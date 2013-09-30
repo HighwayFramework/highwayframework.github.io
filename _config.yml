@@ -27,6 +27,8 @@ email:
 navigation:
 - text: Home
   url: /index.html
+- text: Projects
+  url: /projects/index.html
 
 # ----------------------- #
 #    Jekyll & Plugins     #
