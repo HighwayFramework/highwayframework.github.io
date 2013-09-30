@@ -27,6 +27,8 @@ email:
 navigation:
 - text: Home
   url: /index.html
+- text: Team
+  url: /team/index.html
 - text: Projects
   url: /projects/index.html
 
