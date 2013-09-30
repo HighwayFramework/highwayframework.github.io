@@ -3,11 +3,11 @@
 # ----------------------- #
 
 url: http://HighwayFramework.github.io
-title: My Octopress Blog
+title: The fastest and smoothest way to good architecture
 subtitle: A blogging framework for hackers.
-author: Your Name
+author: Tim Rayburn & Devlin Liles
 simple_search: http://google.com/search
-description:
+description: 
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -20,6 +20,13 @@ subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
 email:
+
+# ----------------------- #
+#       Navigation        #
+# ----------------------- #
+navigation:
+- text: Home
+  url: /index.html
 
 # ----------------------- #
 #    Jekyll & Plugins     #
@@ -63,13 +70,13 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 # ----------------------- #
 
 # Github repositories
-github_user:
-github_repo_count: 0
+github_user: HighwayFramework
+github_repo_count: 999
 github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user:
+twitter_user: HighwayFramewor
 twitter_tweet_button: true
 
 # Google +1
@@ -97,4 +104,4 @@ disqus_show_comment_count: false
 google_analytics_tracking_id:
 
 # Facebook Like
-facebook_like: false
+facebook_like: true
