@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://HighwayFramework.github.io/sitemap.xml 
+Sitemap: http://hwyfwk.com/sitemap.xml 

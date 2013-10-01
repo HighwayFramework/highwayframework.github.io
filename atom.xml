@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
-  <link href="http://HighwayFramework.github.io/atom.xml" rel="self"/>
-  <link href="http://HighwayFramework.github.io/"/>
-  <updated>2013-10-01T06:43:18-05:00</updated>
-  <id>http://HighwayFramework.github.io/</id>
+  <link href="http://hwyfwk.com/atom.xml" rel="self"/>
+  <link href="http://hwyfwk.com/"/>
+  <updated>2013-10-01T06:47:12-05:00</updated>
+  <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Our new site]]></title>
-    <link href="http://HighwayFramework.github.io/blog/2013/09/30/our-new-site/"/>
+    <link href="http://hwyfwk.com/blog/2013/09/30/our-new-site/"/>
     <updated>2013-09-30T21:12:00-05:00</updated>
-    <id>http://HighwayFramework.github.io/blog/2013/09/30/our-new-site</id>
+    <id>http://hwyfwk.com/blog/2013/09/30/our-new-site</id>
     <content type="html"><![CDATA[<p>Welcome to our new website design, specifically recreated to ensure that you, our amazing community, has a place to find all the documentation, videos, and discussion you could ever want for the projects in the Highway Framework.  We will be adding a lot of content to the site over the next few days.  Please bear with us if there is any dust settling from the move.</p>
 ]]></content>
   </entry>
