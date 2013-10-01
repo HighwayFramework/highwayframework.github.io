@@ -11,9 +11,10 @@ layout: default
 
 * Brian Sullivan - Contributed to [Data]
 * Jay Smith - Contributed to [Data]
-* Cori Drew - Contributed to [Data]
+* Cori Drew - Contributed to [Data] and the [Services OnRamp][Services]
 
 [Data]: 			/projects/data/
 [Insurance]:	/projects/insurance/
 [OnRamper]:		/projects/onramper/
 [OnRamps]:		/projects/onramp/
+[Services]:		/projects/onramp/services/
