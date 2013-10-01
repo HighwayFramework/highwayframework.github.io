@@ -1,3 +1,22 @@
+# Highway Framework Website Setup
+
+The following commands clone the `source` branch, which contains our source code in a local directory, 
+and then clones the `master` into the `_deploy` directory beneath that.  This will ensure you don't mark
+a post as updated just because you've never generated it before.
+
+```
+git clone <repo_url> <local_dir_name> -b source
+cd <local_dir_name>
+git clone <repo_url> _deploy -b master
+```
+
+Once you've done this, there are three basic commands you'll want to know:
+
+* `rake generate` - will compile the website on your box to the `public` directory
+* `rake preview` - will start a web server pointed at `public` hosted at [http://localhost:4000](http://localhost:4000)
+* `rake deploy` - will update `_deploy` from github, copy `public` to `_deploy`, and push changes to GitHub.
+
+
 ## What is Octopress?
 
 Octopress is [Jekyll](https://github.com/mojombo/jekyll) blogging at its finest.
