@@ -33,6 +33,10 @@ navigation:
   url: /projects/index.html
 - text: License
   url: /license.html
+- text: Contribute
+  url: /contribute.html
+- text: Support
+  url: /support.html
 
 # ----------------------- #
 #    Jekyll & Plugins     #
