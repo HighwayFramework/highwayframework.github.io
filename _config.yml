@@ -31,6 +31,8 @@ navigation:
   url: /team/index.html
 - text: Projects
   url: /projects/index.html
+- text: License
+  url: /license.html
 
 # ----------------------- #
 #    Jekyll & Plugins     #
