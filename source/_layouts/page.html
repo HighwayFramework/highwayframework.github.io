@@ -6,7 +6,10 @@ layout: default
   {% if page.title %}
   <header>
     <div class="jumbotron">
-      {% if site.titlecase %}{{ page.title | titlecase }}{% else %}{{ page.title }}{% endif %}
+    	<div class="container">
+    		<img src="/images/Highway.jpg" />
+      	{% if site.titlecase %}{{ page.title | titlecase }}{% else %}{{ page.title }}{% endif %}
+    	</div>
     </div>
     {% if page.date %}<p class="meta">{% include post/date.html %}{{ time }}</p>{% endif %}
   </header>
