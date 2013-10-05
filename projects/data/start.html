@@ -102,7 +102,7 @@
 
 <p>So you want to get started with Highway.Data, but don’t know where to start? Lets start the same place we always start with something new. &ldquo;Tests!!!&rdquo;</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -119,30 +119,31 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[TestClass]
-</span><span class='line'>public class DriversEducationServiceTests
-</span><span class='line'>{
-</span><span class='line'>   [TestMethod]
-</span><span class='line'>   public void ShouldAddDriverByName()
-</span><span class='line'>   {
-</span><span class='line'>      //arrange
-</span><span class='line'>      var context = new InMemoryDataContext();
-</span><span class='line'>      var service = new DriversEducationService(new Repository(context));
-</span><span class='line'>       
-</span><span class='line'>     //act
-</span><span class='line'>      service.AddDriver("Devlin");
-</span><span class='line'>    
-</span><span class='line'>      //assert
-</span><span class='line'>      context.AsQueryable&lt;Driver&gt;().Count(x =&gt; x.Name == "Devlin").Should().Be(1);
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversEducationServiceTests</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">   [TestMethod]</span>
+</span><span class='line'>   <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldAddDriverByName</span><span class="p">()</span>
+</span><span class='line'>   <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//arrange</span>
+</span><span class='line'>      <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
+</span><span class='line'>      <span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriversEducationService</span><span class="p">(</span><span class="k">new</span> <span class="n">Repository</span><span class="p">(</span><span class="n">context</span><span class="p">));</span>
+</span><span class='line'>      
+</span><span class='line'>     <span class="c1">//act</span>
+</span><span class='line'>      <span class="n">service</span><span class="p">.</span><span class="n">AddDriver</span><span class="p">(</span><span class="s">&quot;Devlin&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//assert</span>
+</span><span class='line'>      <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Count</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">&quot;Devlin&quot;</span><span class="p">).</span><span class="n">Should</span><span class="p">().</span><span class="n">Be</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now that we have a test, lets work on an implementation. In this implementation we are going to focus on the patterns in Highway.Data. We will dive into Entity Framework, nHibernate, and RavenDb later. In order to facilitate this, we are going to use the InMemoryDataContext that ships with Highway.Data as our test stub.</p>
 
 <p>We just need to add a driver to the database.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -166,30 +167,31 @@
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversEducationService
-</span><span class='line'>{
-</span><span class='line'>    private readonly IRepository _repository;
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversEducationService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IRepository</span> <span class="n">_repository</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>    public DriversEducationService(IRepository repository)
-</span><span class='line'>    {
-</span><span class='line'>        _repository = repository;
-</span><span class='line'>    }
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversEducationService</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repository</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    public void AddDriver(string name)
-</span><span class='line'>    {
-</span><span class='line'>        _repository.Context.Add(new Driver(name));
-</span><span class='line'>    }
-</span><span class='line'>}
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">AddDriver</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_repository</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Driver
-</span><span class='line'>{
-</span><span class='line'>    public string Name { get; set; }
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    public Driver(string name)
-</span><span class='line'>    {
-</span><span class='line'>        Name = name;
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">Driver</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Once we have the repository, we can use the Context on Repository as a unit of work. Check <a href="http://www.martinfowler.com/eaaCatalog/repository.html" title="Repository Pattern">here</a> and <a href="http://www.martinfowler.com/eaaCatalog/unitOfWork.html" title="Unit of Work Pattern">here</a> read up on Repository or Unit of Work.</p>
@@ -198,7 +200,7 @@
 
 <p>Once we have added an object we will obviously need to query the object back out. For this we will need to use a mixture of <a href="http://en.wikipedia.org/wiki/Specification_pattern" title="Specification Pattern">Specification Pattern</a> and <a href="http://martinfowler.com/eaaCatalog/queryObject.html" title="Query Object Pattern">Query Object Pattern</a>. Below is the test for querying back an object.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -214,75 +216,79 @@
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[TestMethod]
-</span><span class='line'>public void ShouldQueryDriversByName()
-</span><span class='line'>{
-</span><span class='line'>    //arrange 
-</span><span class='line'>    var context = new InMemoryDataContext();
-</span><span class='line'>    context.Add(new Driver("Devlin"));
-</span><span class='line'>    context.Add(new Driver("Tim"));
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldQueryDriversByName</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//arrange </span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Devlin&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Tim&quot;</span><span class="p">));</span>
 </span><span class='line'>
-</span><span class='line'>    var service = new DriversEducationService(new Repository(context));
+</span><span class='line'>    <span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriversEducationService</span><span class="p">(</span><span class="k">new</span> <span class="n">Repository</span><span class="p">(</span><span class="n">context</span><span class="p">));</span>
 </span><span class='line'>
-</span><span class='line'>    //act
-</span><span class='line'>    Driver driver = service.GetDriver("Devlin");
+</span><span class='line'>    <span class="c1">//act</span>
+</span><span class='line'>    <span class="n">Driver</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">service</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin&quot;</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    //assert
-</span><span class='line'>    driver.Should().NotBeNull();
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="c1">//assert</span>
+</span><span class='line'>    <span class="n">driver</span><span class="p">.</span><span class="n">Should</span><span class="p">().</span><span class="n">NotBeNull</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>And our service code that passes the test.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public Driver GetDriver(string name)
-</span><span class='line'>{
-</span><span class='line'>    return _repository.Find(new DriverByName(name));
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="n">Driver</span> <span class="nf">GetDriver</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_repository</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriverByName</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>With the following query.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriverByName : Scalar&lt;Driver&gt;
-</span><span class='line'>{
-</span><span class='line'>    public DriverByName(string name)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = c =&gt; c.AsQueryable&lt;Driver&gt;().Single(x =&gt; x.Name == name);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverByName</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriverByName</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Single</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>If we want to query a collection of entities, that is as simple as changing the base class our query object inherits from.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversByName : Query&lt;Driver&gt;
-</span><span class='line'>{
-</span><span class='line'>    public DriversByName(string name)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = c =&gt; c.AsQueryable&lt;Driver&gt;().Where(x =&gt; x.Name == name);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversByName</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversByName</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Built into the framework is the ability to fire off commands that affect the database but don&rsquo;t return a value. The syntax is very similar.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -301,25 +307,26 @@
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public void RemoveDriversByName(string name)
-</span><span class='line'>{
-</span><span class='line'>    _repository.Execute(new RemoveDrivers(name));
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">RemoveDriversByName</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_repository</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="k">new</span> <span class="n">RemoveDrivers</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class RemoveDrivers : Command
-</span><span class='line'>{
-</span><span class='line'>    public RemoveDrivers(string name)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = c =&gt;
-</span><span class='line'>        {
-</span><span class='line'>            foreach (var driver in c.AsQueryable&lt;Driver&gt;().Where(x=&gt;x.Name == name))
-</span><span class='line'>            {
-</span><span class='line'>                c.Remove(driver);
-</span><span class='line'>            }
-</span><span class='line'>            c.Commit();
-</span><span class='line'>        };
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">RemoveDrivers</span> <span class="p">:</span> <span class="n">Command</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">RemoveDrivers</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">driver</span> <span class="k">in</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">x</span><span class="p">=&gt;</span><span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="n">name</span><span class="p">))</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">driver</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">c</span><span class="p">.</span><span class="n">Commit</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
