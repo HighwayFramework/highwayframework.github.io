@@ -3,7 +3,7 @@ layout: post
 title: "Strong Names"
 date: 2013-10-04 20:05
 comments: true
-categories: data, pavement
+categories: data pavement
 ---
 We are thrilled to announce that we have today released an update to Highway.Pavement and Highway.Data which add strong name keys (SNKs) to the assemblies.  Furthermore, in keeping with good open source practices, the cryptographic keys to accomplish this signing are now checked into the source repository for each project.
 <!--more-->
