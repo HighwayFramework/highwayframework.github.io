@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: release | The fastest and smoothest way to good architecture]]></title>
+  <link href="http://hwyfwk.com/blog/categories/release/atom.xml" rel="self"/>
+  <link href="http://hwyfwk.com/"/>
+  <updated>2013-10-05T12:25:22-05:00</updated>
+  <id>http://hwyfwk.com/</id>
+  <author>
+    <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
+    <email><![CDATA[Team@HwyFwk.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.3]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/"/>
+    <updated>2013-10-05T12:22:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
+</ul>
+
+
+<h1>Notes</h1>
+
+<ul>
+<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v4.1]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/"/>
+    <updated>2013-10-05T12:19:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Adding a strong name key to all Highway.Data assemblies so they can be referenced from signed assemblies.</li>
+</ul>
+
+
+<h1>Notes</h1>
+
+<ul>
+<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
