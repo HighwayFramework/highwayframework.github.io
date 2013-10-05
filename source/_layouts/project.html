@@ -1,5 +1,6 @@
 ---
 layout: page
+comments: false
 ---
 <div class="section-nav">
 	<h3><a href="{{ page.url | get_path }}index.html">Project Home</a>{% unless page.no_start %} | <a href="{{ page.url | get_path }}start.html">Getting Started</a>{% endunless %}{% unless page.no_features %} | <a href="{{ page.url | get_path }}features.html">Features</a>{% endunless %}{% unless page.no_releases %} | <a href="{{ page.url | get_path }}releases.html">Release Notes</a>{% endunless %}{% unless page.no_api %} | <a href="{{ page.url | get_path }}api.html">API Documentation</a>{% endunless %}</h3>
