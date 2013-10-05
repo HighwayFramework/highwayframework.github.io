@@ -2,6 +2,6 @@
 layout: page
 ---
 <div class="section-nav">
-	<h3><a href="{{ page.url | get_path }}index.html">Project Home</a>{% if page.start_disabled == false %} | <a href="{{ page.url | get_path }}start.html">Getting Started</a>{% endif %}{% if page.features_disabled == false %} | <a href="{{ page.url | get_path }}features.html">Features</a>{% endif %}{% if page.releases_disabled == false %} | <a href="{{ page.url | get_path }}release.html">Release Notes</a>{% endif %}{% if page.api_disabled == false %} | <a href="{{ page.url | get_path }}api.html">API Documentation</a>{% endif %}</h3>
+	<h3><a href="{{ page.url | get_path }}index.html">Project Home</a>{% unless page.no_start %} | <a href="{{ page.url | get_path }}start.html">Getting Started</a>{% endunless %}{% unless page.no_features %} | <a href="{{ page.url | get_path }}features.html">Features</a>{% endunless %}{% unless page.no_releases %} | <a href="{{ page.url | get_path }}release.html">Release Notes</a>{% endunless %}{% unless page.no_api %} | <a href="{{ page.url | get_path }}api.html">API Documentation</a>{% endunless %}</h3>
 </div>
 {{ content }}
