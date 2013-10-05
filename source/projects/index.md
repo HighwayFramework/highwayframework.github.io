@@ -9,6 +9,7 @@ Projects in an active status are being developed, and expanded to bring new feat
 
 * [Highway.Data][Data]
 * [Highway.Insurance][Insurance]
+* [Highway.Pavement][Pavement]
 
 # Stable Projects
 
@@ -22,9 +23,7 @@ Projects in a stable status are supported, but are considered to currently meet 
 
 Projects in an incubating status are not stable, their APIs may substantially change, or the project may be terminated entirely if the team decides that the projects lack support, fail to address industry needs, or that there are better solutions in the marketplace.
 
-* [Highway.Pavement][Pavement]
 * [Highway.RoadCrew][RoadCrew]
-* [Highway.Configuration][Configuration]
 
 # Inactive Projects
 
@@ -40,4 +39,3 @@ Projects in an inactive status are no longer supported or developed.  You should
 [Services]:			/projects/onramp/services/
 [Pavement]:			/projects/pavement/
 [RoadCrew]:			/projects/roadcrew/
-[Configuration]:	/projects/configuration/
