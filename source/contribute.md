@@ -1,8 +1,9 @@
 ---
-layout:  default
+layout:  page
+title: Our Mission
 ---
 
-# Our mission is to be the most useful, approachable, testable, and well documented framework for .NET developers.
+# Our mission is to be the most **useful**, **approachable**, **testable**, and **well documented** framework for .NET developers.
 
 ## Useful
 

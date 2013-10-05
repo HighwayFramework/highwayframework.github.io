@@ -1,10 +1,8 @@
 ---
-layout:  default
+layout:  page
+title: The MIT License (MIT)
 ---
-
-# The MIT License (MIT)
-
-## Copyright (c) 2011-2013 Devlin Liles & Tim Rayburn
+# Copyright (c) 2011-2013 Devlin Liles & Tim Rayburn
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
