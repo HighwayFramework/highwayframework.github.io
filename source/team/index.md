@@ -14,7 +14,7 @@ Recently Devlin became published along with his good friend [Tim Rayburn][tim] a
 He is an avid soccer player and hobbyist gamer.
 
 
-# Tim Rayburn - Lead for [OnRamper] and all [OnRamps]
+# Tim Rayburn - Lead for [OnRamper], OnRamps [MVC] & [Services]
 {% img right /images/tim-rayburn.png %}
 [Tim Rayburn][tim] is a Principal Consultant with [Improving Enterprises][improving], a software and project management consulting company in Dallas, TX. Since 2007 he has been annually awarded the [Microsoft MVP for Connected Systems Development][mvp] in recognition of his expertise and community leadership. He is the organizer of Dallas TechFest, where through the work of an amazing staff they bring an incredible multi-technology conference to life every year in Dallas. He is the author of “[Entity Framework 4.1: Expert’s Cookbook][book]”, with [Devlin Liles][devlin], and can be found speaking across the nation of agile process, distributed architecture, and data access technologies. He lives in Arlington Texas with his amazing wife Kate and their loyal dog Gandalf.
 
@@ -27,8 +27,8 @@ He is an avid soccer player and hobbyist gamer.
 [Data]: 			/projects/data/
 [Insurance]:	/projects/insurance/
 [OnRamper]:		/projects/onramper/
-[OnRamps]:		/projects/onramp/
-[Services]:		/projects/onramp/services/
+[Services]:		/projects/onramp-services/
+[MVC]:				/projects/onramp-mvc/
 [improving]:	http://improvingenterprises.com/
 [devlin]:		http://devlinliles.com
 [tim]:			http://timrayburn.net

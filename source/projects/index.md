@@ -35,7 +35,7 @@ Projects in an inactive status are no longer supported or developed.  You should
 [Data]:				/projects/data/
 [Insurance]:		/projects/insurance/
 [OnRamper]:			/projects/onramper/
-[MVC]:				/projects/onramp/mvc/
-[Services]:			/projects/onramp/services/
+[MVC]:				/projects/onramp-mvc/
+[Services]:			/projects/onramp-services/
 [Pavement]:			/projects/pavement/
 [RoadCrew]:			/projects/roadcrew/
