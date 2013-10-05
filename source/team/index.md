@@ -4,8 +4,9 @@ layout: default
 
 # Core Team
 
-* Devlin Liles - Lead for [Data] and [Insurance]
-* Tim Rayburn - Lead for [OnRamper] and all [OnRamps]
+## Devlin Liles - Lead for [Data] and [Insurance]
+
+## Tim Rayburn - Lead for [OnRamper] and all [OnRamps]
 
 # Contributors
 
