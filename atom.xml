@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-04T13:53:49-05:00</updated>
+  <updated>2013-10-04T20:14:36-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,46 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Strong Names]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/04/strong-names/"/>
+    <updated>2013-10-04T20:05:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/04/strong-names</id>
+    <content type="html"><![CDATA[<p>We are thrilled to announce that we have today released an update to Highway.Pavement and Highway.Data which add strong name keys (SNKs) to the assemblies.  Furthermore, in keeping with good open source practices, the cryptographic keys to accomplish this signing are now checked into the source repository for each project.</p>
+
+<!--more-->
+
+
+<p>Thank you to friend of the project Michael Dudley for prompting us to do something which we should have done some time ago.</p>
+
+<p>Please note, that since we&rsquo;ve introduced these keys, there is a chance some Binding Redirects in your config files may need to be updated.  Here is the public key information if you should need it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Microsoft (R) .NET Framework Strong Name Utility  Version 4.0.30319.17929
+</span><span class='line'>Copyright (c) Microsoft Corporation.  All rights reserved.
+</span><span class='line'>
+</span><span class='line'>Public key (hash algorithm: sha1):
+</span><span class='line'>00240000048000009400000006020000002400005253413100040000010001000d9d9349bb0d52
+</span><span class='line'>9d9e45bda5d7c7e82852dfd8f8978b6499f712866db11623fb9ff9d616bb5e796f441b3ee5e681
+</span><span class='line'>16ba7f8a533a74e87d892226cb3dcf091b9fe476d41e862f5a5d8f768d5ced1c5816282ebdc7ef
+</span><span class='line'>8fb3d40709fb4e64b57141c1691f00dcc451a367671de255df03115b001923ec9590870772118e
+</span><span class='line'>2cbe65df
+</span><span class='line'>
+</span><span class='line'>Public key token is fe803c9600455796</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Our new site]]></title>
