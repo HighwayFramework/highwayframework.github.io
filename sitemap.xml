@@ -2,23 +2,33 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://hwyfwk.com/blog/2013/09/30/our-new-site/</loc>
-        <lastmod>2013-10-01T07:32:38-05:00</lastmod>
+        <lastmod>2013-10-05T15:23:05-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/04/strong-names/</loc>
-        <lastmod>2013-10-04T20:28:02-05:00</lastmod>
+        <lastmod>2013-10-05T15:23:05-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/</loc>
-        <lastmod>2013-10-05T12:21:50-05:00</lastmod>
+        <lastmod>2013-10-05T15:23:05-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/</loc>
-        <lastmod>2013-10-05T12:24:15-05:00</lastmod>
+        <lastmod>2013-10-05T15:23:05-05:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers/
+        </loc>
+        <lastmod>2013-10-05T15:48:57-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/</loc>
+        <lastmod>2013-10-05T15:23:05-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/archives/</loc>
-        <lastmod>2013-10-05T12:24:15-05:00</lastmod>
+        <lastmod>2013-10-05T15:48:57-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/contribute.html</loc>
@@ -26,7 +36,7 @@
     </url>
     <url>
         <loc>http://hwyfwk.com/</loc>
-        <lastmod>2013-10-05T12:24:15-05:00</lastmod>
+        <lastmod>2013-10-05T15:48:57-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/license.html</loc>
