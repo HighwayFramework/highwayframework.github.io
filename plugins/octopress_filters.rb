@@ -129,6 +129,9 @@ module OctopressLiquidFilters
   def titlecase(input)
     input.titlecase
   end
+  
+  # Added by Tim Rayburn, return just the path from a URI
+  def get_path(input) input.gsub /(.+\/)(.+\.html)/ do $1 end end
 
 end
 Liquid::Template.register_filter OctopressLiquidFilters

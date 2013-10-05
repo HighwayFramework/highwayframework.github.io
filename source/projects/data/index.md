@@ -1,8 +1,6 @@
 ---
-layout: default
+layout: project-data
 ---
-
-# [Project Home][Home] | [API Documentation][api] | [Getting Started][Start]
 
 ## What is Highway.Data?
 
