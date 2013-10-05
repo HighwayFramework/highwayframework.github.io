@@ -1,0 +1,77 @@
+---
+layout: post
+title: "Castle Windsor with Auto Discovered Installers"
+date: 2013-10-05 15:07
+comments: true
+no_homepage: true
+categories: onramp-mvc feature
+order: 10
+---
+
+# Configuring Castle Windsor
+
+Dependency injection is a key part of good software development, it is the D or [SOLID], and yet is not something [Microsoft] ships a solution for.  As such, we have turned to the community and the long standing, well supported, king of IoC : [Castle.Windsor]
+
+We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our `IoC.Startup()` method, we do the following:
+
+``` csharp
+        [Obsolete("Container should never be accessed directly outside of App_Start")]
+        public static IWindsorContainer Container { get; set; }
+        
+        public static void Startup()
+        {
+	#pragma warning disable 618
+            // Create the container
+            Container = new WindsorContainer();
+
+            // Add the Array Resolver, so we can take dependencies on T[]
+            // while only registering T.
+            Container.Kernel.Resolver.AddSubResolver(new ArrayResolver(Container.Kernel));
+
+            // Register the kernel and container, in case an installer needs it.
+            Container.Register(
+                Component.For<IKernel>().Instance(Container.Kernel),
+                Component.For<IWindsorContainer>().Instance(Container)
+                );
+
+            // Search for an use all installers in this application.
+            Container.Install(FromAssembly.This());
+	#pragma warning restore 618
+        }
+```
+
+We make your instance of [Castle.Windsor] available via `IoC.Container` but we have specifically marked that as `[Obsolete]` because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of App_Start.
+
+## Accessing the Container without an Obsolete Warning
+
+Now, on rare occasions there will be perfectly reasonable pragmatic reasons to need to access the container.  This is the reason why we have marked the `[Obsolete]` merely as a warning, and then included the `#pragma` statements to disable those warnings in places you are accepting the need to directly access the container.  When those occur, simply surround your code with :
+
+```
+	#pragma warning disable 618
+	#pragma warning restore 618
+```
+
+You should keep such sections small, and should be aware that the `#pragma` statements will also disable any other `[Obsolete]` warnings that occur between them, not just those for the `IoC.Container`.
+
+# Discovering Installers
+
+Our code above includes one very small, but very powerful line that is worth highlighting:
+
+```
+Container.Install(FromAssembly.This());
+```
+
+This statement tells [Castle.Windsor] to scan the **current assembly**, looking for classes which implement the `IWindsorInstaller` interface, and to execute those components, allowing them to register components with the container.  This auto discovery is one of the best features of our IoC implementation, allowing you to segregate your registrations into small, related pieces, as you will see.
+
+# Included Installers
+
+We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the `Installers` folder of your MVC solution.  Here are their names and purposes:
+
+* ControllerInstaller - Scans the current assembly for all types that implement `IController` from System.Web.Mvc and registers them with [Castle.Windsor].  This means you never have to register your controllers manually.
+* LoggingInstaller - Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.
+* FilterInstaller - Is where you register all MVC filters.  We will cover this in more detail when we discuss Filter Injection.
+* HighwayDataInstaller - Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.
+
+[SOLID]:						http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+[Microsoft]:				http://microsoft.com
+[Castle.Windsor]:		http://docs.castleproject.org/Default.aspx?Page=MainPage&NS=Windsor&AspxAutoDetectCookieSupport=1
