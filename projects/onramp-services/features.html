@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>The fastest and smoothest way to good architecture</title>
+  <title>Highway.OnRamp.Services - The fastest and smoothest way to good architecture</title>
   <meta name="author" content="Tim Rayburn & Devlin Liles">
 
    
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/projects/onramp/mvc/start.html">
+  <link rel="canonical" href="http://hwyfwk.com/projects/onramp-services/features.html">
   <link href="/favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
@@ -86,41 +86,32 @@
     <div class="span12">
       <div class="row-fluid">
         <div id="content">
-          <h1><a href="/projects/onramp/mvc/">Project Home</a> | <a href="/projects/onramp/mvc/start.html">Getting Started</a></h1>
+          <article role="article">
+  
+  <header>
+    <div class="jumbotron">
+    	<div class="container">
+    		<img src="/images/Highway.jpg" />
+      	Highway.OnRamp.Services
+    	</div>
+    </div>
+    
+  </header>
+  
+  <div class="section-nav">
+	<h3><a href="/projects/onramp-services/index.html">Project Home</a> | <a href="/projects/onramp-services/start.html">Getting Started</a> | <a href="/projects/onramp-services/features.html">Features</a> | <a href="/projects/onramp-services/releases.html">Release Notes</a> | <a href="/projects/onramp-services/api.html">API Documentation</a></h3>
+</div>
+<h1>Features</h1>
 
-<h2>Getting Started with Highway.OnRamp.MVC</h2>
-
-<h3>Create an MVC Site</h3>
-
-<p>Our first step will be to create an MVC site, or open an existing MVC project.</p>
-
-<h3>Install the Package</h3>
-
-<p>Next open the <strong>Package Manager Console</strong> and issue the command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.OnRamp.MVC.All</span></code></pre></td></tr></table></div></figure>
 
 
-<h3>Create Value, Not Boilerplate</h3>
 
-<p>That is all.  You should not be able to build and run your site, and a wide variety of features should be automatically engaged.  In the next section we&rsquo;ll introduce those features, one by one, and explain roughly how they work.</p>
 
-<h2>Features Tour</h2>
 
-<h3>Web Activator</h3>
+</article>
 
-<p>Throughout the rest of the features for this OnRamp, you will see we perform a lot of work just before, or just after, App_Start runs.  In order to be able to compose these behaviors into your project, we use a project called WebActivator.  That sounds very complex, but it&rsquo;s very simple, there are attributes which can be used to make a particular static method be called either just before or just after App_Start.</p>
 
-<p>We only run one thing before App_Start : <strong>Bootstrapping Castle.Windsor</strong>.  Basically we create our container instance, and register all components.  This means that from App_Start onward you can count as given that an IoC container exists, and all provided registrations have been run.</p>
 
-<h3>Dependency Injection</h3>
-
-<p>The OnRamp introduces the ability to do Dependency Injection via Castle.Windsor, a very popular and well understood project from the Castle Project.  In the class <code>IoC</code> there exists an instance of the <code>IWindsorContainer</code>.  <strong>Please note it is marked as obsolete</strong>!! You should not access this directly, unless you&rsquo;re writing code which fires at App_Start.  In all other cases, the fact that we handle injecting Controllers should ensure you never need to resolve anything directly.</p>
-
-<h4>Registering with Castle</h4>
-
-<p>As part of the bootstrapping process, all classes which implement <code>IWindsorInstaller</code> from the current application are executed.  The OnRamp creates several of these, and locates them in the <code>Installers</code> folder.</p>
 
         </div>
       </div>
