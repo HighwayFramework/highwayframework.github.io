@@ -12,7 +12,7 @@ Projects in an active status are being developed, and expanded to bring new feat
 
 # Stable Projects
 
-Projects in a stable status are supported, and but are considered to currently meet all needs of the users.  Releases will still occur, but you should expect that they will be smaller and incremental updates.
+Projects in a stable status are supported, but are considered to currently meet all needs of the users.  Releases will still occur, but you should expect that they will be smaller and incremental updates.
 
 * [Highway.OnRamper][OnRamper]
 * [Highway.OnRamp.MVC][MVC]
