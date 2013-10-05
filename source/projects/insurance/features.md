@@ -12,6 +12,5 @@ project: insurance
 {% include feature_post.html %}
 </article>
 </div>
-</div>
 {% endif %}
 {% endsorted_for %}

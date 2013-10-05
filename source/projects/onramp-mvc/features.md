@@ -12,6 +12,5 @@ project: onramp-mvc
 {% include feature_post.html %}
 </article>
 </div>
-</div>
 {% endif %}
 {% endsorted_for %}
