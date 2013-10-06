@@ -12,6 +12,5 @@ project: onramper
 {% include feature_post.html %}
 </article>
 </div>
-</div>
 {% endif %}
 {% endfor %}
