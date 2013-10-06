@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-05T16:11:05-05:00</updated>
+  <updated>2013-10-06T09:19:28-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NLog and Castle Logging Facility for Logging]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/"/>
+    <updated>2013-10-06T08:50:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging</id>
+    <content type="html"><![CDATA[<p>One of the most important features of any application is a good logging strategy.  Because of this, <code>Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code>NLog.config</code> file.</p>
+
+<h1>How do I log from a class?</h1>
+
+<p>If you want to log from a class, there is a very simply pattern we recommend you follow:</p>
+
+<p>``` csharp
+using Castle.Core.Logging;</p>
+
+<p>public class MyNewClass
+{</p>
+
+<pre><code>public MyNewClass()
+{
+    Logger = NullLogger.Instance;
+}
+
+public ILogger Logger { get; set; }
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The steps are quite simple:</p>
+
+<ul>
+<li>Declare a public property of type <code>ILogger</code></li>
+<li>Initialize that property in your constructor to <code>NullLogger.Instance</code></li>
+</ul>
+
+
+<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code>Logger</code> property.  But, if you ever remove the <code>LoggingInstaller</code> your code will continue to work because the <code>NullLogger</code> is a proper implementation of <code>ILogger</code> which does nothing.  This avoids <code>NullReferenceException</code>s when you don&rsquo;t have a Logger injected, for instance during tests.</p>
+
+<h1>How does that get setup to begin with?</h1>
+
+<p>The Logging Facility is setup in the <code>LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
+
+<p>``` csharp
+public class LoggingInstaller : IWindsorInstaller
+{</p>
+
+<pre><code>public void Install(IWindsorContainer container, IConfigurationStore store)
+{
+
+    container.AddFacility&lt;LoggingFacility&gt;(m =&gt; m.UseNLog().WithConfig("NLog.config"));
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>That really is all there is to it, we configure the facility to use NLog, and then tell it where the config file is.  Now, the config file we include is very simple:</p>
+
+<p>``` xml
+&lt;nlog xmlns=&ldquo;<a href="http://www.nlog-project.org/schemas/NLog.xsd">http://www.nlog-project.org/schemas/NLog.xsd</a>&rdquo;</p>
+
+<pre><code>  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  autoReload="true"
+  globalThreshold="Debug"&gt;
+</code></pre>
+
+<p>  <targets></p>
+
+<pre><code>&lt;target xsi:type="File"
+        name="file"
+        fileName="${basedir}/Logs/Log.txt"
+        archiveEvery="Day" /&gt;
+</code></pre>
+
+<p>  </targets></p>
+
+<p>  <rules></p>
+
+<pre><code>&lt;logger name="*" minlevel="Debug" writeTo="file" /&gt;
+</code></pre>
+
+<p>  </rules>
+</nlog>
+```</p>
+
+<p>This configuration sets up a <code>Logs</code> directory that will contain <code>Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says &ldquo;log everything to Logs.txt&rdquo;.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
+
+<h1>What is logged automatically for me?</h1>
+
+<p>We setup two types of loggers for you automatically;</p>
+
+<ul>
+<li>The App_Start component <code>LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
+<li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WebActivator for Composable Startup]]></title>
