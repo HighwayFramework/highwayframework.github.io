@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-07T10:20:46-05:00</updated>
+  <updated>2013-10-08T17:57:53-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v4.1.0.1]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1/"/>
+    <updated>2013-10-08T17:55:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>No code changes, correcting NuGet metadata for Highway.Data.* not pointing at the correct version.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Data v4.1]]></title>
