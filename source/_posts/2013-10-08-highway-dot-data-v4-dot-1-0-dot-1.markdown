@@ -9,6 +9,6 @@ categories: data release
 
 # Changes
 
-* No code changes, correcting NuGet metadata for Highway.Data.* not pointing at the correct version.
+* No code changes, correcting NuGet metadata for Highway.Data.* not pointing at the correct version of Highway.Data after the introduction of strong naming.
 
 
