@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-12T13:21:16-05:00</updated>
+  <updated>2013-10-15T14:15:21-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,218 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Entity Framework - Testable Adapter for DbContext]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext/"/>
+    <updated>2013-10-15T12:58:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext</id>
+    <content type="html"><![CDATA[<h1>Installing Highway.Data.EntityFramework</h1>
+
+<p>Our first and most important feature of Highway.Data.EntityFramework is wrapping the Highway.Data <code>IDataContext</code> interface around the <code>DbContext</code> of Entity Framework.  You get started with Highway.Data.EntityFramework by simply opening the Package Manager Console and typeing:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">Install-Package</span> <span class="n">Highway</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">EntityFramework</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will bring in Entity Framework, Highway.Data, Highway.Pavement, and some common wrappers around Logging and Service location.</p>
+
+<h1>Introducing the IDataContext</h1>
+
+<p>Now, let&rsquo;s create a variable of type <code>IDataContext</code> and provide it an instance of the class <code>DataContext</code>, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">IDataContext</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="s">&quot;server=.;database=master;integrated security=true;&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note, we provide our connection string to the <code>DataContext</code> class when it is instantiated.  Let&rsquo;s look at the definition of <code>IDataContext</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDataContext</span> <span class="p">:</span> <span class="n">IDisposable</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">T</span> <span class="n">Add</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">Commit</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">Reload</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">Remove</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">Update</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The interface provides a way to do all of the CRUD operations:</p>
+
+<ul>
+<li><strong>C</strong>reate &ndash; <code>Add&lt;T&gt;(T item)</code></li>
+<li><strong>R</strong>ead &ndash; <code>AsQueryable&lt;T&gt;()</code></li>
+<li><strong>U</strong>pdate &ndash; <code>Update&lt;T&gt;(T item)</code></li>
+<li><strong>D</strong>elete &ndash; <code>Remove&lt;T&gt;(T item)</code></li>
+</ul>
+
+
+<p>In addition we&rsquo;ve provided a way to do two other important things:</p>
+
+<ul>
+<li>Refresh an object from the Database via <code>Reload&lt;T&gt;(T item)</code></li>
+<li>Commit all work as a single transaction via <code>Commit()</code></li>
+</ul>
+
+
+<h2>DbContext and Entity Framework</h2>
+
+<p>Inside the Highway.Data.EntityFramework version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an instance of <code>DbContext</code>.  Our declaration looks like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DataContext</span> <span class="p">:</span> <span class="n">DbContext</span><span class="p">,</span> <span class="n">IEntityDataContext</span><span class="p">,</span> <span class="n">IObservableDataContext</span><span class="p">,</span> <span class="n">IDataContext</span><span class="p">,</span> <span class="n">IDisposable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Anytime you have existing code which requires a DbContext, you can instead provide an instance of the DataContext class.</p>
+
+<h1>Testing with DataContext</h1>
+
+<p>From a testing perspective this provides great abstractions.  Consider the following classes and test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span> <span class="p">{</span> <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">IDataContext</span> <span class="n">context</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriverEducationService</span><span class="p">(</span><span class="n">IDataContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">context</span> <span class="p">=</span> <span class="n">context</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Driver</span> <span class="nf">GetDriver</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">First</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A simple class that retrieves driver by name. <strong>Please note, we are discussing only <code>IDataContext</code> here, we normally recommend querying via <code>IRepository</code> in Highway.Data</strong></p>
+
+<p>Now let&rsquo;s write a test that ensures that works, without having to touch a database:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationServiceTests</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [TestMethod]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">GetDriver_ShouldRetrieveADriverByName</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Arrange</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Devlin Liles&quot;</span> <span class="p">});</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriverEducationService</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Act</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Assert</span>
+</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, this test doesn&rsquo;t use mocking because we provide an <code>InMemoryDataContext</code> with Highway.Data which removes the need for it in most cases.  But when it doesn&rsquo;t remove that need, we can also re-write the same test using a mocking framework like Rhino.Mocks very simply:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationServiceTests_WithMocking</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [TestMethod]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">GetDriver_ShouldRetrieveADriverByName</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Arrange</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IDataContext</span><span class="p">&gt;();</span>
+</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Expect</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;())</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">Return</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Devlin Liles&quot;</span> <span class="p">}</span>
+</span><span class='line'>            <span class="p">}.</span><span class="n">AsQueryable</span><span class="p">());</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriverEducationService</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Act</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Assert</span>
+</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Data v4.1.0.1]]></title>

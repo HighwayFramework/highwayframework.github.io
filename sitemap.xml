@@ -39,8 +39,14 @@
         <lastmod>2013-10-11T08:32:55-05:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext/
+        </loc>
+        <lastmod>2013-10-15T14:14:33-05:00</lastmod>
+    </url>
+    <url>
         <loc>http://hwyfwk.com/blog/archives/</loc>
-        <lastmod>2013-10-11T08:32:55-05:00</lastmod>
+        <lastmod>2013-10-15T14:14:33-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/contribute.html</loc>
@@ -48,7 +54,7 @@
     </url>
     <url>
         <loc>http://hwyfwk.com/</loc>
-        <lastmod>2013-10-11T08:32:55-05:00</lastmod>
+        <lastmod>2013-10-15T14:14:33-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/license.html</loc>
@@ -60,23 +66,23 @@
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/api.html</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-15T13:15:07-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/features.html</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-15T13:15:07-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-15T13:15:07-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/releases.html</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-15T13:15:07-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/start.html</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-15T13:15:07-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/</loc>

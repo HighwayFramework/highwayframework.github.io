@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-12T13:21:16-05:00</updated>
+  <updated>2013-10-15T14:15:21-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,160 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Entity Framework - Testable Adapter for DbContext]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext/"/>
+    <updated>2013-10-15T12:58:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext</id>
+    <content type="html"><![CDATA[<h1>Installing Highway.Data.EntityFramework</h1>
+
+<p>Our first and most important feature of Highway.Data.EntityFramework is wrapping the Highway.Data <code>IDataContext</code> interface around the <code>DbContext</code> of Entity Framework.  You get started with Highway.Data.EntityFramework by simply opening the Package Manager Console and typeing:</p>
+
+<p><code>powershell
+Install-Package Highway.Data.EntityFramework
+</code></p>
+
+<p>This will bring in Entity Framework, Highway.Data, Highway.Pavement, and some common wrappers around Logging and Service location.</p>
+
+<h1>Introducing the IDataContext</h1>
+
+<p>Now, let&rsquo;s create a variable of type <code>IDataContext</code> and provide it an instance of the class <code>DataContext</code>, like so:</p>
+
+<p><code>csharp
+IDataContext context = new DataContext("server=.;database=master;integrated security=true;");
+</code></p>
+
+<p>Note, we provide our connection string to the <code>DataContext</code> class when it is instantiated.  Let&rsquo;s look at the definition of <code>IDataContext</code>:</p>
+
+<p>```
+public interface IDataContext : IDisposable
+{</p>
+
+<pre><code>IEventManager EventManager { get; set; }
+
+T Add&lt;T&gt;(T item) where T : class;
+IQueryable&lt;T&gt; AsQueryable&lt;T&gt;() where T : class;
+int Commit();
+T Reload&lt;T&gt;(T item) where T : class;
+T Remove&lt;T&gt;(T item) where T : class;
+T Update&lt;T&gt;(T item) where T : class;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The interface provides a way to do all of the CRUD operations:</p>
+
+<ul>
+<li><strong>C</strong>reate &ndash; <code>Add&lt;T&gt;(T item)</code></li>
+<li><strong>R</strong>ead &ndash; <code>AsQueryable&lt;T&gt;()</code></li>
+<li><strong>U</strong>pdate &ndash; <code>Update&lt;T&gt;(T item)</code></li>
+<li><strong>D</strong>elete &ndash; <code>Remove&lt;T&gt;(T item)</code></li>
+</ul>
+
+
+<p>In addition we&rsquo;ve provided a way to do two other important things:</p>
+
+<ul>
+<li>Refresh an object from the Database via <code>Reload&lt;T&gt;(T item)</code></li>
+<li>Commit all work as a single transaction via <code>Commit()</code></li>
+</ul>
+
+
+<h2>DbContext and Entity Framework</h2>
+
+<p>Inside the Highway.Data.EntityFramework version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an instance of <code>DbContext</code>.  Our declaration looks like so:</p>
+
+<p><code>
+public class DataContext : DbContext, IEntityDataContext, IObservableDataContext, IDataContext, IDisposable
+</code>
+Anytime you have existing code which requires a DbContext, you can instead provide an instance of the DataContext class.</p>
+
+<h1>Testing with DataContext</h1>
+
+<p>From a testing perspective this provides great abstractions.  Consider the following classes and test:</p>
+
+<p>```
+public class Driver { public string Name { get; set; } }</p>
+
+<p>public class DriverEducationService
+{</p>
+
+<pre><code>private IDataContext context;
+public DriverEducationService(IDataContext context)
+{
+    this.context = context;
+}
+
+public Driver GetDriver(string name)
+{
+    return context.AsQueryable&lt;Driver&gt;().First(e =&gt; e.Name == name);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>A simple class that retrieves driver by name. <strong>Please note, we are discussing only <code>IDataContext</code> here, we normally recommend querying via <code>IRepository</code> in Highway.Data</strong></p>
+
+<p>Now let&rsquo;s write a test that ensures that works, without having to touch a database:</p>
+
+<p>```
+[TestClass]
+public class DriverEducationServiceTests
+{</p>
+
+<pre><code>[TestMethod]
+public void GetDriver_ShouldRetrieveADriverByName()
+{
+    // Arrange
+    var context = new InMemoryDataContext();
+    context.Add(new Driver { Name = "Devlin Liles" });
+    var target = new DriverEducationService(context);
+
+    // Act
+    var driver = target.GetDriver("Devlin Liles");
+
+    // Assert
+    Assert.AreEqual("Devlin Liles", driver.Name);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Now, this test doesn&rsquo;t use mocking because we provide an <code>InMemoryDataContext</code> with Highway.Data which removes the need for it in most cases.  But when it doesn&rsquo;t remove that need, we can also re-write the same test using a mocking framework like Rhino.Mocks very simply:</p>
+
+<p>```
+[TestClass]
+public class DriverEducationServiceTests_WithMocking
+{</p>
+
+<pre><code>[TestMethod]
+public void GetDriver_ShouldRetrieveADriverByName()
+{
+    // Arrange
+    var context = MockRepository.GenerateMock&lt;IDataContext&gt;();
+    context.Expect(e =&gt; e.AsQueryable&lt;Driver&gt;())
+        .Return(new List&lt;Driver&gt; 
+        { 
+            new Driver { Name = "Devlin Liles" } 
+        }.AsQueryable());
+    var target = new DriverEducationService(context);
+
+    // Act
+    var driver = target.GetDriver("Devlin Liles");
+
+    // Assert
+    Assert.AreEqual("Devlin Liles", driver.Name);
+}
+</code></pre>
+
+<p>}
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MVC Filters with Dependency Injection]]></title>
