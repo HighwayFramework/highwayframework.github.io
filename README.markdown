@@ -16,6 +16,21 @@ Once you've done this, there are three basic commands you'll want to know:
 * `rake preview` - will start a web server pointed at `public` hosted at [http://localhost:4000](http://localhost:4000)
 * `rake deploy` - will update `_deploy` from github, copy `public` to `_deploy`, and push changes to GitHub.
 
+## Setup on Windows
+
+If you're using Windows, you will want to make sure you've got Python installed (`cinst python`) as it is required for rendering code blocks.
+
+Also you might want to install Pik, a ruby version picker for Windows.  Apparently they have a Chocolatey package at `cinst pik` but I installed it manually from their website at [https://github.com/vertiginous/pik](https://github.com/vertiginous/pik).
+
+## General Setup
+
+I recommend running Ruby 1.9.3, it is the most stable choice.
+
+Like most Ruby projects, after you're done cloning, you'll want to `bundle install`
+
+You will need the Ruby developer kit for 1.9.3 to successfully run the bundler, on windows PIK can help with that.
+
+# BELOW THIS LINE IS THE ORIGINAL OCTOPRESS README
 
 ## What is Octopress?
 
