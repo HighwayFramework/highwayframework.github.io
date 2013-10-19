@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pavement | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/pavement/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-19T09:14:23-05:00</updated>
+  <updated>2013-10-19T12:21:44-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,305 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Queries / Commands / Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/"/>
+    <updated>2013-10-19T09:21:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars</id>
+    <content type="html"><![CDATA[<h1>Using Queries, Commands and Scalars</h1>
+
+<p>The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the &ldquo;How we get data&rdquo; from the &ldquo;What data do I get&rdquo;. In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data.</p>
+
+<ul>
+<li><a href="/blog/2013/10/19/understanding-the-patterns/">Patterns</a></li>
+<li><a href="#query">Query</a></li>
+<li><a href="#command">Command</a></li>
+<li><a href="#scalar">Scalar</a></li>
+</ul>
+
+
+<p><a name="query"></a></p>
+
+<h1>Queries</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Query interface
+``` csharp
+public interface IQuery<out T> : IQueryBase
+{</p>
+
+<pre><code>IEnumerable&lt;T&gt; Execute(IDataContext context);
+</code></pre>
+
+<p>}
+<code>``
+Execute is the function that our</code>Repository` will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.</p>
+
+<h3>IEnumerable<T> Vs IQueryable<T></h3>
+
+<p>Notice how the Execution of the query returns an <code>IEnumerable</code> instead of an <code>IQueryable</code>. This is to basically &ldquo;seal&rdquo; the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.</p>
+
+<h2>Usage</h2>
+
+<p>The basic query selects a collection of objects that you tell it to as one operation. If we need to get drivers by last name, consider the following classes and tests.</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver { public string LastName { get; set; } }</p>
+
+<p>public class DriversByLastName : Query<Driver>
+{</p>
+
+<pre><code>public DriversByLastName(string lastName)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Query<Driver><code>class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the</code>ContextQuery`, which is just a delegate to get called when we need the results.</p>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldGetDriversByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var query = new DriversByLastName("Liles");
+
+//Act
+var results = query.Execute(context); 
+
+//Assert
+Assert.AreEqual(1, results.Count());
+Assert.AreEqual("Liles",results.Single().LastName);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+IEnumerable&lt;Driver&gt; = repository.Find(new DriversByLastName("Liles"));
+</code></p>
+
+<p><a name="command"></a></p>
+
+<h1>Command</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Command Interface
+``` csharp
+public interface ICommand
+{</p>
+
+<pre><code>void Execute(IDataContext context);
+</code></pre>
+
+<p>}
+```
+Execute is the function that our Repository will use to execute the command, and it will hand it the context to execute upon. This allows us to create commands without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our commands.</p>
+
+<h2>Usage</h2>
+
+<p>The basic command allows us to fire off a set of operations without a return against our persistence store. This command could be updates, deletes, or even firing SQL Jobs. Lets consider the classes and tests involved</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver
+{</p>
+
+<pre><code>public int Score { get; set; }
+public string LastName { get; set; } 
+</code></pre>
+
+<p>}</p>
+
+<p>public class SetDriverScoreByLastName : Command
+{</p>
+
+<pre><code>public SetDriverScoreByLastName(string lastName, int score)
+{
+    ContextQuery = context =&gt; 
+    {
+        var drivers = context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+        foreach(var driver in drivers)
+        {
+            driver.Score = score;
+        }
+        context.Commit();
+    }
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Command<code>class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the</code>ContextQuery` to be a multiple line delegate like above, or a single operation.</p>
+
+<blockquote><h3><strong><em>Commands are not deferred, they execute immediately</em></strong></h3></blockquote>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldSetScoresByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var command = new SetDriverScoreByLastName("Liles", 100);
+
+//Act
+command.Execute(context); 
+
+//Assert
+var result = context.AsQueryable&lt;Driver&gt;().Single(x =&gt; x.LastName == "Liles"); 
+Assert.AreEqual("Liles", results.LastName);
+Assert.AreEqual(100, results.Score);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+repository.Execute(new SetDriverScoreByLastName("Liles", 100));
+</code></p>
+
+<p><a name="scalar"></a></p>
+
+<h1>Scalar</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Scalar interface
+``` csharp
+public interface IScalar<out T>
+{</p>
+
+<pre><code>T Execute(IDataContext context);
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Usage</h2>
+
+<p>The basic scalar selects a single object that you tell it to as one operation. If we need to get a driver by last name, consider the following classes and tests. we can also return out non entity types such as a count of drivers by score;</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver
+{</p>
+
+<pre><code>public int Score { get; set; }
+public string LastName { get; set; } 
+</code></pre>
+
+<p>}</p>
+
+<p>public class FirstDriverByLastName : Scalar<Driver>
+{</p>
+
+<pre><code>public FirstDriverByLastName(string lastName)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().FirstOrDefault(e =&gt; e.LastName == lastName);
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class PassingDrivers : Scalar<int>
+{</p>
+
+<pre><code>public PassingDrivers()
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Count(x =&gt; x.Score &gt; 75);
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Scalar<Driver><code>or</code>Scalar<int>` class. The type parameter defines the type we are returning with the scalar, and the base class gives us all the logic to execute and log the information about the execution.</p>
+
+<blockquote><h3><strong><em>Scalars are not deferred, they execute immediately</em></strong></h3></blockquote>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldGetFirstDriverByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var query = new FirstDriverByLastName("Liles");
+
+//Act
+var result = query.Execute(context); 
+
+//Assert
+Assert.AreEqual("Liles",result.LastName);
+</code></pre>
+
+<p>}</p>
+
+<p>[TestMethod]
+public void ShouldGetCountOfPassingDrivers()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles", Score = 50 });
+context.Add(new Driver(){ LastName = "Rayburn", Score = 100 });
+
+var query = new PassingDrivers();
+
+//Act
+var result = query.Execute(context); 
+
+//Assert
+Assert.AreEqual(1,result);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+Driver driver = repository.Find(new DriverByLastName("Liles"));
+int passingDrivers = repository.Find(new PassingDrivers());
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Roadmaps]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-19T09:14:23-05:00</updated>
+  <updated>2013-10-19T12:21:44-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,618 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Understanding the Patterns]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/"/>
+    <updated>2013-10-19T10:40:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns</id>
+    <content type="html"><![CDATA[<h1>Patterns</h1>
+
+<p>Highway.Data is based on a blended use of <strong>3 major patterns</strong>, and to understand the intent of the Queries / Commands / Scalars that make highway smooth, we must first talk about the patterns.</p>
+
+<p>There are a lot of places where you can find the academic explanation of these patterns, but here we are going to focus on the outcomes we are using it for. If you would like to read more about these, check out the <a href="#furtherReading">Further Reading</a> below.</p>
+
+<h2>Repository</h2>
+
+<p>Repository is a way to abstract the &ldquo;guts&rdquo; of the data access and persistence knowledge away from my logic. This is a lot of the time misused. Typed Repositories, Repositories with more than 5 methods, repositories that manage their own statefulness are all examples of a good pattern meeting a bad implementation. We use Repository in combination with Unit of Work and a modern interpretation of Query Object pattern.</p>
+
+<h3>Signs of a well built Repository</h3>
+
+<ul>
+<li>The user of the repository ask for data, but no information about the persistence is leaked to the caller.</li>
+<li>It is not specific to any domain, and can be portable</li>
+<li>It has state, but doesn&rsquo;t manage it</li>
+<li>It has no control of the Update/Add/Delete side of the operations, but gives access to that API. Repositories are meant as an abstraction for reading data.</li>
+</ul>
+
+
+<h2>Unit Of Work</h2>
+
+<p>Unit of Work allows us to track in memory changes of an object that are made in series and then commit those changes to some persistence layer. This is an atomic unit of work that is transaction during the commit but in our code is just changes to objects.</p>
+
+<h3>Signs of a well built unit of work</h3>
+
+<ul>
+<li>Commit-able</li>
+<li>Abandon/Rollback-able</li>
+<li>Not specific to any one API</li>
+<li>Give the basic Add/Remove/Update functionality</li>
+<li>Are not query-able</li>
+</ul>
+
+
+<h2>Query Object</h2>
+
+<p>Query Object is a way of encapsulating the details of a single query into an object that can be reused without being stateful. This helps us avoid duplication in the code base and we can codify and test our queries.</p>
+
+<h3>Signs of a well built query object</h3>
+
+<ul>
+<li>It doesn&rsquo;t manager state outside a single execution</li>
+<li>It is reuse-able</li>
+<li>It is able to be functionally tested</li>
+<li>It is able to be performance tested</li>
+<li>It can output it&rsquo;s persistence query ( SQL statement for example )</li>
+<li>If it returns multiple rows, it can have pagination applied without modification</li>
+</ul>
+
+
+<p><a name="furtherReading"></a></p>
+
+<h2>Further Reading</h2>
+
+<p>We hold our opinions because of years of software development on all sizes of projects, but understand that many opinions exist that are valid. In an effort to present the information as impartially as possible below does include links to content that disagrees with our opinions. Please read on and form your own opinions.</p>
+
+<h3>Repository</h3>
+
+<p><a href="http://www.martinfowler.com/eaaCatalog/repository.html">Martin Fowler Repository Pattern</a></p>
+
+<p><a href="http://weblogs.asp.net/fredriknormen/archive/2008/04/24/what-purpose-does-the-repository-pattern-have.aspx">Fredik Normén Repository Pattern Purpose Discussion</a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/ff649690.aspx">MSDN Repository Article</a></p>
+
+<p><a href="http://ayende.com/blog/4784/architecting-in-the-pit-of-doom-the-evils-of-the-repository-abstraction-layer">Ayende@Rahien Repository Pit Of Doom</a></p>
+
+<p><a href="http://www.devlinliles.com/post/I-disagree-with-the-pit-of-Doom">Devlin Liles Discussion of the Pit Of Doom</a></p>
+
+<h3>Unit of Work</h3>
+
+<p><a href="http://www.martinfowler.com/eaaCatalog/unitOfWork.html">Martin Fowler Unit of Work</a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/magazine/dd882510.aspx">Jeremy Miller Unit of Work and Persistence Ignorance</a></p>
+
+<p><a href="http://rlacovara.blogspot.com/2009/04/entity-framework-patterns-unit-of-work.html">Ruby Lacovara Entity Framework Patterns Unit of Work</a></p>
+
+<h3>Query Object</h3>
+
+<p><a href="http://martinfowler.com/eaaCatalog/queryObject.html">Martin Fowler Query Object</a></p>
+
+<p><a href="http://coderkarl.wordpress.com/2012/05/02/the-query-object-pattern-2/">Karl Nilsson Query Object Pattern</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Queries / Commands / Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/"/>
+    <updated>2013-10-19T09:21:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars</id>
+    <content type="html"><![CDATA[<h1>Using Queries, Commands and Scalars</h1>
+
+<p>The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the &ldquo;How we get data&rdquo; from the &ldquo;What data do I get&rdquo;. In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data.</p>
+
+<ul>
+<li><a href="/blog/2013/10/19/understanding-the-patterns/">Patterns</a></li>
+<li><a href="#query">Query</a></li>
+<li><a href="#command">Command</a></li>
+<li><a href="#scalar">Scalar</a></li>
+</ul>
+
+
+<p><a name="query"></a></p>
+
+<h1>Queries</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Query interface
+``` csharp
+public interface IQuery<out T> : IQueryBase
+{</p>
+
+<pre><code>IEnumerable&lt;T&gt; Execute(IDataContext context);
+</code></pre>
+
+<p>}
+<code>``
+Execute is the function that our</code>Repository` will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.</p>
+
+<h3>IEnumerable<T> Vs IQueryable<T></h3>
+
+<p>Notice how the Execution of the query returns an <code>IEnumerable</code> instead of an <code>IQueryable</code>. This is to basically &ldquo;seal&rdquo; the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.</p>
+
+<h2>Usage</h2>
+
+<p>The basic query selects a collection of objects that you tell it to as one operation. If we need to get drivers by last name, consider the following classes and tests.</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver { public string LastName { get; set; } }</p>
+
+<p>public class DriversByLastName : Query<Driver>
+{</p>
+
+<pre><code>public DriversByLastName(string lastName)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Query<Driver><code>class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the</code>ContextQuery`, which is just a delegate to get called when we need the results.</p>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldGetDriversByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var query = new DriversByLastName("Liles");
+
+//Act
+var results = query.Execute(context); 
+
+//Assert
+Assert.AreEqual(1, results.Count());
+Assert.AreEqual("Liles",results.Single().LastName);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+IEnumerable&lt;Driver&gt; = repository.Find(new DriversByLastName("Liles"));
+</code></p>
+
+<p><a name="command"></a></p>
+
+<h1>Command</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Command Interface
+``` csharp
+public interface ICommand
+{</p>
+
+<pre><code>void Execute(IDataContext context);
+</code></pre>
+
+<p>}
+```
+Execute is the function that our Repository will use to execute the command, and it will hand it the context to execute upon. This allows us to create commands without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our commands.</p>
+
+<h2>Usage</h2>
+
+<p>The basic command allows us to fire off a set of operations without a return against our persistence store. This command could be updates, deletes, or even firing SQL Jobs. Lets consider the classes and tests involved</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver
+{</p>
+
+<pre><code>public int Score { get; set; }
+public string LastName { get; set; } 
+</code></pre>
+
+<p>}</p>
+
+<p>public class SetDriverScoreByLastName : Command
+{</p>
+
+<pre><code>public SetDriverScoreByLastName(string lastName, int score)
+{
+    ContextQuery = context =&gt; 
+    {
+        var drivers = context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+        foreach(var driver in drivers)
+        {
+            driver.Score = score;
+        }
+        context.Commit();
+    }
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Command<code>class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the</code>ContextQuery` to be a multiple line delegate like above, or a single operation.</p>
+
+<blockquote><h3><strong><em>Commands are not deferred, they execute immediately</em></strong></h3></blockquote>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldSetScoresByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var command = new SetDriverScoreByLastName("Liles", 100);
+
+//Act
+command.Execute(context); 
+
+//Assert
+var result = context.AsQueryable&lt;Driver&gt;().Single(x =&gt; x.LastName == "Liles"); 
+Assert.AreEqual("Liles", results.LastName);
+Assert.AreEqual(100, results.Score);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+repository.Execute(new SetDriverScoreByLastName("Liles", 100));
+</code></p>
+
+<p><a name="scalar"></a></p>
+
+<h1>Scalar</h1>
+
+<h2>Implementation</h2>
+
+<p>Lets take a look at the definition of out basic Scalar interface
+``` csharp
+public interface IScalar<out T>
+{</p>
+
+<pre><code>T Execute(IDataContext context);
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Usage</h2>
+
+<p>The basic scalar selects a single object that you tell it to as one operation. If we need to get a driver by last name, consider the following classes and tests. we can also return out non entity types such as a count of drivers by score;</p>
+
+<h3>Classes Involved</h3>
+
+<p>```
+public class Driver
+{</p>
+
+<pre><code>public int Score { get; set; }
+public string LastName { get; set; } 
+</code></pre>
+
+<p>}</p>
+
+<p>public class FirstDriverByLastName : Scalar<Driver>
+{</p>
+
+<pre><code>public FirstDriverByLastName(string lastName)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().FirstOrDefault(e =&gt; e.LastName == lastName);
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class PassingDrivers : Scalar<int>
+{</p>
+
+<pre><code>public PassingDrivers()
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Count(x =&gt; x.Score &gt; 75);
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice how we inherit from the</code>Scalar<Driver><code>or</code>Scalar<int>` class. The type parameter defines the type we are returning with the scalar, and the base class gives us all the logic to execute and log the information about the execution.</p>
+
+<blockquote><h3><strong><em>Scalars are not deferred, they execute immediately</em></strong></h3></blockquote>
+
+<h3>Tests</h3>
+
+<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
+
+<p>```
+[TestMethod]
+public void ShouldGetFirstDriverByLastName()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles" });
+context.Add(new Driver(){ LastName = "Rayburn" });
+
+var query = new FirstDriverByLastName("Liles");
+
+//Act
+var result = query.Execute(context); 
+
+//Assert
+Assert.AreEqual("Liles",result.LastName);
+</code></pre>
+
+<p>}</p>
+
+<p>[TestMethod]
+public void ShouldGetCountOfPassingDrivers()
+{</p>
+
+<pre><code>//Arrange
+var context = new InMemoryDataContext();
+context.Add(new Driver(){ LastName = "Liles", Score = 50 });
+context.Add(new Driver(){ LastName = "Rayburn", Score = 100 });
+
+var query = new PassingDrivers();
+
+//Act
+var result = query.Execute(context); 
+
+//Assert
+Assert.AreEqual(1,result);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>Example Usage with repository</h3>
+
+<p><code>
+Driver driver = repository.Find(new DriverByLastName("Liles"));
+int passingDrivers = repository.Find(new PassingDrivers());
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Repository]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/19/repository/"/>
+    <updated>2013-10-19T08:17:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/19/repository</id>
+    <content type="html"><![CDATA[<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<p>In Highway.Data, we define our <code>IRepository</code> interface as follows:</p>
+
+<p>``` csharp</p>
+
+<pre><code>public interface IRepository
+{
+    IDataContext Context { get; }
+    IEventManager EventManager { get; }
+
+    IEnumerable&lt;T&gt; Find&lt;T&gt;(IQuery&lt;T&gt; query);
+    T Find&lt;T&gt;(IScalar&lt;T&gt; query);
+    void Execute(ICommand command);
+}
+</code></pre>
+
+<p>```</p>
+
+<p>The interface first has two properties, those being <code>Context</code> and <code>EventManager</code>.  The details of those are covered elsewhere, though we will touch lightly on <code>Context</code> in this article.  The other three methods are very interesting, and each deserve a section of their own.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>```
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public Car Car { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Find Multiple Things &ndash; IEnumerable&lt;T&gt; Find&lt;T&gt;(IQuery&lt;T&gt; query)</h1>
+
+<p>This method is used when you want to retrieve multiple things from the database.  Let&rsquo;s assume we had a MVC controller which wanted to query for all drivers who had taken a class from Instructor #5.  First thing we&rsquo;ll need is a controller which has a dependency of our <code>IRepository</code> interface.</p>
+
+<p>```
+public class DriversController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public DriversController(IRepository repo)
+{
+    this.repo = repo;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Now then, we&rsquo;ll add an action method to this controller, which is called <code>ByInstructor</code> which takes an <code>int</code> of the Instructor&rsquo;s <code>Id</code>.  Then we call to the repository, passing in an instance of our Query object called <code>FindDriversByInstructorId</code>.  Like so:</p>
+
+<p>```
+public class DriversController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public DriversController(IRepository repo)
+{
+    this.repo = repo;
+}
+
+public ActionResult ByInstructor(int instructorId)
+{
+    IEnumerable&lt;Driver&gt; drivers = repo.Find(new FindDriversByInstructorId(instructorId));
+    return View(drivers);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Note how our <code>DriversController</code> is not aware of anything database specific, like connection strings, or even which Object Relational Mapper (ORM) is servicing the request.  All it knows is that it is asking for multiple drivers, and receiving them.  Now, you might be curious what&rsquo;s going on inside of <code>FindDriversByInstructorId</code>, and while we&rsquo;re not discussing queries here, I want to show you the code so you don&rsquo;t think there is magic going on:</p>
+
+<p>```
+public class FindDriversByInstructorId : Query<Driver>
+{</p>
+
+<pre><code>public FindDriversByInstructorId(int instructorId)
+{
+    ContextQuery = c =&gt; c.AsQueryable&lt;Instructor&gt;().SelectMany(e =&gt; e.Drivers);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Find One Thing &ndash; T Find&lt;T&gt;(IScalar&lt;T&gt; query)</h1>
+
+<p>Our next method is used when we want to retrieve a singular thing from the database.  That one thing might be an <code>int</code>, for instance a count of rows, or it might be an entity like <code>Car</code>, for instance getting the car for a particular driver.  This time we&rsquo;ll be working with the <code>CarController</code>, and we&rsquo;re going to retrieve a <code>Car</code> by it&rsquo;s <code>Driver</code>&rsquo;s <code>Id</code>.  Our controller would use <code>IRepository</code> like so:</p>
+
+<p>```
+public class CarController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public CarController(IRepository repo)
+{
+    this.repo = repo;
+}
+
+public ActionResult ByDriver(int driverId)
+{
+    Car car = repo.Find(new FindCarByDriverId(driverId));
+    return View(car);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As you can see, we return a singular object, once again completely unaware of which ORM is doing the work, or anything related to the database.  Like before, while we&rsquo;re not discussing Scalars here, this is the query being used :</p>
+
+<p>```
+public class FindCarByDriverId : Scalar<Car>
+{</p>
+
+<pre><code>public FindCarByDriverId(int driverId)
+{
+    ContextQuery = c =&gt; c.AsQueryable&lt;Driver&gt;()
+        .Where(e =&gt; e.Id == driverId)
+        .Select(e =&gt; e.Car)
+        .FirstOrDefault();
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Do Something &ndash; void Execute(ICommand command)</h1>
+
+<p>Our final method is used to perform a command that has no return value.  There are often times when you want the database to do some work, but you don&rsquo;t need it to return anything as a result of that work, this is what <code>Execute</code> is for.  In our example, we&rsquo;re going to add another method to our <code>CarController</code> class from the previous example, which will remove all Chevy vehicles from our database.  Our <code>CarController</code> will now look like this:</p>
+
+<p>```
+public class CarController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public CarController(IRepository repo)
+{
+    this.repo = repo;
+}
+
+public ActionResult ByDriver(int driverId)
+{
+    Car car = repo.Find(new FindCarByDriverId(driverId));
+    return View(car);
+}
+
+public ActionResult RemoveChevy()
+{
+    repo.Execute(new DropMake("Chevy"));
+    return RedirectToAction("Index", "Home");
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Note how <code>Execute</code> returns no value.  Our <code>DropMake</code> command looks like this :</p>
+
+<p>```
+public class DropMake : Command
+{</p>
+
+<pre><code>public DropMake(string make)
+{
+    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+    ContextQuery = c =&gt;
+    {
+        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+        foreach (var car in cars)
+        {
+            c.Remove(car);
+        }
+    };
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As the comment says, this is an inefficient way to remove multiple rows, please review the documentation on <code>AdvancedCommand</code> if you really need to perform a delete like this.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Entity Framework - Testable Adapter for DbContext]]></title>
@@ -255,217 +867,6 @@ new Filter(container.Resolve&lt;ExceptionLoggingFilter&gt;(), FilterScope.Last, 
 <p>In this simple case, we create an instance of the <code>System.Web.Mvc.Filter</code> class and provide it our <code>ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code>FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code>int.MinValue</code>, aka I really mean last of all last filters.</p>
 
 <p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code>Filter</code> and when to return <code>null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code>null</code>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NLog and Castle Logging Facility for Logging]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/"/>
-    <updated>2013-10-06T08:50:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging</id>
-    <content type="html"><![CDATA[<p>One of the most important features of any application is a good logging strategy.  Because of this, <code>Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code>NLog.config</code> file.</p>
-
-<h1>How do I log from a class?</h1>
-
-<p>If you want to log from a class, there is a very simply pattern we recommend you follow:</p>
-
-<p>``` csharp
-using Castle.Core.Logging;</p>
-
-<p>public class MyNewClass
-{</p>
-
-<pre><code>public MyNewClass()
-{
-    Logger = NullLogger.Instance;
-}
-
-public ILogger Logger { get; set; }
-</code></pre>
-
-<p>}
-```</p>
-
-<p>The steps are quite simple:</p>
-
-<ul>
-<li>Declare a public property of type <code>ILogger</code></li>
-<li>Initialize that property in your constructor to <code>NullLogger.Instance</code></li>
-</ul>
-
-
-<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code>Logger</code> property.  But, if you ever remove the <code>LoggingInstaller</code> your code will continue to work because the <code>NullLogger</code> is a proper implementation of <code>ILogger</code> which does nothing.  This avoids <code>NullReferenceException</code>s when you don&rsquo;t have a Logger injected, for instance during tests.</p>
-
-<h1>How does that get setup to begin with?</h1>
-
-<p>The Logging Facility is setup in the <code>LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
-
-<p>``` csharp
-public class LoggingInstaller : IWindsorInstaller
-{</p>
-
-<pre><code>public void Install(IWindsorContainer container, IConfigurationStore store)
-{
-
-    container.AddFacility&lt;LoggingFacility&gt;(m =&gt; m.UseNLog().WithConfig("NLog.config"));
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>That really is all there is to it, we configure the facility to use NLog, and then tell it where the config file is.  Now, the config file we include is very simple:</p>
-
-<p>``` xml
-&lt;nlog xmlns=&ldquo;<a href="http://www.nlog-project.org/schemas/NLog.xsd">http://www.nlog-project.org/schemas/NLog.xsd</a>&rdquo;</p>
-
-<pre><code>  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  autoReload="true"
-  globalThreshold="Debug"&gt;
-</code></pre>
-
-<p>  <targets></p>
-
-<pre><code>&lt;target xsi:type="File"
-        name="file"
-        fileName="${basedir}/Logs/Log.txt"
-        archiveEvery="Day" /&gt;
-</code></pre>
-
-<p>  </targets></p>
-
-<p>  <rules></p>
-
-<pre><code>&lt;logger name="*" minlevel="Debug" writeTo="file" /&gt;
-</code></pre>
-
-<p>  </rules>
-</nlog>
-```</p>
-
-<p>This configuration sets up a <code>Logs</code> directory that will contain <code>Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says &ldquo;log everything to Logs.txt&rdquo;.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
-
-<h1>What is logged automatically for me?</h1>
-
-<p>We setup two types of loggers for you automatically;</p>
-
-<ul>
-<li>The App_Start component <code>LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
-<li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WebActivator for Composable Startup]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/"/>
-    <updated>2013-10-05T15:09:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup</id>
-    <content type="html"><![CDATA[<p>The first and most important piece our OnRamp is the use of <a href="http://www.nuget.org/packages/WebActivatorEx/">WebActivator</a> to allow us to declare classes that will run either just before or just after the App_Start event of your ASP.NET application, or when your application shuts down.  This is accomplished using an assembly level attribute, pointing to a particular static class and method.</p>
-
-<p>Consider the following class declaration from our <code>IoC.cs</code> file:</p>
-
-<p>``` csharp
-[assembly: WebActivator.PreApplicationStartMethod(typeof(Templates.App_Start.IoC), &ldquo;Startup&rdquo;)]
-namespace Templates.App_Start
-{</p>
-
-<pre><code>public static class IoC
-{
-    public static void Startup()
-    {
-      // Details here described in the next feature…
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Note how we declare the <code>PreApplicationStartMethod</code>, and point to the type of <code>Templates.App_Start.IoC</code> and then the <code>"Startup"</code> string lets it know which method to run.  This results in our <code>IoC.Startup()</code> method being called before App_Start.</p>
-
-<p>Just as there is <code>PreApplicationStartMethod</code>, there is also <code>PostApplicationStartMethod</code> and <code>ApplicationShutdownMethod</code>, both of which are used in our Logging wire up which will be discussed later.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Castle Windsor with Auto Discovered Installers]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers/"/>
-    <updated>2013-10-05T15:07:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers</id>
-    <content type="html"><![CDATA[<h1>Configuring Castle Windsor</h1>
-
-<p>Dependency injection is a key part of good software development, it is the D or <a href="http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID</a>, and yet is not something <a href="http://microsoft.com">Microsoft</a> ships a solution for.  As such, we have turned to the community and the long standing, well supported, king of IoC : <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a></p>
-
-<p>We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our <code>IoC.Startup()</code> method, we do the following:</p>
-
-<p>``` csharp</p>
-
-<pre><code>    [Obsolete("Container should never be accessed directly outside of App_Start")]
-    public static IWindsorContainer Container { get; set; }
-
-    public static void Startup()
-    {
-#pragma warning disable 618
-        // Create the container
-        Container = new WindsorContainer();
-
-        // Add the Array Resolver, so we can take dependencies on T[]
-        // while only registering T.
-        Container.Kernel.Resolver.AddSubResolver(new ArrayResolver(Container.Kernel));
-
-        // Register the kernel and container, in case an installer needs it.
-        Container.Register(
-            Component.For&lt;IKernel&gt;().Instance(Container.Kernel),
-            Component.For&lt;IWindsorContainer&gt;().Instance(Container)
-            );
-
-        // Search for an use all installers in this application.
-        Container.Install(FromAssembly.This());
-#pragma warning restore 618
-    }
-</code></pre>
-
-<p>```</p>
-
-<p>We make your instance of <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> available via <code>IoC.Container</code> but we have specifically marked that as <code>[Obsolete]</code> because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of App_Start.</p>
-
-<h2>Accessing the Container without an Obsolete Warning</h2>
-
-<p>Now, on rare occasions there will be perfectly reasonable pragmatic reasons to need to access the container.  This is the reason why we have marked the <code>[Obsolete]</code> merely as a warning, and then included the <code>#pragma</code> statements to disable those warnings in places you are accepting the need to directly access the container.  When those occur, simply surround your code with :</p>
-
-<p>```</p>
-
-<pre><code>#pragma warning disable 618
-#pragma warning restore 618
-</code></pre>
-
-<p>```</p>
-
-<p>You should keep such sections small, and should be aware that the <code>#pragma</code> statements will also disable any other <code>[Obsolete]</code> warnings that occur between them, not just those for the <code>IoC.Container</code>.</p>
-
-<h1>Discovering Installers</h1>
-
-<p>Our code above includes one very small, but very powerful line that is worth highlighting:</p>
-
-<p><code>
-Container.Install(FromAssembly.This());
-</code></p>
-
-<p>This statement tells <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> to scan the <strong>current assembly</strong>, looking for classes which implement the <code>IWindsorInstaller</code> interface, and to execute those components, allowing them to register components with the container.  This auto discovery is one of the best features of our IoC implementation, allowing you to segregate your registrations into small, related pieces, as you will see.</p>
-
-<h1>Included Installers</h1>
-
-<p>We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the <code>Installers</code> folder of your MVC solution.  Here are their names and purposes:</p>
-
-<ul>
-<li>ControllerInstaller &ndash; Scans the current assembly for all types that implement <code>IController</code> from System.Web.Mvc and registers them with <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a>.  This means you never have to register your controllers manually.</li>
-<li>LoggingInstaller &ndash; Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
-<li>FilterInstaller &ndash; Is where you register all MVC filters.  We will cover this in more detail when we discuss Filter Injection.</li>
-<li>HighwayDataInstaller &ndash; Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
-</ul>
-
 ]]></content>
   </entry>
   
