@@ -8,6 +8,9 @@ order: 0
 categories: data onramp-mvc onramp-services pavement roadcrew onramper insurance faq
 ---
 
+Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.
+<!-- MORE -->
+
 #Highway.Data
 ##vNext - Time line - Q4 2013
 
