@@ -24,10 +24,10 @@ public interface IQuery<out T> : IQueryBase
     IEnumerable<T> Execute(IDataContext context);
 }
 ```
-Execute is the function that our Repository will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.
+Execute is the function that our `Repository` will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.
 
 ###IEnumerable<T> Vs IQueryable<T>
-Notice how the Execution of the query returns an IEnumerable instead of an IQueryable. This is to basically "seal" the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.
+Notice how the Execution of the query returns an `IEnumerable` instead of an `IQueryable`. This is to basically "seal" the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.
 
 
 ##Usage
@@ -45,7 +45,7 @@ public class DriversByLastName : Query<Driver>
     }
 }
 ```
-Notice how we inherit from the `Query<Driver>` class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the ContextQuery, which is just a delegate to get called when we need the results.
+Notice how we inherit from the `Query<Driver>` class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the `ContextQuery`, which is just a delegate to get called when we need the results.
 
 ###Tests
 
@@ -114,7 +114,7 @@ public class SetDriverScoreByLastName : Command
     }
 }
 ```
-Notice how we inherit from the `Command` class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the ContextQuery to be a multiple line delegate like above, or a single operation.
+Notice how we inherit from the `Command` class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the `ContextQuery` to be a multiple line delegate like above, or a single operation.
 
 >###***Commands are not deferred, they execute immediately***
 
