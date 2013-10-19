@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-19T08:05:26-05:00</updated>
+  <updated>2013-10-19T09:07:44-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Roadmaps]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
+    <updated>2013-10-19T08:38:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
+    <content type="html"><![CDATA[<h1>Highway.Data</h1>
+
+<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
+
+<ul>
+<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
+<li>By end of the year EF 6.0 major features that need additional work in the framework will be supported and documented</li>
+</ul>
+
+
+<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
+
+<ul>
+<li>Context and Repository will have factories for creation that control lifetime of the objects</li>
+<li>Projection based Scalars &ndash; Scalars will be converted to projection based to allow for SQL output,</li>
+<li>Documentation &ndash; Video Tutorials for 80% features</li>
+</ul>
+
+
+<h1>Highway.Insurance</h1>
+
+<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
+
+<ul>
+<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
+<li>Version Support for VS 2013 APIs</li>
+</ul>
+
+
+<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
+
+<ul>
+<li>Video Tutorials for 80% features</li>
+</ul>
+
+
+<h1>Highway.Pavement</h1>
+
+<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
+
+<ul>
+<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
+</ul>
+
+
+<h1>Highway.MVC &ndash; New Project</h1>
+
+<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
+
+<ul>
+<li>Package a set of classes that allow for MVVM Model hydration to Knockout or Angular by default from MVC Model</li>
+<li>All feature documentation and usage video tutorials</li>
+</ul>
+
+
+<h1>Highway.OnRamp.MVC.MVVM &ndash; New Project</h1>
+
+<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
+
+<ul>
+<li>OnRamp to drop MVVM wire up and folder structure into any MVC project &ndash; Even Existing</li>
+<li>Video to walk through basic structure</li>
+</ul>
+
+
+<h1>Highway.OnRamp.MVC</h1>
+
+<h2>vNext &ndash; Timeline &ndash; Q4 2013</h2>
+
+<ul>
+<li>Documentation of all current features (70%+ complete already)</li>
+<li>Reorganize solution structure to move most inserted classes into an App_Infrastructure folder</li>
+<li>Introduce default conventions for &ldquo;Post<em>&rdquo; and &ldquo;Get</em>&rdquo; actions to be limited to HttpPost and HttpGet respectively via Filter injection.</li>
+</ul>
+
+
+<h1>Highway.RoadCrew</h1>
+
+<h2>vFirst</h2>
+
+<ul>
+<li>Implement all currently listed stories/issues to establish a great foundation</li>
+<li>Document all those features on the website, as completed.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Entity Framework - Testable Adapter for DbContext]]></title>
