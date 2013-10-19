@@ -7,6 +7,7 @@ comments: false
 {% capture features_path %}{{ page.url | get_path }}features.html{% endcapture %}
 {% capture releases_path %}{{ page.url | get_path }}releases.html{% endcapture %}
 {% capture api_path %}{{ page.url | get_path }}api.html{% endcapture %}
+{% capture faq_path %}{{ page.url | get_path }}faq.html{% endcapture %}
 <div class="section-nav">
 	<h3>
 		<a href="{{home_path}}" {% if page.url == home_path %}class="active"{% endif %}>Project Home</a>
@@ -21,6 +22,9 @@ comments: false
 		{% endunless %}
 		{% unless page.no_api %} | 
 			<a href="{{api_path}}" {% if page.url == api_path %}class="active"{% endif %}>API Documentation</a>
+		{% endunless %}
+		{% unless page.no_faq %} | 
+			<a href="{{faq_path}}" {% if page.url == faq_path %}class="active"{% endif %}>FAQs</a>
 		{% endunless %}
 	</h3>
 </div>
