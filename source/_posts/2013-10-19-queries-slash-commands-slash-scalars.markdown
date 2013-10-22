@@ -5,7 +5,7 @@ date: 2013-10-19 09:21
 comments: true
 no_homepage: true
 order: 30
-categories: data onramp-mvc onramp-services pavement roadcrew onramper insurance release feature
+categories: data feature
 ---
 #Using Queries, Commands and Scalars
 The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the "How we get data" from the "What data do I get". In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data. 
