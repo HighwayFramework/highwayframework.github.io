@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-19T12:25:53-05:00</updated>
+  <updated>2013-10-22T15:30:24-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v4.1.0.2]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2/"/>
+    <updated>2013-10-22T15:26:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Removed an extraneous extension method called <code>Include</code> which was creating a conflict with the <code>System.Data.Entity</code> method of the same name.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Understanding the Patterns]]></title>
