@@ -2,79 +2,83 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://hwyfwk.com/blog/2013/09/30/our-new-site/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:51-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/04/strong-names/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:46-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:29-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:23-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers/
         </loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:39-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/</loc>
-        <lastmod>2013-10-06T20:09:01-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:16-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/</loc>
-        <lastmod>2013-10-06T22:16:31-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:00-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/</loc>
-        <lastmod>2013-10-06T21:11:30-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:06-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1/</loc>
-        <lastmod>2013-10-11T08:32:55-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:55-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext/
         </loc>
-        <lastmod>2013-10-22T15:25:23-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:49-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/repository/</loc>
-        <lastmod>2013-10-22T15:25:23-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:35-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/roadmaps/</loc>
-        <lastmod>2013-10-19T10:26:54-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:27-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/</loc>
-        <lastmod>2013-10-22T15:29:33-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:40-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/</loc>
-        <lastmod>2013-10-22T15:25:23-05:00</lastmod>
+        <lastmod>2013-10-23T10:29:15-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2/</loc>
-        <lastmod>2013-10-22T15:28:17-05:00</lastmod>
+        <lastmod>2013-10-23T10:28:16-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/archives/</loc>
-        <lastmod>2013-10-22T15:29:33-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:51-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/contribute.html</loc>
         <lastmod>2013-10-19T07:51:44-05:00</lastmod>
     </url>
     <url>
+        <loc>http://hwyfwk.com/faq.html</loc>
+        <lastmod>2013-10-23T10:37:35-05:00</lastmod>
+    </url>
+    <url>
         <loc>http://hwyfwk.com/</loc>
-        <lastmod>2013-10-22T15:29:33-05:00</lastmod>
+        <lastmod>2013-10-23T10:30:51-05:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/license.html</loc>
