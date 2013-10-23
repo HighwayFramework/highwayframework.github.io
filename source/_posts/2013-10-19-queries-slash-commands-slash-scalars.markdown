@@ -3,7 +3,6 @@ layout: post
 title: "Queries / Commands / Scalars"
 date: 2013-10-19 09:21
 comments: true
-no_homepage: true
 order: 30
 categories: data feature
 ---

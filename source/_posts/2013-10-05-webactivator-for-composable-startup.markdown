@@ -3,7 +3,6 @@ layout: post
 title: "WebActivator for Composable Startup"
 date: 2013-10-05 15:09
 comments: true
-no_homepage: true
 categories: onramp-mvc feature
 ---
 

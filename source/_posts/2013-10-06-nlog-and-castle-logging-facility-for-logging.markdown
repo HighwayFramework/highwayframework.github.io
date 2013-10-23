@@ -3,7 +3,6 @@ layout: post
 title: "NLog and Castle Logging Facility for Logging"
 date: 2013-10-06 08:50
 comments: true
-no_homepage: true
 categories: onramp-mvc feature
 order: 20
 ---

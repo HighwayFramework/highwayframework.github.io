@@ -4,7 +4,6 @@ title: "Highway.Pavement v0.3"
 date: 2013-10-05 12:22
 comments: true
 categories: pavement release
-no_homepage: true
 ---
 
 # Changes

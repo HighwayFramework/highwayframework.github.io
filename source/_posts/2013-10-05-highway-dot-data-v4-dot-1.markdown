@@ -4,7 +4,6 @@ title: "Highway.Data v4.1"
 date: 2013-10-05 12:19
 comments: true
 categories: data release
-no_homepage: true
 ---
 
 # Changes

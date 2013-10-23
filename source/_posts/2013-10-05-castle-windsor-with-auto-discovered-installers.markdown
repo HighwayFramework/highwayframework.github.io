@@ -3,7 +3,6 @@ layout: post
 title: "Castle Windsor with Auto Discovered Installers"
 date: 2013-10-05 15:07
 comments: true
-no_homepage: true
 categories: onramp-mvc feature
 order: 10
 ---

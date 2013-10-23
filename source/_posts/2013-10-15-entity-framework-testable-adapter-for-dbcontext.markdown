@@ -3,7 +3,6 @@ layout: post
 title: "Entity Framework - Testable Adapter for DbContext"
 date: 2013-10-15 12:58
 comments: true
-no_homepage: true
 order: 100
 categories: data feature
 ---

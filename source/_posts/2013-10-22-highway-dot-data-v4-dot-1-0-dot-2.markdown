@@ -3,7 +3,6 @@ layout: post
 title: "Highway.Data v4.1.0.2"
 date: 2013-10-22 15:26
 comments: true
-no_homepage: true
 categories: data release
 ---
 
