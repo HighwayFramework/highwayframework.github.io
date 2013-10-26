@@ -13,9 +13,6 @@ categories: data feature
 We have defined standard queries in our [Queries / Commands / Scalars](blog/2013/10/19/queries-slash-commands-slash-scalars/) post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn't make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. {"Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed."} 
 {% endpullquote %}
 
-
-All of the `AdvancedQuery`, `AdvancedScalar`, and `AdvancedCommand` are an opt in process for one reason, **it requires that you bind your implementation of the query to the underlying technology.** This is not something to take lightly, but sometimes it is needed. 
-
 # Example Domain
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
@@ -32,8 +29,7 @@ public class Driver
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public int Score { get; set; }
-    public Instructor Instructor { get; set; }
+    public Car Car { get; set; }
 }
 
 public class Car
@@ -44,32 +40,11 @@ public class Car
     public string Year { get; set; }
 }
 
-public class Top5PercentileOfDrivers : Query<Driver>
+public class DriversByLastName : Query<Driver>
 {
-    public Top5PercentileOfDrivers()
+    public DriversByLastName(string lastName)
     {
-        ContextQuery = context =>
-        {
-            var scores = context.AsQueryable<Driver>().Select(x => x.Score);
-            int percentileScore =
-                Convert.ToInt32(Math.Round((5/100)*scores.Count() + 0.5, MidpointRounding.AwayFromZero));
-            return context.AsQueryable<Driver>().OrderByDescending(x => x.Score).Take(percentileScore);
-        };
-    }
-}
-
-public class SwapInstructors : Scalar<int>
-{
-    public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
-    {
-        ContextQuery = context =>
-        {
-            foreach(var driver in currentInstructor.Drivers)
-			{
-				driver.Instructor = newInstructor;
-			}
-			context.Commit();
-        };
+        ContextQuery = context => context.AsQueryable<Driver>().Where(e => e.LastName == lastName);
     }
 }
 
@@ -92,47 +67,31 @@ public class DropMake : Command
 }
 ```
 
-# Advanced Query - Sometimes you need a Stored Procedure
-In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.
+# Advanced Query - When you need a hammer
 
-```
-public class Top5PercentileOfDrivers : AdvancedQuery<Driver>
-{
-    public Top5PercentileOfDrivers()
-    {
-        ContextQuery = context => context.ExecuteSqlQuery<Driver>("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
-    }
-}
-```
-
-# Advanced Commands -  When you need a hammer
 {% pullquote %}
-In the usage of data persistence technologies it is possible to run into corners that cost a significant amount of time to build out of. This has the chance to nullify the speed of development benefits in using the technology. Highway.Data provides a way to step out of this corner by using the base technology of the underlying implementation. When you are building something, sometimes you just need a hammer. {"Highway.Data gives you an easy way to use the hammer, but doesn't require every problem to be a nail."} 
+In the usage of data persistence technologies it is possible to run into corners that cost a significant amount of time to build out of. This has the chance to nullify the speed of development benefits in using the technology. Highway.Data provides a way to step out of this corner by using the base technology of the underlying implementation. {"When you are building something, sometimes you just need a hammer. Highway.Data gives you an easy way to use the hammer, but not affect the utilizing code."} 
 {% endpullquote %}
-```
-public class DropMake : AdvancedCommand
-{
-    public DropMake(string make)
-    {
-        ContextQuery = c => c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
-    }
-}
-```
-#Advanced Scalar
-In the instance that we need to make a lot of changes but also return some value from the database, we can use an `AdvancedScalar`. 
-```
-public class SwapInstructores : AdvancedScalar<int>
-{
-    public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
-    {
-        DbParameter[] parameters = new DbParameter[]
-        {
-            new SqlParameter("old", currentInstructor.Id),
-            new SqlParameter("new", newInstructor.Id), 
-        };
-        ContextQuery = c => c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
-    }
-}
-```
 
-Each of these examples gives one of the many usages of `AdvancedQuery`/`AdvancedCommand`/`AdvancedScalar`, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.
+The `AdvancedQuery` is an opt in process for one reason, **it requires that you bind your implementation of the query to the underlying technology.** This is not something to take lightly, but sometimes it is needed. 
+
+```
+public class DriversController : Controller
+{
+    private IRepository repo;
+
+    public DriversController(IRepository repo)
+    {
+        this.repo = repo;
+    }
+
+    public ActionResult RemoveChevy()
+    {
+        repo.Execute(new DropMake("Chevy"));
+        return RedirectToAction("Index", "Home");
+    }
+}
+```
+Now that we have a call to the database and out training school has been running for a while we realize that we have 500 "Smith"s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of `Query` to do the following.
+
+This allows us to reused already defined queries for our paging solution as well. **This is one of the rare cases that you can modify the SQL of a query from outside the query** This will only return the records that are inside the page that you have defined.
