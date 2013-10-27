@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-23T14:32:02-05:00</updated>
+  <updated>2013-10-27T10:26:43-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,278 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Queries / Commands /Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/"/>
+    <updated>2013-10-25T15:11:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars</id>
+    <content type="html"><![CDATA[<h1>Advanced Queries / Commands / Scalars</h1>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<p>All of the <code>AdvancedQuery</code>, <code>AdvancedScalar</code>, and <code>AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>```
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public int Score { get; set; }
+public Instructor Instructor { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Top5PercentileOfDrivers : Query<Driver>
+{</p>
+
+<pre><code>public Top5PercentileOfDrivers()
+{
+    ContextQuery = context =&gt;
+    {
+        var scores = context.AsQueryable&lt;Driver&gt;().Select(x =&gt; x.Score);
+        int percentileScore =
+            Convert.ToInt32(Math.Round((5/100)*scores.Count() + 0.5, MidpointRounding.AwayFromZero));
+        return context.AsQueryable&lt;Driver&gt;().OrderByDescending(x =&gt; x.Score).Take(percentileScore);
+    };
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class SwapInstructors : Scalar<int>
+{</p>
+
+<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+{
+    ContextQuery = context =&gt;
+    {
+        foreach(var driver in currentInstructor.Drivers)
+        {
+            driver.Instructor = newInstructor;
+        }
+        context.Commit();
+    };
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class DropMake : Command
+{</p>
+
+<pre><code>public DropMake(string make)
+{
+    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+    ContextQuery = c =&gt;
+    {
+        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+        foreach (var car in cars)
+        {
+            c.Remove(car);
+        }
+    };
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Query &ndash; Sometimes you need a Stored Procedure</h1>
+
+<p>In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.</p>
+
+<p>```
+public class Top5PercentileOfDrivers : AdvancedQuery<Driver>
+{</p>
+
+<pre><code>public Top5PercentileOfDrivers()
+{
+    ContextQuery = context =&gt; context.ExecuteSqlQuery&lt;Driver&gt;("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Commands &ndash;  When you need a hammer</h1>
+
+<p>Surround your pullquote like this {" text to be quoted "}
+```
+public class DropMake : AdvancedCommand
+{</p>
+
+<pre><code>public DropMake(string make)
+{
+    ContextQuery = c =&gt; c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Scalar</h1>
+
+<p>In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code>AdvancedScalar</code>.
+```
+public class SwapInstructores : AdvancedScalar<int>
+{</p>
+
+<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+{
+    DbParameter[] parameters = new DbParameter[]
+    {
+        new SqlParameter("old", currentInstructor.Id),
+        new SqlParameter("new", newInstructor.Id), 
+    };
+    ContextQuery = c =&gt; c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Pagination Of Queries]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/"/>
+    <updated>2013-10-25T14:11:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/25/pagination-of-queries</id>
+    <content type="html"><![CDATA[<h1>Paging Queries</h1>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>```
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public Car Car { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class DriversByLastName : Query<Driver>
+{</p>
+
+<pre><code>public DriversByLastName(string lastName)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Paging The <code>IQuery</code> &ndash; LINQ style</h1>
+
+<p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
+
+<p>```
+public class DriversController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public DriversController(IRepository repo)
+{
+    this.repo = repo;
+}
+
+public ActionResult ByLastName(string lastName)
+{
+    IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName));
+    return View(drivers);
+}
+</code></pre>
+
+<p>}
+<code>``
+Now that we have a call to the database and out training school has been running for a while we realize that we have 500 "Smith"s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of</code>Query` to do the following.</p>
+
+<p>```
+public class DriversController : Controller
+{</p>
+
+<pre><code>private IRepository repo;
+
+public DriversController(IRepository repo)
+{
+    this.repo = repo;
+}
+
+public ActionResult ByLastName(string lastName, int page)
+{
+    var pageSize = 10;
+    IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName)
+                                                .Skip(page * pageSize).Take(pageSize));
+    return View(drivers);
+}
+</code></pre>
+
+<p>}
+```
+This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Understanding the Patterns]]></title>
@@ -622,251 +894,6 @@ public class DropMake : Command
 ```</p>
 
 <p>As the comment says, this is an inefficient way to remove multiple rows, please review the documentation on <code>AdvancedCommand</code> if you really need to perform a delete like this.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Entity Framework - Testable Adapter for DbContext]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext/"/>
-    <updated>2013-10-15T12:58:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/15/entity-framework-testable-adapter-for-dbcontext</id>
-    <content type="html"><![CDATA[<h1>Installing Highway.Data.EntityFramework</h1>
-
-<p>Our first and most important feature of Highway.Data.EntityFramework is wrapping the Highway.Data <code>IDataContext</code> interface around the <code>DbContext</code> of Entity Framework.  You get started with Highway.Data.EntityFramework by simply opening the Package Manager Console and typeing:</p>
-
-<p><code>powershell
-Install-Package Highway.Data.EntityFramework
-</code></p>
-
-<p>This will bring in Entity Framework, Highway.Data, Highway.Pavement, and some common wrappers around Logging and Service location.</p>
-
-<h1>Introducing the IDataContext</h1>
-
-<p>Now, let&rsquo;s create a variable of type <code>IDataContext</code> and provide it an instance of the class <code>DataContext</code>, like so:</p>
-
-<p><code>csharp
-IDataContext context = new DataContext("server=.;database=master;integrated security=true;");
-</code></p>
-
-<p>Note, we provide our connection string to the <code>DataContext</code> class when it is instantiated.  Let&rsquo;s look at the definition of <code>IDataContext</code>:</p>
-
-<p>```
-public interface IDataContext : IDisposable
-{</p>
-
-<pre><code>IEventManager EventManager { get; set; }
-
-T Add&lt;T&gt;(T item) where T : class;
-IQueryable&lt;T&gt; AsQueryable&lt;T&gt;() where T : class;
-int Commit();
-T Reload&lt;T&gt;(T item) where T : class;
-T Remove&lt;T&gt;(T item) where T : class;
-T Update&lt;T&gt;(T item) where T : class;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>The interface provides a way to do all of the CRUD operations:</p>
-
-<ul>
-<li><strong>C</strong>reate &ndash; <code>Add&lt;T&gt;(T item)</code></li>
-<li><strong>R</strong>ead &ndash; <code>AsQueryable&lt;T&gt;()</code></li>
-<li><strong>U</strong>pdate &ndash; <code>Update&lt;T&gt;(T item)</code></li>
-<li><strong>D</strong>elete &ndash; <code>Remove&lt;T&gt;(T item)</code></li>
-</ul>
-
-
-<p>In addition we&rsquo;ve provided a way to do two other important things:</p>
-
-<ul>
-<li>Refresh an object from the Database via <code>Reload&lt;T&gt;(T item)</code></li>
-<li>Commit all work as a single transaction via <code>Commit()</code></li>
-</ul>
-
-
-<h2>DbContext and Entity Framework</h2>
-
-<p>Inside the Highway.Data.EntityFramework version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an instance of <code>DbContext</code>.  Our declaration looks like so:</p>
-
-<p><code>
-public class DataContext : DbContext, IEntityDataContext, IObservableDataContext, IDataContext, IDisposable
-</code>
-Anytime you have existing code which requires a DbContext, you can instead provide an instance of the DataContext class.</p>
-
-<h1>Testing with DataContext</h1>
-
-<p>From a testing perspective this provides great abstractions.  Consider the following classes and test:</p>
-
-<p>```
-public class Driver { public string Name { get; set; } }</p>
-
-<p>public class DriverEducationService
-{</p>
-
-<pre><code>private IDataContext context;
-public DriverEducationService(IDataContext context)
-{
-    this.context = context;
-}
-
-public Driver GetDriver(string name)
-{
-    return context.AsQueryable&lt;Driver&gt;().First(e =&gt; e.Name == name);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>A simple class that retrieves driver by name. <strong>Please note, we are discussing only <code>IDataContext</code> here, we normally recommend querying via <code>IRepository</code> in Highway.Data</strong></p>
-
-<p>Now let&rsquo;s write a test that ensures that works, without having to touch a database:</p>
-
-<p>```
-[TestClass]
-public class DriverEducationServiceTests
-{</p>
-
-<pre><code>[TestMethod]
-public void GetDriver_ShouldRetrieveADriverByName()
-{
-    // Arrange
-    var context = new InMemoryDataContext();
-    context.Add(new Driver { Name = "Devlin Liles" });
-    var target = new DriverEducationService(context);
-
-    // Act
-    var driver = target.GetDriver("Devlin Liles");
-
-    // Assert
-    Assert.AreEqual("Devlin Liles", driver.Name);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Now, this test doesn&rsquo;t use mocking because we provide an <code>InMemoryDataContext</code> with Highway.Data which removes the need for it in most cases.  But when it doesn&rsquo;t remove that need, we can also re-write the same test using a mocking framework like Rhino.Mocks very simply:</p>
-
-<p>```
-[TestClass]
-public class DriverEducationServiceTests_WithMocking
-{</p>
-
-<pre><code>[TestMethod]
-public void GetDriver_ShouldRetrieveADriverByName()
-{
-    // Arrange
-    var context = MockRepository.GenerateMock&lt;IDataContext&gt;();
-    context.Expect(e =&gt; e.AsQueryable&lt;Driver&gt;())
-        .Return(new List&lt;Driver&gt; 
-        { 
-            new Driver { Name = "Devlin Liles" } 
-        }.AsQueryable());
-    var target = new DriverEducationService(context);
-
-    // Act
-    var driver = target.GetDriver("Devlin Liles");
-
-    // Assert
-    Assert.AreEqual("Devlin Liles", driver.Name);
-}
-</code></pre>
-
-<p>}
-```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MVC Filters with Dependency Injection]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/"/>
-    <updated>2013-10-06T20:39:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection</id>
-    <content type="html"><![CDATA[<p>One of the most powerful features of the MVC OnRamp is the ability to have MVC Filters injected via our Inversion of Control (IoC) container, Castle.Windsor.  There are several types of filters supported by ASP.NET MVC that allow you to handle orthogonal issues such as:</p>
-
-<ul>
-<li><code>IExceptionFilter</code> which is invoked whenever unhandled exceptions occur.</li>
-<li><code>IActionFilter</code> which is invoked just before and just after specific actions.</li>
-<li><code>IAuthorizationFilter</code> which is invoked when authorizing requests.</li>
-<li><code>IResultFilter</code> which is invoked on just before and just after results are returned.</li>
-</ul>
-
-
-<p>Normally these filters are applied one of two ways:</p>
-
-<ul>
-<li>Globally via specification in the App_Start, which can easily be resolved from the IoC container but which must be global in scope, and hence somewhat limiting.</li>
-<li>Via Attribute on either a Controller or Action, which cannot be resolved from the IoC because we have no control over the instantiation of those attributes.</li>
-</ul>
-
-
-<p>But MVC allows for another option, which is an <code>IFilterProvider</code>, this interface is called at the outset of any request, and is allowed to return at runtime instances of filters which are to be applied.  Using this interface, we have created a class that resolves filters from within Castle.Windsor.  Consider the following class:</p>
-
-<p>``` csharp
-public class IoCFilterProvider : IFilterProvider
-{</p>
-
-<pre><code>private readonly IEnumerable&lt;Func&lt;ControllerContext, ActionDescriptor, Filter&gt;&gt; registeredFilters;
-
-public IoCFilterProvider(Func&lt;ControllerContext, ActionDescriptor, Filter&gt;[] registeredFilters)
-{
-    this.registeredFilters = registeredFilters;
-}
-
-public IEnumerable&lt;Filter&gt; GetFilters(ControllerContext controllerContext, ActionDescriptor actionDescriptor)
-{
-    return registeredFilters.Select(m =&gt; m.Invoke(controllerContext, actionDescriptor)).Where(m =&gt; m != null);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>This simple class takes as a dependencies an array of delegates, speficically an array of <code>Func&lt;&gt;</code> delegates which receive as parameters the <code>ControllerContext</code> and <code>ActionDescriptor</code> and which return an instance of the <code>Filter</code> class.</p>
-
-<ul>
-<li>The <code>ControllerContext</code> class describes the controller that is about to be called.</li>
-<li>The <code>ActionDescriptor</code> class describes the action on that controller which is about to be called.</li>
-</ul>
-
-
-<p>Given this information, you can decide to either return a <code>Filter</code> which will be applied, or return a null which will take no action.</p>
-
-<h1>How do I register a filter?</h1>
-
-<p>In our <code>FilterInstaller</code> class you will see an example of registering such a filter:</p>
-
-<p>``` csharp
-public class FilterInstaller : IWindsorInstaller
-{</p>
-
-<pre><code>public void Install(IWindsorContainer container, IConfigurationStore store)
-{
-    container.Register(
-        Component.For&lt;IFilterProvider&gt;().ImplementedBy&lt;IoCFilterProvider&gt;(),
-        Component.For&lt;ExceptionLoggingFilter&gt;().ImplementedBy&lt;ExceptionLoggingFilter&gt;(),
-        Component.For&lt;Func&lt;ControllerContext,ActionDescriptor,Filter&gt;&gt;().Instance(
-            (c,a) =&gt; new Filter(container.Resolve&lt;ExceptionLoggingFilter&gt;(), FilterScope.Last, int.MinValue))
-        );
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>On line 8, we register a <code>Func&lt;ControllerContext,ActionDescriptor,Filter&gt;</code> and state that we will provide a specific instance of that delegate to be used.</p>
-
-<p>On line 9, we use the lambda syntax to declare a delegate, which is provided <code>(c,a)</code> as the parameters of type <code>ControllerContext</code> and <code>ActionDescriptor</code>, and which has a body of:</p>
-
-<p><code>csharp
-new Filter(container.Resolve&lt;ExceptionLoggingFilter&gt;(), FilterScope.Last, int.MinValue)
-</code></p>
-
-<p>In this simple case, we create an instance of the <code>System.Web.Mvc.Filter</code> class and provide it our <code>ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code>FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code>int.MinValue</code>, aka I really mean last of all last filters.</p>
-
-<p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code>Filter</code> and when to return <code>null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code>null</code>.</p>
 ]]></content>
   </entry>
   

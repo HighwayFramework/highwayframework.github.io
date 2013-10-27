@@ -1,0 +1,506 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Advanced Queries / Commands /Scalars - The fastest and smoothest way to good architecture</title>
+  <meta name="author" content="Tim Rayburn & Devlin Liles">
+
+  
+  <meta name="description" content="Advanced Queries / Commands / Scalars We have defined standard queries in our Queries / Commands / Scalars post, but how to tackle more complex &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="The fastest and smoothest way to good architecture" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">The fastest and smoothest way to good architecture</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hwyfwk.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Advanced Queries / Commands /Scalars</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-25T15:11:00-05:00" pubdate data-updated="true">Oct 25<span>th</span>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://hwyfwk.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Advanced Queries / Commands / Scalars</h1>
+
+<p><span class='pullquote-right' data-pullquote='Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.'>
+We have defined standard queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn&rsquo;t make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.
+</span></p>
+
+<p>All of the <code>AdvancedQuery</code>, <code>AdvancedScalar</code>, and <code>AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Driver
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string FirstName { get; set; }
+</span><span class='line'>    public string LastName { get; set; }
+</span><span class='line'>    public int Score { get; set; }
+</span><span class='line'>    public Instructor Instructor { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Car
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string Make { get; set; }
+</span><span class='line'>    public string Model { get; set; }
+</span><span class='line'>    public string Year { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Top5PercentileOfDrivers : Query&lt;Driver&gt;
+</span><span class='line'>{
+</span><span class='line'>    public Top5PercentileOfDrivers()
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt;
+</span><span class='line'>        {
+</span><span class='line'>            var scores = context.AsQueryable&lt;Driver&gt;().Select(x =&gt; x.Score);
+</span><span class='line'>            int percentileScore =
+</span><span class='line'>                Convert.ToInt32(Math.Round((5/100)*scores.Count() + 0.5, MidpointRounding.AwayFromZero));
+</span><span class='line'>            return context.AsQueryable&lt;Driver&gt;().OrderByDescending(x =&gt; x.Score).Take(percentileScore);
+</span><span class='line'>        };
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class SwapInstructors : Scalar&lt;int&gt;
+</span><span class='line'>{
+</span><span class='line'>    public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt;
+</span><span class='line'>        {
+</span><span class='line'>            foreach(var driver in currentInstructor.Drivers)
+</span><span class='line'>          {
+</span><span class='line'>              driver.Instructor = newInstructor;
+</span><span class='line'>          }
+</span><span class='line'>          context.Commit();
+</span><span class='line'>        };
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class DropMake : Command
+</span><span class='line'>{
+</span><span class='line'>    public DropMake(string make)
+</span><span class='line'>    {
+</span><span class='line'>        // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+</span><span class='line'>        // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+</span><span class='line'>        // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+</span><span class='line'>        ContextQuery = c =&gt;
+</span><span class='line'>        {
+</span><span class='line'>            var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+</span><span class='line'>            foreach (var car in cars)
+</span><span class='line'>            {
+</span><span class='line'>                c.Remove(car);
+</span><span class='line'>            }
+</span><span class='line'>        };
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Advanced Query &ndash; Sometimes you need a Stored Procedure</h1>
+
+<p>In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Top5PercentileOfDrivers : AdvancedQuery&lt;Driver&gt;
+</span><span class='line'>{
+</span><span class='line'>    public Top5PercentileOfDrivers()
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt; context.ExecuteSqlQuery&lt;Driver&gt;("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Advanced Commands &ndash;  When you need a hammer</h1>
+
+<p><span class='pullquote-right' data-pullquote='Highway.Data gives you an easy way to use the hammer, but doesn&#8217;t require every problem to be a nail.'>
+In the usage of data persistence technologies it is possible to run into corners that cost a significant amount of time to build out of. This has the chance to nullify the speed of development benefits in using the technology. Highway.Data provides a way to step out of this corner by using the base technology of the underlying implementation. When you are building something, sometimes you just need a hammer. Highway.Data gives you an easy way to use the hammer, but doesn&rsquo;t require every problem to be a nail.
+</span></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class DropMake : AdvancedCommand
+</span><span class='line'>{
+</span><span class='line'>    public DropMake(string make)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = c =&gt; c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Advanced Scalar</h1>
+
+<p>In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code>AdvancedScalar</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class SwapInstructores : AdvancedScalar&lt;int&gt;
+</span><span class='line'>{
+</span><span class='line'>    public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+</span><span class='line'>    {
+</span><span class='line'>        DbParameter[] parameters = new DbParameter[]
+</span><span class='line'>        {
+</span><span class='line'>            new SqlParameter("old", currentInstructor.Id),
+</span><span class='line'>            new SqlParameter("new", newInstructor.Id), 
+</span><span class='line'>        };
+</span><span class='line'>        ContextQuery = c =&gt; c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Tim Rayburn & Devlin Liles</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-25T15:11:00-05:00" pubdate data-updated="true">Oct 25<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/data/'>data</a>, <a class='category' href='/blog/categories/feature/'>feature</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/" data-via="HwyFwk" data-counturl="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/25/pagination-of-queries/" title="Previous Post: Pagination Of Queries">&laquo; Pagination Of Queries</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/">Advanced Queries / Commands /Scalars</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/25/pagination-of-queries/">Pagination of Queries</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2/">Highway.Data v4.1.0.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/understanding-the-patterns/">Understanding the Patterns</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/HighwayFramework">@HighwayFramework</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'HighwayFramework',
+            count: 999,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Tim Rayburn & Devlin Liles -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'highwayframework';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/';
+        var disqus_url = 'http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
