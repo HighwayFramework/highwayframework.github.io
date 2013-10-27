@@ -7,8 +7,6 @@ no_homepage: true
 order: 32
 categories: data feature
 ---
-#Advanced Queries / Commands / Scalars
-
 {% pullquote %}
 We have defined standard queries in our [Queries / Commands / Scalars](blog/2013/10/19/queries-slash-commands-slash-scalars/) post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn't make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. {"Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed."} 
 {% endpullquote %}

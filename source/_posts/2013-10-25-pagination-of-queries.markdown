@@ -49,7 +49,7 @@ public class DriversByLastName : Query<Driver>
 }
 ```
 
-# Paging The `IQuery` - LINQ style
+# Paging The IQuery - LINQ style
 
 This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using `.Skip(int numberOfObjects)` and `.Take(int numberOfObjects)`. Take the following controller method to get drivers by name
 
