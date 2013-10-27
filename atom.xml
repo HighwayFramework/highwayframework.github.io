@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-27T14:14:16-05:00</updated>
+  <updated>2013-10-27T18:12:53-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,13 +14,126 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Performance Testing Queries]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/"/>
+    <updated>2013-10-27T16:31:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/27/performance-testing-queries</id>
+    <content type="html"><![CDATA[<p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
+
+<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
+
+<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
+
+<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
+
+<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Car
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string Make { get; set; }
+</span><span class='line'>    public string Model { get; set; }
+</span><span class='line'>    public string Year { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class DropMake : Command
+</span><span class='line'>{
+</span><span class='line'>    public DropMake(string make)
+</span><span class='line'>    {
+</span><span class='line'>        // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+</span><span class='line'>        // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+</span><span class='line'>        // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+</span><span class='line'>        ContextQuery = c =&gt;
+</span><span class='line'>        {
+</span><span class='line'>            var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+</span><span class='line'>            foreach (var car in cars)
+</span><span class='line'>            {
+</span><span class='line'>                c.Remove(car);
+</span><span class='line'>            }
+</span><span class='line'>        };
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Performance Tests</h1>
+
+<h2>These should <em>ideally</em> run against production like data</h2>
+
+<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
+
+<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[TestMethod]
+</span><span class='line'>public void ShouldDeleteInUnder250Milliseconds()
+</span><span class='line'>{
+</span><span class='line'>    var context = new DataContext(Settings.Default.Connection, new DataMappings());
+</span><span class='line'>
+</span><span class='line'>    var dropMake = new DropMake("Chevy");
+</span><span class='line'>
+</span><span class='line'>    dropMake.RunPerformanceTest(context,false,250);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
+
+<p>Let&rsquo;s take a closer look at this line</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>dropMake.RunPerformanceTest(context,false,250);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The 1st parameter, context, is the data connection we use to execute the test.</p>
+
+<p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
+
+<p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Advanced Queries / Commands /Scalars]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/"/>
     <updated>2013-10-25T15:11:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars</id>
-    <content type="html"><![CDATA[<h1>Advanced Queries / Commands / Scalars</h1>
-
-<p><span class='pullquote-right' data-pullquote='Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.'>
+    <content type="html"><![CDATA[<p><span class='pullquote-right' data-pullquote='Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.'>
 We have defined standard queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn&rsquo;t make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.
 </span></p>
 
@@ -321,7 +434,7 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
-<h1>Paging The <code>IQuery</code> &ndash; LINQ style</h1>
+<h1>Paging The IQuery &ndash; LINQ style</h1>
 
 <p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
 

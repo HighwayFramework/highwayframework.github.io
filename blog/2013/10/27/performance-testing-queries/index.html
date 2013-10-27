@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Pagination Of Queries - The fastest and smoothest way to good architecture</title>
+  <title>Performance Testing Queries - The fastest and smoothest way to good architecture</title>
   <meta name="author" content="Tim Rayburn & Devlin Liles">
 
    
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/pagination-of-queries">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries">
   <link href="/favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    Pagination of Queries
+    Performance Testing Queries
 	<h5>
 
 
@@ -109,16 +109,20 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-25T14:11:00-05:00" pubdate data-updated="true">Oct 25<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-27T16:31:00-05:00" pubdate data-updated="true">Oct 27<span>th</span>, 2013</time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <h1>Paging Queries</h1>
+      <p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
 
-<p><span class='pullquote-right' data-pullquote='The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?'>
-We have gone through how to define and use Queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but now lets talk about value adds on those Queries. If you want to page an existing <code>Query&lt;T&gt;</code>, we believe that you should be able to quickly and easily.The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?
-</span></p>
+<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
+
+<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
+
+<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
+
+<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
 
 <h1>Example Domain</h1>
 
@@ -149,25 +153,7 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>public class Driver
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string FirstName { get; set; }
-</span><span class='line'>    public string LastName { get; set; }
-</span><span class='line'>    public Car Car { get; set; }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>public class Car
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Car
 </span><span class='line'>{
 </span><span class='line'>    public int Id { get; set; }
 </span><span class='line'>    public string Make { get; set; }
@@ -175,18 +161,32 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 </span><span class='line'>    public string Year { get; set; }
 </span><span class='line'>}
 </span><span class='line'>
-</span><span class='line'>public class DriversByLastName : Query&lt;Driver&gt;
+</span><span class='line'>public class DropMake : Command
 </span><span class='line'>{
-</span><span class='line'>    public DriversByLastName(string lastName)
+</span><span class='line'>    public DropMake(string make)
 </span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
+</span><span class='line'>        // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+</span><span class='line'>        // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+</span><span class='line'>        // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+</span><span class='line'>        ContextQuery = c =&gt;
+</span><span class='line'>        {
+</span><span class='line'>            var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+</span><span class='line'>            foreach (var car in cars)
+</span><span class='line'>            {
+</span><span class='line'>                c.Remove(car);
+</span><span class='line'>            }
+</span><span class='line'>        };
 </span><span class='line'>    }
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
-<h1>Paging The IQuery &ndash; LINQ style</h1>
+<h1>Performance Tests</h1>
 
-<p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
+<h2>These should <em>ideally</em> run against production like data</h2>
+
+<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
+
+<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -197,68 +197,30 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversController : Controller
+</pre></td><td class='code'><pre><code class=''><span class='line'>[TestMethod]
+</span><span class='line'>public void ShouldDeleteInUnder250Milliseconds()
 </span><span class='line'>{
-</span><span class='line'>    private IRepository repo;
+</span><span class='line'>    var context = new DataContext(Settings.Default.Connection, new DataMappings());
 </span><span class='line'>
-</span><span class='line'>    public DriversController(IRepository repo)
-</span><span class='line'>    {
-</span><span class='line'>        this.repo = repo;
-</span><span class='line'>    }
+</span><span class='line'>    var dropMake = new DropMake("Chevy");
 </span><span class='line'>
-</span><span class='line'>    public ActionResult ByLastName(string lastName)
-</span><span class='line'>    {
-</span><span class='line'>        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName));
-</span><span class='line'>        return View(drivers);
-</span><span class='line'>    }
+</span><span class='line'>    dropMake.RunPerformanceTest(context,false,250);
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now that we have a call to the database and out training school has been running for a while we realize that we have 500 &ldquo;Smith&#8221;s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of <code>Query</code> to do the following.</p>
+<p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
+
+<p>Let&rsquo;s take a closer look at this line</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversController : Controller
-</span><span class='line'>{
-</span><span class='line'>    private IRepository repo;
-</span><span class='line'>
-</span><span class='line'>    public DriversController(IRepository repo)
-</span><span class='line'>    {
-</span><span class='line'>        this.repo = repo;
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    public ActionResult ByLastName(string lastName, int page)
-</span><span class='line'>    {
-</span><span class='line'>      var pageSize = 10;
-</span><span class='line'>        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName)
-</span><span class='line'>                                                  .Skip(page * pageSize).Take(pageSize));
-</span><span class='line'>        return View(drivers);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>dropMake.RunPerformanceTest(context,false,250);</span></code></pre></td></tr></table></div></figure>
 
 
-<p>This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
+<p>The 1st parameter, context, is the data connection we use to execute the test.</p>
+
+<p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
+
+<p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
 
     </div>
   </div>
@@ -280,6 +242,20 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
   <a href="/blog/categories/data/"><span class="badge">data</span></a>
 
   <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
+
+  <a href="/blog/categories/insurance/"><span class="badge">insurance</span></a>
+
+  <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/onramp-services/"><span class="badge">onramp-services</span></a>
+
+  <a href="/blog/categories/onramper/"><span class="badge">onramper</span></a>
+
+  <a href="/blog/categories/pavement/"><span class="badge">pavement</span></a>
+
+  <a href="/blog/categories/release/"><span class="badge">release</span></a>
+
+  <a href="/blog/categories/roadcrew/"><span class="badge">roadcrew</span></a>
 
 
 
@@ -342,8 +318,8 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/';
-        var disqus_url = 'http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/';
+        var disqus_identifier = 'http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/';
+        var disqus_url = 'http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/';
         var disqus_script = 'embed.js';
       
     (function () {
