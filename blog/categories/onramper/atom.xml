@@ -4,7 +4,7 @@
   <title><![CDATA[Category: onramper | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/onramper/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-27T18:12:53-05:00</updated>
+  <updated>2013-10-28T18:11:32-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,96 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Performance Testing Queries]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/"/>
-    <updated>2013-10-27T16:31:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/27/performance-testing-queries</id>
-    <content type="html"><![CDATA[<p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
-
-<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
-
-<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
-
-<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
-
-<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>```
-public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class DropMake : Command
-{</p>
-
-<pre><code>public DropMake(string make)
-{
-    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
-    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
-    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
-    ContextQuery = c =&gt;
-    {
-        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
-        foreach (var car in cars)
-        {
-            c.Remove(car);
-        }
-    };
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Performance Tests</h1>
-
-<h2>These should <em>ideally</em> run against production like data</h2>
-
-<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
-
-<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
-
-<p>```
-[TestMethod]
-public void ShouldDeleteInUnder250Milliseconds()
-{</p>
-
-<pre><code>var context = new DataContext(Settings.Default.Connection, new DataMappings());
-
-var dropMake = new DropMake("Chevy");
-
-dropMake.RunPerformanceTest(context,false,250);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
-
-<p>Let&rsquo;s take a closer look at this line
-<code>
-dropMake.RunPerformanceTest(context,false,250);
-</code>
-The 1st parameter, context, is the data connection we use to execute the test.</p>
-
-<p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
-
-<p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Roadmaps]]></title>
