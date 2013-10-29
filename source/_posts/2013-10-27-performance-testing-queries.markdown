@@ -5,7 +5,7 @@ date: 2013-10-27 16:31
 comments: true
 no_homepage: true
 order: 34
-categories: data onramp-mvc onramp-services pavement roadcrew onramper insurance release feature
+categories: data feature
 ---
 
 When dealing with data access you should always adhere to Jackson's rules of optimization. For convenience they are right here:
