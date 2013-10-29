@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-28T18:11:32-05:00</updated>
+  <updated>2013-10-29T10:00:53-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,236 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Logging]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/"/>
+    <updated>2013-10-28T17:59:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext</id>
+    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="">Common.Logging 2.1.1.0</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Driver
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string FirstName { get; set; }
+</span><span class='line'>    public string LastName { get; set; }
+</span><span class='line'>    public Car Car { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Car
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string Make { get; set; }
+</span><span class='line'>    public string Model { get; set; }
+</span><span class='line'>    public string Year { get; set; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Adding Items</h1>
+
+<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Eager Loading with Queries and Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars/"/>
+    <updated>2013-10-28T17:38:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars</id>
+    <content type="html"><![CDATA[<p>When we define a query, sometimes we need to load a graph of related objects as well. This can be impressively helpful with an ORM, but it is also more expensive per query. We have to balance the cost of the query graph with the ease of loading related objects in the code base. The approach to this varies by the underlying ORM that you are using, so please click the link for the section that pertains to you.</p>
+
+<p><a href="#ef">Entity Framework</a></p>
+
+<p><a href="#nhibernate">NHibernate</a></p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Driver
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string FirstName { get; set; }
+</span><span class='line'>    public string LastName { get; set; }
+</span><span class='line'>    public Car Car { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Car
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string Make { get; set; }
+</span><span class='line'>    public string Model { get; set; }
+</span><span class='line'>    public string Year { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class InstructorById : Scalar&lt;Instructor&gt;
+</span><span class='line'>{
+</span><span class='line'>    public InstructorById(int id)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
+</span><span class='line'>                                       .SingleOrDefault(e =&gt; e.Id == id);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Use Case</h2>
+
+<p>Let&rsquo;s assume that we now need to load Drivers and Cars for the instructor. Because we are only loading one Instructor this should be fairly light weight on the database.</p>
+
+<p><a name="ef"></a></p>
+
+<h1>Entity Framework</h1>
+
+<p>Entity Framework got the API for this correct, so when you unit test this without a database it does nothing with the include call. This allows us to not need an advanced query for the Entity Framework version of the query.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : Scalar&lt;Instructor&gt;
+</span><span class='line'>{
+</span><span class='line'>    public InstructorById(int id)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
+</span><span class='line'>                                  .Include(x =&gt; x.Drivers.Select(c =&gt; c.Car))
+</span><span class='line'>                                  .SingleOrDefault(e =&gt; e.Id == id);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice to traverse a collection we have to use the <code>Select</code> method, this is a quark of LINQ and Entity Framework. As you see below in the NHibernate solution there is a slightly more elegant way they could have done this, but it comes with a hefty cost.</p>
+
+<p><a name="nhibernate"></a></p>
+
+<h1>NHibernate</h1>
+
+<p>In the NHibernate usage we will have to bind ourselves to their specific API, which means that we will have to use an <code>AdvancedQuery</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : AdvancedScalar&lt;Instructor&gt;
+</span><span class='line'>{
+</span><span class='line'>    public InstructorById(int id)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
+</span><span class='line'>                                  .FetchMany(x =&gt; x.Drivers)   
+</span><span class='line'>                                  .ThenFetch(x =&gt; x.Car)
+</span><span class='line'>                                  .SingleOrDefault(e =&gt; e.Id == id);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This reads more fluently but causes us to be bound to NHibernate. <strong>It also has one massive bug in NHibernate&rsquo;s LINQ provider.</strong> In the above query you will only get one related driver and one related car. This is because it applies a Top 1 to the queries. To avoid this you must do the below query.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : AdvancedScalar&lt;Instructor&gt;
+</span><span class='line'>{
+</span><span class='line'>    public InstructorById(int id)
+</span><span class='line'>    {
+</span><span class='line'>        ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
+</span><span class='line'>                                  .FetchMany(x =&gt; x.Drivers)   
+</span><span class='line'>                                  .ThenFetch(x =&gt; x.Car)
+</span><span class='line'>                                  .Where(e =&gt; e.Id == id)
+</span><span class='line'>                                  .ToList() // This forces execution without the Top 1 of a single or default
+</span><span class='line'>                                  .SingleOrDefault();
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>This is a bug in NHibernate</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Performance Testing Queries]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-28T18:11:32-05:00</updated>
+  <updated>2013-10-29T10:00:53-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,184 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Logging]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/"/>
+    <updated>2013-10-28T17:59:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext</id>
+    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="">Common.Logging 2.1.1.0</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>```
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public Car Car { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Adding Items</h1>
+
+<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Eager Loading with Queries and Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars/"/>
+    <updated>2013-10-28T17:38:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars</id>
+    <content type="html"><![CDATA[<p>When we define a query, sometimes we need to load a graph of related objects as well. This can be impressively helpful with an ORM, but it is also more expensive per query. We have to balance the cost of the query graph with the ease of loading related objects in the code base. The approach to this varies by the underlying ORM that you are using, so please click the link for the section that pertains to you.</p>
+
+<p><a href="#ef">Entity Framework</a></p>
+
+<p><a href="#nhibernate">NHibernate</a></p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>```
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public Car Car { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class InstructorById : Scalar<Instructor>
+{</p>
+
+<pre><code>public InstructorById(int id)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
+                                     .SingleOrDefault(e =&gt; e.Id == id);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Use Case</h2>
+
+<p>Let&rsquo;s assume that we now need to load Drivers and Cars for the instructor. Because we are only loading one Instructor this should be fairly light weight on the database.</p>
+
+<p><a name="ef"></a></p>
+
+<h1>Entity Framework</h1>
+
+<p>Entity Framework got the API for this correct, so when you unit test this without a database it does nothing with the include call. This allows us to not need an advanced query for the Entity Framework version of the query.</p>
+
+<p>```
+public class InstructorById : Scalar<Instructor>
+{</p>
+
+<pre><code>public InstructorById(int id)
+{
+    ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
+                                .Include(x =&gt; x.Drivers.Select(c =&gt; c.Car))
+                                .SingleOrDefault(e =&gt; e.Id == id);
+}
+</code></pre>
+
+<p>}
+<code>``
+Notice to traverse a collection we have to use the</code>Select` method, this is a quark of LINQ and Entity Framework. As you see below in the NHibernate solution there is a slightly more elegant way they could have done this, but it comes with a hefty cost.</p>
+
+<p><a name="nhibernate"></a></p>
+
+<h1>NHibernate</h1>
+
+<p>In the NHibernate usage we will have to bind ourselves to their specific API, which means that we will have to use an <code>AdvancedQuery</code>.
+```
+public class InstructorById : AdvancedScalar<Instructor>
+{</p>
+
+<pre><code>public InstructorById(int id)
+{
+    ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
+                                .FetchMany(x =&gt; x.Drivers)  
+                                .ThenFetch(x =&gt; x.Car)
+                                .SingleOrDefault(e =&gt; e.Id == id);
+}
+</code></pre>
+
+<p>}
+<code>
+This reads more fluently but causes us to be bound to NHibernate. **It also has one massive bug in NHibernate's LINQ provider.** In the above query you will only get one related driver and one related car. This is because it applies a Top 1 to the queries. To avoid this you must do the below query.
+</code>
+public class InstructorById : AdvancedScalar<Instructor>
+{</p>
+
+<pre><code>public InstructorById(int id)
+{
+    ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
+                                .FetchMany(x =&gt; x.Drivers)  
+                                .ThenFetch(x =&gt; x.Car)
+                                .Where(e =&gt; e.Id == id)
+                                .ToList() // This forces execution without the Top 1 of a single or default
+                                .SingleOrDefault();
+}
+</code></pre>
+
+<p>}
+```
+<strong>This is a bug in NHibernate</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Performance Testing Queries]]></title>
@@ -370,395 +548,6 @@ public ActionResult ByLastName(string lastName, int page)
 <p>}
 ```
 This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Understanding the Patterns]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/"/>
-    <updated>2013-10-19T10:40:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns</id>
-    <content type="html"><![CDATA[<h1>Patterns</h1>
-
-<p>Highway.Data is based on a blended use of <strong>3 major patterns</strong>, and to understand the intent of the Queries / Commands / Scalars that make highway smooth, we must first talk about the patterns.</p>
-
-<p>There are a lot of places where you can find the academic explanation of these patterns, but here we are going to focus on the outcomes we are using it for. If you would like to read more about these, check out the <a href="#furtherReading">Further Reading</a> below.</p>
-
-<h2>Repository</h2>
-
-<p>Repository is a way to abstract the &ldquo;guts&rdquo; of the data access and persistence knowledge away from my logic. This is a lot of the time misused. Typed Repositories, Repositories with more than 5 methods, repositories that manage their own statefulness are all examples of a good pattern meeting a bad implementation. We use Repository in combination with Unit of Work and a modern interpretation of Query Object pattern.</p>
-
-<h3>Signs of a well built Repository</h3>
-
-<ul>
-<li>The user of the repository ask for data, but no information about the persistence is leaked to the caller.</li>
-<li>It is not specific to any domain, and can be portable</li>
-<li>It has state, but doesn&rsquo;t manage it</li>
-<li>It has no control of the Update/Add/Delete side of the operations, but gives access to that API. Repositories are meant as an abstraction for reading data.</li>
-</ul>
-
-
-<h2>Unit Of Work</h2>
-
-<p>Unit of Work allows us to track in memory changes of an object that are made in series and then commit those changes to some persistence layer. This is an atomic unit of work that is transaction during the commit but in our code is just changes to objects.</p>
-
-<h3>Signs of a well built unit of work</h3>
-
-<ul>
-<li>Commit-able</li>
-<li>Abandon/Rollback-able</li>
-<li>Not specific to any one API</li>
-<li>Give the basic Add/Remove/Update functionality</li>
-<li>Are not query-able</li>
-</ul>
-
-
-<h2>Query Object</h2>
-
-<p>Query Object is a way of encapsulating the details of a single query into an object that can be reused without being stateful. This helps us avoid duplication in the code base and we can codify and test our queries.</p>
-
-<h3>Signs of a well built query object</h3>
-
-<ul>
-<li>It doesn&rsquo;t manager state outside a single execution</li>
-<li>It is reuse-able</li>
-<li>It is able to be functionally tested</li>
-<li>It is able to be performance tested</li>
-<li>It can output it&rsquo;s persistence query ( SQL statement for example )</li>
-<li>If it returns multiple rows, it can have pagination applied without modification</li>
-</ul>
-
-
-<p><a name="furtherReading"></a></p>
-
-<h2>Further Reading</h2>
-
-<p>We hold our opinions because of years of software development on all sizes of projects, but understand that many opinions exist that are valid. In an effort to present the information as impartially as possible below does include links to content that disagrees with our opinions. Please read on and form your own opinions.</p>
-
-<h3>Repository</h3>
-
-<p><a href="http://www.martinfowler.com/eaaCatalog/repository.html">Martin Fowler Repository Pattern</a></p>
-
-<p><a href="http://weblogs.asp.net/fredriknormen/archive/2008/04/24/what-purpose-does-the-repository-pattern-have.aspx">Fredik Normén Repository Pattern Purpose Discussion</a></p>
-
-<p><a href="http://msdn.microsoft.com/en-us/library/ff649690.aspx">MSDN Repository Article</a></p>
-
-<p><a href="http://ayende.com/blog/4784/architecting-in-the-pit-of-doom-the-evils-of-the-repository-abstraction-layer">Ayende@Rahien Repository Pit Of Doom</a></p>
-
-<p><a href="http://www.devlinliles.com/post/I-disagree-with-the-pit-of-Doom">Devlin Liles Discussion of the Pit Of Doom</a></p>
-
-<h3>Unit of Work</h3>
-
-<p><a href="http://www.martinfowler.com/eaaCatalog/unitOfWork.html">Martin Fowler Unit of Work</a></p>
-
-<p><a href="http://msdn.microsoft.com/en-us/magazine/dd882510.aspx">Jeremy Miller Unit of Work and Persistence Ignorance</a></p>
-
-<p><a href="http://rlacovara.blogspot.com/2009/04/entity-framework-patterns-unit-of-work.html">Ruby Lacovara Entity Framework Patterns Unit of Work</a></p>
-
-<h3>Query Object</h3>
-
-<p><a href="http://martinfowler.com/eaaCatalog/queryObject.html">Martin Fowler Query Object</a></p>
-
-<p><a href="http://coderkarl.wordpress.com/2012/05/02/the-query-object-pattern-2/">Karl Nilsson Query Object Pattern</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Queries / Commands / Scalars]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/"/>
-    <updated>2013-10-19T09:21:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars</id>
-    <content type="html"><![CDATA[<h1>Using Queries, Commands and Scalars</h1>
-
-<p>The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the &ldquo;How we get data&rdquo; from the &ldquo;What data do I get&rdquo;. In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data.</p>
-
-<ul>
-<li><a href="/blog/2013/10/19/understanding-the-patterns/">Patterns</a></li>
-<li><a href="#query">Query</a></li>
-<li><a href="#command">Command</a></li>
-<li><a href="#scalar">Scalar</a></li>
-</ul>
-
-
-<p><a name="query"></a></p>
-
-<h1>Queries</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Query interface
-``` csharp
-public interface IQuery<out T> : IQueryBase
-{</p>
-
-<pre><code>IEnumerable&lt;T&gt; Execute(IDataContext context);
-</code></pre>
-
-<p>}
-<code>``
-Execute is the function that our</code>Repository` will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.</p>
-
-<h3>IEnumerable<T> Vs IQueryable<T></h3>
-
-<p>Notice how the Execution of the query returns an <code>IEnumerable</code> instead of an <code>IQueryable</code>. This is to basically &ldquo;seal&rdquo; the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.</p>
-
-<h2>Usage</h2>
-
-<p>The basic query selects a collection of objects that you tell it to as one operation. If we need to get drivers by last name, consider the following classes and tests.</p>
-
-<h3>Classes Involved</h3>
-
-<p>```
-public class Driver { public string LastName { get; set; } }</p>
-
-<p>public class DriversByLastName : Query<Driver>
-{</p>
-
-<pre><code>public DriversByLastName(string lastName)
-{
-    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
-}
-</code></pre>
-
-<p>}
-<code>``
-Notice how we inherit from the</code>Query<Driver><code>class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the</code>ContextQuery`, which is just a delegate to get called when we need the results.</p>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<p>```
-[TestMethod]
-public void ShouldGetDriversByLastName()
-{</p>
-
-<pre><code>//Arrange
-var context = new InMemoryDataContext();
-context.Add(new Driver(){ LastName = "Liles" });
-context.Add(new Driver(){ LastName = "Rayburn" });
-
-var query = new DriversByLastName("Liles");
-
-//Act
-var results = query.Execute(context); 
-
-//Assert
-Assert.AreEqual(1, results.Count());
-Assert.AreEqual("Liles",results.Single().LastName);
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>Example Usage with repository</h3>
-
-<p><code>
-IEnumerable&lt;Driver&gt; = repository.Find(new DriversByLastName("Liles"));
-</code></p>
-
-<p><a name="command"></a></p>
-
-<h1>Command</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Command Interface
-``` csharp
-public interface ICommand
-{</p>
-
-<pre><code>void Execute(IDataContext context);
-</code></pre>
-
-<p>}
-```
-Execute is the function that our Repository will use to execute the command, and it will hand it the context to execute upon. This allows us to create commands without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our commands.</p>
-
-<h2>Usage</h2>
-
-<p>The basic command allows us to fire off a set of operations without a return against our persistence store. This command could be updates, deletes, or even firing SQL Jobs. Lets consider the classes and tests involved</p>
-
-<h3>Classes Involved</h3>
-
-<p>```
-public class Driver
-{</p>
-
-<pre><code>public int Score { get; set; }
-public string LastName { get; set; } 
-</code></pre>
-
-<p>}</p>
-
-<p>public class SetDriverScoreByLastName : Command
-{</p>
-
-<pre><code>public SetDriverScoreByLastName(string lastName, int score)
-{
-    ContextQuery = context =&gt; 
-    {
-        var drivers = context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
-        foreach(var driver in drivers)
-        {
-            driver.Score = score;
-        }
-        context.Commit();
-    }
-}
-</code></pre>
-
-<p>}
-<code>``
-Notice how we inherit from the</code>Command<code>class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the</code>ContextQuery` to be a multiple line delegate like above, or a single operation.</p>
-
-<blockquote><h3><strong><em>Commands are not deferred, they execute immediately</em></strong></h3></blockquote>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<p>```
-[TestMethod]
-public void ShouldSetScoresByLastName()
-{</p>
-
-<pre><code>//Arrange
-var context = new InMemoryDataContext();
-context.Add(new Driver(){ LastName = "Liles" });
-context.Add(new Driver(){ LastName = "Rayburn" });
-
-var command = new SetDriverScoreByLastName("Liles", 100);
-
-//Act
-command.Execute(context); 
-
-//Assert
-var result = context.AsQueryable&lt;Driver&gt;().Single(x =&gt; x.LastName == "Liles"); 
-Assert.AreEqual("Liles", results.LastName);
-Assert.AreEqual(100, results.Score);
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>Example Usage with repository</h3>
-
-<p><code>
-repository.Execute(new SetDriverScoreByLastName("Liles", 100));
-</code></p>
-
-<p><a name="scalar"></a></p>
-
-<h1>Scalar</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Scalar interface
-``` csharp
-public interface IScalar<out T>
-{</p>
-
-<pre><code>T Execute(IDataContext context);
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>Usage</h2>
-
-<p>The basic scalar selects a single object that you tell it to as one operation. If we need to get a driver by last name, consider the following classes and tests. we can also return out non entity types such as a count of drivers by score;</p>
-
-<h3>Classes Involved</h3>
-
-<p>```
-public class Driver
-{</p>
-
-<pre><code>public int Score { get; set; }
-public string LastName { get; set; } 
-</code></pre>
-
-<p>}</p>
-
-<p>public class FirstDriverByLastName : Scalar<Driver>
-{</p>
-
-<pre><code>public FirstDriverByLastName(string lastName)
-{
-    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().FirstOrDefault(e =&gt; e.LastName == lastName);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class PassingDrivers : Scalar<int>
-{</p>
-
-<pre><code>public PassingDrivers()
-{
-    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Count(x =&gt; x.Score &gt; 75);
-}
-</code></pre>
-
-<p>}
-<code>``
-Notice how we inherit from the</code>Scalar<Driver><code>or</code>Scalar<int>` class. The type parameter defines the type we are returning with the scalar, and the base class gives us all the logic to execute and log the information about the execution.</p>
-
-<blockquote><h3><strong><em>Scalars are not deferred, they execute immediately</em></strong></h3></blockquote>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<p>```
-[TestMethod]
-public void ShouldGetFirstDriverByLastName()
-{</p>
-
-<pre><code>//Arrange
-var context = new InMemoryDataContext();
-context.Add(new Driver(){ LastName = "Liles" });
-context.Add(new Driver(){ LastName = "Rayburn" });
-
-var query = new FirstDriverByLastName("Liles");
-
-//Act
-var result = query.Execute(context); 
-
-//Assert
-Assert.AreEqual("Liles",result.LastName);
-</code></pre>
-
-<p>}</p>
-
-<p>[TestMethod]
-public void ShouldGetCountOfPassingDrivers()
-{</p>
-
-<pre><code>//Arrange
-var context = new InMemoryDataContext();
-context.Add(new Driver(){ LastName = "Liles", Score = 50 });
-context.Add(new Driver(){ LastName = "Rayburn", Score = 100 });
-
-var query = new PassingDrivers();
-
-//Act
-var result = query.Execute(context); 
-
-//Assert
-Assert.AreEqual(1,result);
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>Example Usage with repository</h3>
-
-<p><code>
-Driver driver = repository.Find(new DriverByLastName("Liles"));
-int passingDrivers = repository.Find(new PassingDrivers());
-</code></p>
 ]]></content>
   </entry>
   

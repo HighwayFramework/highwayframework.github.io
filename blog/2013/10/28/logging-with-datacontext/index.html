@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Support Contracts - The fastest and smoothest way to good architecture</title>
+  <title>Logging - The fastest and smoothest way to good architecture</title>
   <meta name="author" content="Tim Rayburn & Devlin Liles">
 
    
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/support.html">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext">
   <link href="/favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
@@ -61,7 +61,7 @@
     
         <li ><a href="/contribute.html">Contribute</a></li>
     
-        <li class="active"><a href="/support.html">Support</a></li>
+        <li ><a href="/support.html">Support</a></li>
     
         <li ><a href="/faq.html">FAQs</a></li>
     
@@ -90,24 +90,142 @@
     <div class="span12">
       <div class="row-fluid">
         <div id="content">
-          <article role="article">
+          <div>
+<article class="hentry" role="article">
   
+
   <header>
-    <div class="jumbotron">
-    	<div class="container">
-    		<img src="/images/Highway.jpg" />
-      	Support Contracts
-    	</div>
+  <div class="jumbotron">
+    Logging
+	<h5>
+
+
+
+
+
+
+
+
+  
+
+
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-28T17:59:00-05:00" pubdate data-updated="true">Oct 28<span>th</span>, 2013</time></h5>
+  </div>
+</header>
+  <div class="row-fluid">
+    <div class="span12">
+      <p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="">Common.Logging 2.1.1.0</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Driver
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string FirstName { get; set; }
+</span><span class='line'>    public string LastName { get; set; }
+</span><span class='line'>    public Car Car { get; set; }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>public class Car
+</span><span class='line'>{
+</span><span class='line'>    public int Id { get; set; }
+</span><span class='line'>    public string Make { get; set; }
+</span><span class='line'>    public string Model { get; set; }
+</span><span class='line'>    public string Year { get; set; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Adding Items</h1>
+
+<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you.</p>
+
+    </div>
+  </div>
+
+
+
+  <footer>
+    <hr>
+    
+    <div class="row-fluid">
+      
+      <div class="span6">
+        <p class="meta">
+        
+        
+
+
+
+  <a href="/blog/categories/data/"><span class="badge">data</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
+
+
+
+
+        </p>
+      </div>
+      
+      <div class="span6 social-sharing">
+        <div class="sharing">
+  <div class="addthis_toolbox addthis_default_style ">
+  
+  <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+  
+  
+  <a class="addthis_button_tweet"></a>
+  
+  
+  <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+      </div>
+      
+      
     </div>
     
-  </header>
-  
-  <p>We recognize that some enterprises require that they secure support contracts for any open source libraries which are used within their development.  As such the core development team has reached an agreement with <a href="http://improvingenterprises.com/">Improving Enterprises</a> to act as the primary purveyor of such contracts.  If you&rsquo;d like to arrange for such support, please contact us via <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x54;&#101;&#97;&#109;&#x40;&#72;&#119;&#121;&#70;&#119;&#107;&#46;&#x63;&#x6f;&#x6d;">&#84;&#101;&#97;&#x6d;&#x40;&#x48;&#119;&#121;&#x46;&#x77;&#x6b;&#x2e;&#x63;&#111;&#x6d;</a> .</p>
-
-<p><img src="http://hwyfwk.com/images/Improving.png" alt="image" /></p>
-
+    
+  </footer>
 </article>
 
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
 
 
 
@@ -131,7 +249,10 @@
       var disqus_shortname = 'highwayframework';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/';
+        var disqus_url = 'http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
