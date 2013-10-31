@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-31T12:25:56-05:00</updated>
+  <updated>2013-10-31T17:08:17-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,11 +14,23 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Entity Framework - Configuring Highway.Data]]></title>
+    <title type="html"><![CDATA[Configuring Highway.Data]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/"/>
     <updated>2013-10-30T20:20:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
-    <content type="html"><![CDATA[<h2>Getting Started</h2>
+    <content type="html"><![CDATA[<p>If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.</p>
+
+<p><a href="EntityFramework">Entity Framework</a></p>
+
+<p><a href="NHibernate">NHibernate</a></p>
+
+<p><a href="RavenDB">RavenDB</a></p>
+
+<p><a name="EntityFramework"></a></p>
+
+<h1>EntityFramework</h1>
+
+<h2>Getting Started</h2>
 
 <p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
 
@@ -133,6 +145,77 @@ var context = new DataContext("Your connection string here", new DriversExams(),
 </code></p>
 
 <p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
+
+<p><a name="NHibernate"></a></p>
+
+<h1>NHibernate</h1>
+
+<p>Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code>DataContext</code>.</p>
+
+<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
+
+<p><code>plain
+Install-Package Highway.Data.NHibernate
+</code></p>
+
+<p>This will bring the install down and put it in our project.</p>
+
+<p>Everything else is out of the box NHibernate, isn&rsquo;t it great!!</p>
+
+<h2>Example</h2>
+
+<p>```csharp
+var nhibernateConfiguration = new Configuration().Configure();</p>
+
+<p>var model = AutoMap.AssemblyOf<Driver>()</p>
+
+<pre><code>.Where(type =&gt; typeof (Driver).IsAssignableFrom(type))
+.Conventions.AddFromAssemblyOf&lt;Driver&gt;()
+.UseOverridesFromAssemblyOf&lt;Driver&gt;();
+</code></pre>
+
+<p>var factory = Fluently.Configure(nhibernateConfiguration).Mappings(mappingConfiguration => mappingConfiguration.AutoMappings.Add(model)).BuildSessionFactory();</p>
+
+<p>var context = new DataContext(factory.OpenSession());</p>
+
+<p>```</p>
+
+<p><a name="RavenDB"></a></p>
+
+<h1>RavenDB</h1>
+
+<p>Highway.Data is very easy to configure with RavenDB, because we take in an <code>IDocumentSession</code> on Constructor for <code>DataContext</code>.</p>
+
+<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
+
+<p><code>plain
+Install-Package Highway.Data.RavenDb
+</code></p>
+
+<p>This will bring the install down and put it in our project.</p>
+
+<p>Everything else is out of the box RavenDB, isn&rsquo;t it great!!</p>
+
+<h2>Example</h2>
+
+<p>```csharp
+var embeddableDocumentStore = new EmbeddableDocumentStore()
+{</p>
+
+<pre><code>DataDirectory = "",
+RunInMemory = true
+</code></pre>
+
+<p>};
+embeddableDocumentStore.Initialize();</p>
+
+<p>var context = new DataContext(embeddableDocumentStore.OpenSession());</p>
+
+<p>```</p>
 ]]></content>
   </entry>
   

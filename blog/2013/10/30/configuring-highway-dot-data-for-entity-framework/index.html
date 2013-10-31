@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Entity Framework - Configuring Highway.Data - The fastest and smoothest way to good architecture</title>
+  <title>Configuring Highway.Data - The fastest and smoothest way to good architecture</title>
   <meta name="author" content="Tim Rayburn & Devlin Liles">
 
    
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    Entity Framework - Configuring Highway.Data
+    Configuring Highway.Data
 	<h5>
 
 
@@ -114,7 +114,19 @@
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <h2>Getting Started</h2>
+      <p>If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.</p>
+
+<p><a href="EntityFramework">Entity Framework</a></p>
+
+<p><a href="NHibernate">NHibernate</a></p>
+
+<p><a href="RavenDB">RavenDB</a></p>
+
+<p><a name="EntityFramework"></a></p>
+
+<h1>EntityFramework</h1>
+
+<h2>Getting Started</h2>
 
 <p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
 
@@ -260,6 +272,90 @@
 
 
 <p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
+
+<p><a name="NHibernate"></a></p>
+
+<h1>NHibernate</h1>
+
+<p>Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code>DataContext</code>.</p>
+
+<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.NHibernate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will bring the install down and put it in our project.</p>
+
+<p>Everything else is out of the box NHibernate, isn&rsquo;t it great!!</p>
+
+<h2>Example</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">nhibernateConfiguration</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="p">().</span><span class="n">Configure</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">AutoMap</span><span class="p">.</span><span class="n">AssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span> <span class="p">(</span><span class="n">Driver</span><span class="p">).</span><span class="n">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">Conventions</span><span class="p">.</span><span class="n">AddFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">UseOverridesFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">factory</span> <span class="p">=</span> <span class="n">Fluently</span><span class="p">.</span><span class="n">Configure</span><span class="p">(</span><span class="n">nhibernateConfiguration</span><span class="p">).</span><span class="n">Mappings</span><span class="p">(</span><span class="n">mappingConfiguration</span> <span class="p">=&gt;</span> <span class="n">mappingConfiguration</span><span class="p">.</span><span class="n">AutoMappings</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">model</span><span class="p">)).</span><span class="n">BuildSessionFactory</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">factory</span><span class="p">.</span><span class="n">OpenSession</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a name="RavenDB"></a></p>
+
+<h1>RavenDB</h1>
+
+<p>Highway.Data is very easy to configure with RavenDB, because we take in an <code>IDocumentSession</code> on Constructor for <code>DataContext</code>.</p>
+
+<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.RavenDb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will bring the install down and put it in our project.</p>
+
+<p>Everything else is out of the box RavenDB, isn&rsquo;t it great!!</p>
+
+<h2>Example</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">embeddableDocumentStore</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EmbeddableDocumentStore</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">DataDirectory</span> <span class="p">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">RunInMemory</span> <span class="p">=</span> <span class="k">true</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="n">Initialize</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="n">OpenSession</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 
     </div>
   </div>
