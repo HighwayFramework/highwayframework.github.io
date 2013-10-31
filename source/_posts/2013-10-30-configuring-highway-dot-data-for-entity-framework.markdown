@@ -1,12 +1,23 @@
 ---
 layout: post
-title: "Entity Framework - Configuring Highway.Data"
+title: "Configuring Highway.Data"
 date: 2013-10-30 20:20
 comments: true
 no_homepage: true
 order: 101
 categories: data feature
 ---
+If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.
+
+[Entity Framework](EntityFramework)
+
+[NHibernate](NHibernate)
+
+[RavenDB](RavenDB)
+
+
+<a name="EntityFramework"></a>
+#EntityFramework
 ##Getting Started
 The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.
 
@@ -100,3 +111,64 @@ var context = new DataContext("Your connection string here", new DriversExams(),
 ```
 
 We normally do this via our favorite IoC Container, but alas that is another guide.
+
+<a name="NHibernate"></a>
+#NHibernate
+Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for `DataContext`.
+
+##Getting Started
+The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.
+
+``` plain
+Install-Package Highway.Data.NHibernate
+```
+
+This will bring the install down and put it in our project. 
+
+Everything else is out of the box NHibernate, isn't it great!!
+
+##Example
+```csharp
+var nhibernateConfiguration = new Configuration().Configure();
+ 
+var model = AutoMap.AssemblyOf<Driver>()
+    .Where(type => typeof (Driver).IsAssignableFrom(type))
+    .Conventions.AddFromAssemblyOf<Driver>()
+    .UseOverridesFromAssemblyOf<Driver>();
+ 
+var factory = Fluently.Configure(nhibernateConfiguration).Mappings(mappingConfiguration => mappingConfiguration.AutoMappings.Add(model)).BuildSessionFactory();
+
+var context = new DataContext(factory.OpenSession());
+
+```
+
+
+
+<a name="RavenDB"></a>
+#RavenDB
+Highway.Data is very easy to configure with RavenDB, because we take in an `IDocumentSession` on Constructor for `DataContext`.
+
+##Getting Started
+The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.
+
+``` plain
+Install-Package Highway.Data.RavenDb
+```
+
+This will bring the install down and put it in our project. 
+
+Everything else is out of the box RavenDB, isn't it great!!
+
+##Example
+```csharp
+var embeddableDocumentStore = new EmbeddableDocumentStore()
+{
+    DataDirectory = "",
+    RunInMemory = true
+};
+embeddableDocumentStore.Initialize();
+
+var context = new DataContext(embeddableDocumentStore.OpenSession());
+
+```
+
