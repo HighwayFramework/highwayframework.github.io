@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-31T17:08:17-05:00</updated>
+  <updated>2013-10-31T17:15:07-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -20,11 +20,11 @@
     <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
     <content type="html"><![CDATA[<p>If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.</p>
 
-<p><a href="EntityFramework">Entity Framework</a></p>
+<p><a href="#EntityFramework">Entity Framework</a></p>
 
-<p><a href="NHibernate">NHibernate</a></p>
+<p><a href="#NHibernate">NHibernate</a></p>
 
-<p><a href="RavenDB">RavenDB</a></p>
+<p><a href="#RavenDB">RavenDB</a></p>
 
 <p><a name="EntityFramework"></a></p>
 
