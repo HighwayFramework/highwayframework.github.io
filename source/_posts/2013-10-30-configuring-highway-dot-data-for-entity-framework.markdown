@@ -9,11 +9,11 @@ categories: data feature
 ---
 If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.
 
-[Entity Framework](EntityFramework)
+[Entity Framework](#EntityFramework)
 
-[NHibernate](NHibernate)
+[NHibernate](#NHibernate)
 
-[RavenDB](RavenDB)
+[RavenDB](#RavenDB)
 
 
 <a name="EntityFramework"></a>
