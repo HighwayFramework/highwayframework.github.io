@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-30T20:12:07-05:00</updated>
+  <updated>2013-10-30T20:50:26-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,160 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Entity Framework - Configuring Highway.Data]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/"/>
+    <updated>2013-10-30T20:20:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
+    <content type="html"><![CDATA[<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.EntityFramework</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will bring the install down and put it in our project.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Database to Entity Mappings</h2>
+
+<p>Now we need to create our database mappings. Highway.Data doesn&rsquo;t redefine the mapping syntax, it just makes them injectable into the <code>DataContext</code>. To do this we defined an interface <code>IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code>DataContext</code>.
+<strong>The best practice is to name this class after the aggregate root in your domain, so ours is DriverExams</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversExams</span> <span class="p">:</span> <span class="n">IMappingConfiguration</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureModelBuilder</span><span class="p">(</span><span class="n">DbModelBuilder</span> <span class="n">modelBuilder</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Entity</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span> <span class="c1">//This is the inline/fluent config</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Configurations</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">DriverMap</span><span class="p">());</span> <span class="c1">//This is the class based config</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverMap</span> <span class="p">:</span> <span class="n">EntityTypeConfiguration</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriverMap</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">ToTable</span><span class="p">(</span><span class="s">&quot;Drivers&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="c1">//You can do anything here that EF supports</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code>EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code>IMappingConfiguration</code></em></p>
+
+<h2>Context Level Configuration</h2>
+
+<p>We setup a <code>DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code>IContextConfiguration</code> like below.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DefaultContextConfiguration</span> <span class="p">:</span> <span class="n">IContextConfiguration</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureContext</span><span class="p">(</span><span class="n">DbContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">LazyLoadingEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">ProxyCreationEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//Here you can do any context level configuration changes that EF supports</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will let you change fundemental behavior of the context.</p>
+
+<h2>Logging Configuration</h2>
+
+<p>Then you need to send in a logger, but those details are covered in our <a href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/">Logging Post</a> because it is not Entity Framework specific.</p>
+
+<h2>Using it all</h2>
+
+<p>Last but not least we need to use our configured pieces like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="s">&quot;Your connection string here&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">DriversExams</span><span class="p">(),</span> <span class="k">new</span> <span class="n">DefaultContextConfiguration</span><span class="p">(),</span> <span class="k">new</span> <span class="n">NoOpLogger</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Logging]]></title>
@@ -2511,15 +2665,6 @@ The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repo
 </span><span class='line'>
 </span><span class='line'>Public key token is fe803c9600455796</span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Our new site]]></title>
-    <link href="http://hwyfwk.com/blog/2013/09/30/our-new-site/"/>
-    <updated>2013-09-30T21:12:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/09/30/our-new-site</id>
-    <content type="html"><![CDATA[<p>Welcome to our new website design, specifically recreated to ensure that you, our amazing community, has a place to find all the documentation, videos, and discussion you could ever want for the projects in the Highway Framework.  We will be adding a lot of content to the site over the next few days.  Please bear with us if there is any dust settling from the move.</p>
 ]]></content>
   </entry>
   

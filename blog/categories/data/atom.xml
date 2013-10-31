@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-30T20:12:07-05:00</updated>
+  <updated>2013-10-30T20:50:26-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,129 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Entity Framework - Configuring Highway.Data]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/"/>
+    <updated>2013-10-30T20:20:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
+    <content type="html"><![CDATA[<h2>Getting Started</h2>
+
+<p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
+
+<p><code>plain
+Install-Package Highway.Data.EntityFramework
+</code></p>
+
+<p>This will bring the install down and put it in our project.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>``` csharp
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public Car Car { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Database to Entity Mappings</h2>
+
+<p>Now we need to create our database mappings. Highway.Data doesn&rsquo;t redefine the mapping syntax, it just makes them injectable into the <code>DataContext</code>. To do this we defined an interface <code>IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code>DataContext</code>.
+<strong>The best practice is to name this class after the aggregate root in your domain, so ours is DriverExams</strong></p>
+
+<p>``` csharp
+public class DriversExams : IMappingConfiguration
+{</p>
+
+<pre><code>public void ConfigureModelBuilder(DbModelBuilder modelBuilder)
+{
+    modelBuilder.Entity&lt;Driver&gt;(); //This is the inline/fluent config
+
+    modelBuilder.Configurations.Add(new DriverMap()); //This is the class based config
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class DriverMap : EntityTypeConfiguration<Driver>
+{</p>
+
+<pre><code>public DriverMap()
+{
+    this.ToTable("Drivers");
+    //You can do anything here that EF supports
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code>EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code>IMappingConfiguration</code></em></p>
+
+<h2>Context Level Configuration</h2>
+
+<p>We setup a <code>DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code>IContextConfiguration</code> like below.</p>
+
+<p>``` csharp
+public class DefaultContextConfiguration : IContextConfiguration
+{</p>
+
+<pre><code>public void ConfigureContext(DbContext context)
+{
+    context.Configuration.LazyLoadingEnabled = false;
+    context.Configuration.ProxyCreationEnabled = false;
+    //Here you can do any context level configuration changes that EF supports
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This will let you change fundemental behavior of the context.</p>
+
+<h2>Logging Configuration</h2>
+
+<p>Then you need to send in a logger, but those details are covered in our <a href="/blog/2013/10/28/logging-with-datacontext/">Logging Post</a> because it is not Entity Framework specific.</p>
+
+<h2>Using it all</h2>
+
+<p>Last but not least we need to use our configured pieces like so:</p>
+
+<p><code>csharp
+var context = new DataContext("Your connection string here", new DriversExams(), new DefaultContextConfiguration(), new NoOpLogger());
+</code></p>
+
+<p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Logging]]></title>
@@ -539,115 +662,6 @@ public class SwapInstructores : AdvancedScalar<int>
 ```</p>
 
 <p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Pagination Of Queries]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/"/>
-    <updated>2013-10-25T14:11:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/25/pagination-of-queries</id>
-    <content type="html"><![CDATA[<h1>Paging Queries</h1>
-
-<p>Surround your pullquote like this {" text to be quoted "}</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Instructor
-{</p>
-
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class DriversByLastName : Query<Driver>
-{</p>
-
-<pre><code>public DriversByLastName(string lastName)
-{
-    ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Paging The IQuery &ndash; LINQ style</h1>
-
-<p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
-
-<p>```
-public class DriversController : Controller
-{</p>
-
-<pre><code>private IRepository repo;
-
-public DriversController(IRepository repo)
-{
-    this.repo = repo;
-}
-
-public ActionResult ByLastName(string lastName)
-{
-    IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName));
-    return View(drivers);
-}
-</code></pre>
-
-<p>}
-<code>``
-Now that we have a call to the database and out training school has been running for a while we realize that we have 500 "Smith"s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of</code>Query` to do the following.</p>
-
-<p>```
-public class DriversController : Controller
-{</p>
-
-<pre><code>private IRepository repo;
-
-public DriversController(IRepository repo)
-{
-    this.repo = repo;
-}
-
-public ActionResult ByLastName(string lastName, int page)
-{
-    var pageSize = 10;
-    IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName)
-                                                .Skip(page * pageSize).Take(pageSize));
-    return View(drivers);
-}
-</code></pre>
-
-<p>}
-```
-This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
 ]]></content>
   </entry>
   
