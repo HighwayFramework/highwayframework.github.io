@@ -114,13 +114,13 @@
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="">Common.Logging 2.1.1.0</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
+      <p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="http://www.nuget.org/packages/Common.Logging">Common.Logging</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
 
 <h1>Example Domain</h1>
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -141,32 +141,185 @@
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Driver
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string FirstName { get; set; }
-</span><span class='line'>    public string LastName { get; set; }
-</span><span class='line'>    public Car Car { get; set; }
-</span><span class='line'>}
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Car
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string Make { get; set; }
-</span><span class='line'>    public string Model { get; set; }
-</span><span class='line'>    public string Year { get; set; }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<h1>Adding Items</h1>
+<h1>Adding and Removing Items</h1>
 
-<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you.</p>
+<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you. We want to know where the operations are executing and how the context is operating on a configurable level. This is going to use the standard log levels to get output from the system. Consider the following Test.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldLogAtDebugLevel</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//arrange </span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ConsoleOutLogger</span><span class="p">(</span><span class="s">&quot;Testing&quot;</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">,</span> <span class="k">true</span><span class="p">,</span> <span class="k">true</span><span class="p">,</span> <span class="k">true</span><span class="p">,</span> <span class="s">@&quot;dd/mm/yyyy hh:mm:ss&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">Settings</span><span class="p">.</span><span class="n">Default</span><span class="p">.</span><span class="n">Connection</span><span class="p">,</span> <span class="k">new</span> <span class="n">DriversEducationMappings</span><span class="p">(),</span> <span class="n">logger</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//act</span>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Devlin&quot;</span><span class="p">,</span> <span class="s">&quot;Liles&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Tim&quot;</span><span class="p">,</span> <span class="s">&quot;Rayburn&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Jay&quot;</span><span class="p">,</span> <span class="s">&quot;Smith&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Brian&quot;</span><span class="p">,</span> <span class="s">&quot;Sullivan&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Cori&quot;</span><span class="p">,</span> <span class="s">&quot;Drew&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Commit</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">driver</span> <span class="k">in</span> <span class="n">target</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">target</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">driver</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">target</span><span class="p">.</span><span class="n">Commit</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//assert</span>
+</span><span class='line'>    <span class="n">Assert</span><span class="p">.</span><span class="n">Inconclusive</span><span class="p">(</span><span class="s">&quot;We fail here to get the output from console nice and easy&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output from this test is below</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing -     Commited 5 Changes
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>30/40/2013 05:40:07 [DEBUG] Testing -     Commited 5 Changes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see that you get the step by step of what the application is doing on Debug but if you want even more information, you can up the game with LogLevel.Trace &ndash; This will trace every action start and finish.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>...
+</span><span class='line'>10/30/2013 5:49:10 PM [TRACE] Testing -   Commit
+</span><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing -   Commited 5 Changes
+</span><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
+</span><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
+</span><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object 
+</span><span class='line'>...
+</span><span class='line'>10/30/2013 5:49:10 PM [TRACE] Testing -   Commit
+</span><span class='line'>10/30/2013 5:49:10 PM [DEBUG] Testing -   Commited 5 Changes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This log level also lets you see the guts of when the model binding hits are being taken.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>10/30/2013 5:51:47 PM [DEBUG] Testing -   OnModelCreating
+</span><span class='line'>10/30/2013 5:51:47 PM [TRACE] Testing -       Mapping : DriversEducationMappings</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or Even when we execute a function/stored procedure</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String    </span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have code that is reloading objects to refresh them from the database using <code>Reload&lt;T&gt;(T item)</code> then you would see something like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>10/30/2013 5:56:49 PM [TRACE] Testing - Retrieving State Entry For Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>10/30/2013 5:56:49 PM [DEBUG] Testing - Reloading Object Highway.DriversEducation.GettingStarted.Driver
+</span><span class='line'>10/30/2013 5:56:49 PM [TRACE] Testing - Reloaded Object Highway.DriversEducation.GettingStarted.Driver</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Keep an eye out because in the next version we will be introducing the following logging features.</p>
+
+<ol>
+<li>Repository Level Logging of Queries/Commands/Scalars</li>
+<li>Non-Debugging Levels for always on health logging of the DataContext</li>
+<li>Performance Logging on Trace Level for Commits and Repository Level Items</li>
+</ol>
+
 
     </div>
   </div>

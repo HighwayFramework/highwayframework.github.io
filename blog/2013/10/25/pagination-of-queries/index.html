@@ -124,7 +124,7 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -153,42 +153,43 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 <span class='line-number'>27</span>
 <span class='line-number'>28</span>
 <span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Driver
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string FirstName { get; set; }
-</span><span class='line'>    public string LastName { get; set; }
-</span><span class='line'>    public Car Car { get; set; }
-</span><span class='line'>}
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Car
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string Make { get; set; }
-</span><span class='line'>    public string Model { get; set; }
-</span><span class='line'>    public string Year { get; set; }
-</span><span class='line'>}
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class DriversByLastName : Query&lt;Driver&gt;
-</span><span class='line'>{
-</span><span class='line'>    public DriversByLastName(string lastName)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Driver&gt;().Where(e =&gt; e.LastName == lastName);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversByLastName</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Paging The IQuery &ndash; LINQ style</h1>
 
 <p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -203,26 +204,27 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversController : Controller
-</span><span class='line'>{
-</span><span class='line'>    private IRepository repo;
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>    public DriversController(IRepository repo)
-</span><span class='line'>    {
-</span><span class='line'>        this.repo = repo;
-</span><span class='line'>    }
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    public ActionResult ByLastName(string lastName)
-</span><span class='line'>    {
-</span><span class='line'>        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName));
-</span><span class='line'>        return View(drivers);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="n">lastName</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now that we have a call to the database and out training school has been running for a while we realize that we have 500 &ldquo;Smith&#8221;s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of <code>Query</code> to do the following.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -239,23 +241,24 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class DriversController : Controller
-</span><span class='line'>{
-</span><span class='line'>    private IRepository repo;
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>    public DriversController(IRepository repo)
-</span><span class='line'>    {
-</span><span class='line'>        this.repo = repo;
-</span><span class='line'>    }
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    public ActionResult ByLastName(string lastName, int page)
-</span><span class='line'>    {
-</span><span class='line'>      var pageSize = 10;
-</span><span class='line'>        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName)
-</span><span class='line'>                                                  .Skip(page * pageSize).Take(pageSize));
-</span><span class='line'>        return View(drivers);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">,</span> <span class="kt">int</span> <span class="n">page</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="kt">var</span> <span class="n">pageSize</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
+</span><span class='line'>                                                  <span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="n">page</span> <span class="p">*</span> <span class="n">pageSize</span><span class="p">).</span><span class="n">Take</span><span class="p">(</span><span class="n">pageSize</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>

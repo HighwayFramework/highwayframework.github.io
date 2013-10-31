@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-29T10:00:53-05:00</updated>
+  <updated>2013-10-30T20:12:07-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -18,13 +18,13 @@
     <link href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/"/>
     <updated>2013-10-28T17:59:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext</id>
-    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="">Common.Logging 2.1.1.0</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
+    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="http://www.nuget.org/packages/Common.Logging">Common.Logging</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
 
 <h1>Example Domain</h1>
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<p>```
+<p>``` csharp
 public class Instructor
 {</p>
 
@@ -57,9 +57,109 @@ public string Year { get; set; }
 <p>}
 ```</p>
 
-<h1>Adding Items</h1>
+<h1>Adding and Removing Items</h1>
 
-<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you.</p>
+<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you. We want to know where the operations are executing and how the context is operating on a configurable level. This is going to use the standard log levels to get output from the system. Consider the following Test.</p>
+
+<p>```
+[TestMethod]
+public void ShouldLogAtDebugLevel()
+{</p>
+
+<pre><code>//arrange 
+var logger = new ConsoleOutLogger("Testing", LogLevel.Debug, true, true, true, @"dd/mm/yyyy hh:mm:ss");
+var target = new DataContext(Settings.Default.Connection, new DriversEducationMappings(), logger);
+
+//act
+target.Add(new Driver("Devlin", "Liles"));
+target.Add(new Driver("Tim", "Rayburn"));
+target.Add(new Driver("Jay", "Smith"));
+target.Add(new Driver("Brian", "Sullivan"));
+target.Add(new Driver("Cori", "Drew"));
+
+target.Commit();
+
+foreach (var driver in target.AsQueryable&lt;Driver&gt;())
+{
+    target.Remove(driver);
+}
+
+target.Commit();
+
+//assert
+Assert.Inconclusive("We fail here to get the output from console nice and easy");
+</code></pre>
+
+<p>}
+```
+The output from this test is below</p>
+
+<p><code>plain
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
+30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
+</code></p>
+
+<p>You can see that you get the step by step of what the application is doing on Debug but if you want even more information, you can up the game with LogLevel.Trace &ndash; This will trace every action start and finish.</p>
+
+<p><code>plain
+10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
+...
+10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
+10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
+10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
+10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
+10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object
+...
+10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
+10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
+</code></p>
+
+<p>This log level also lets you see the guts of when the model binding hits are being taken.</p>
+
+<p><code>plain
+10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:51:47 PM [DEBUG] Testing -     OnModelCreating
+10/30/2013 5:51:47 PM [TRACE] Testing -         Mapping : DriversEducationMappings
+</code></p>
+
+<p>Or Even when we execute a function/stored procedure</p>
+
+<p><code>plain
+10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String   
+</code>
+If you have code that is reloading objects to refresh them from the database using <code>Reload&lt;T&gt;(T item)</code> then you would see something like this.</p>
+
+<p>``` plain</p>
+
+<pre><code>10/30/2013 5:56:49 PM [TRACE] Testing - Retrieving State Entry For Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:56:49 PM [DEBUG] Testing - Reloading Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:56:49 PM [TRACE] Testing - Reloaded Object Highway.DriversEducation.GettingStarted.Driver
+</code></pre>
+
+<p>```</p>
+
+<p>Keep an eye out because in the next version we will be introducing the following logging features.</p>
+
+<ol>
+<li>Repository Level Logging of Queries/Commands/Scalars</li>
+<li>Non-Debugging Levels for always on health logging of the DataContext</li>
+<li>Performance Logging on Trace Level for Commits and Repository Level Items</li>
+</ol>
+
 ]]></content>
   </entry>
   
@@ -78,7 +178,7 @@ public string Year { get; set; }
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<p>```
+<p>``` csharp
 public class Instructor
 {</p>
 
@@ -210,7 +310,7 @@ public class InstructorById : AdvancedScalar<Instructor>
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<p>```
+<p>``` csharp
 public class Car
 {</p>
 
@@ -294,7 +394,7 @@ The 1st parameter, context, is the data connection we use to execute the test.</
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<p>```
+<p>``` csharp
 public class Instructor
 {</p>
 
@@ -455,7 +555,7 @@ public class SwapInstructores : AdvancedScalar<int>
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<p>```
+<p>``` csharp
 public class Instructor
 {</p>
 

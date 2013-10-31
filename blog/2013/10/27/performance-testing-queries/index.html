@@ -128,7 +128,7 @@
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -153,31 +153,32 @@
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class Car
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string Make { get; set; }
-</span><span class='line'>    public string Model { get; set; }
-</span><span class='line'>    public string Year { get; set; }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class DropMake : Command
-</span><span class='line'>{
-</span><span class='line'>    public DropMake(string make)
-</span><span class='line'>    {
-</span><span class='line'>        // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
-</span><span class='line'>        // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
-</span><span class='line'>        // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
-</span><span class='line'>        ContextQuery = c =&gt;
-</span><span class='line'>        {
-</span><span class='line'>            var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
-</span><span class='line'>            foreach (var car in cars)
-</span><span class='line'>            {
-</span><span class='line'>                c.Remove(car);
-</span><span class='line'>            }
-</span><span class='line'>        };
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
+</span><span class='line'>        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
+</span><span class='line'>        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Performance Tests</h1>
@@ -188,7 +189,7 @@
 
 <p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -197,23 +198,25 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[TestMethod]
-</span><span class='line'>public void ShouldDeleteInUnder250Milliseconds()
-</span><span class='line'>{
-</span><span class='line'>    var context = new DataContext(Settings.Default.Connection, new DataMappings());
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldDeleteInUnder250Milliseconds</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">Settings</span><span class="p">.</span><span class="n">Default</span><span class="p">.</span><span class="n">Connection</span><span class="p">,</span> <span class="k">new</span> <span class="n">DataMappings</span><span class="p">());</span>
 </span><span class='line'>
-</span><span class='line'>    var dropMake = new DropMake("Chevy");
+</span><span class='line'>    <span class="kt">var</span> <span class="n">dropMake</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DropMake</span><span class="p">(</span><span class="s">&quot;Chevy&quot;</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    dropMake.RunPerformanceTest(context,false,250);
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="n">dropMake</span><span class="p">.</span><span class="n">RunPerformanceTest</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="m">250</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
 
 <p>Let&rsquo;s take a closer look at this line</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>dropMake.RunPerformanceTest(context,false,250);</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">dropMake</span><span class="p">.</span><span class="n">RunPerformanceTest</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="m">250</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The 1st parameter, context, is the data connection we use to execute the test.</p>

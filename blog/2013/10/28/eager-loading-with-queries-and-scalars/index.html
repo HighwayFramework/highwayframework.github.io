@@ -124,7 +124,7 @@
 
 <p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -154,36 +154,37 @@
 <span class='line-number'>28</span>
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class Instructor
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public ICollection&lt;Driver&gt; Drivers { get; set; }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Driver
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string FirstName { get; set; }
-</span><span class='line'>    public string LastName { get; set; }
-</span><span class='line'>    public Car Car { get; set; }
-</span><span class='line'>}
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class Car
-</span><span class='line'>{
-</span><span class='line'>    public int Id { get; set; }
-</span><span class='line'>    public string Make { get; set; }
-</span><span class='line'>    public string Model { get; set; }
-</span><span class='line'>    public string Year { get; set; }
-</span><span class='line'>}
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>public class InstructorById : Scalar&lt;Instructor&gt;
-</span><span class='line'>{
-</span><span class='line'>    public InstructorById(int id)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
-</span><span class='line'>                                       .SingleOrDefault(e =&gt; e.Id == id);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InstructorById</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">InstructorById</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;()</span>
+</span><span class='line'>                                       <span class="p">.</span><span class="n">SingleOrDefault</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Use Case</h2>
@@ -196,7 +197,7 @@
 
 <p>Entity Framework got the API for this correct, so when you unit test this without a database it does nothing with the include call. This allows us to not need an advanced query for the Entity Framework version of the query.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -205,15 +206,16 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : Scalar&lt;Instructor&gt;
-</span><span class='line'>{
-</span><span class='line'>    public InstructorById(int id)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
-</span><span class='line'>                                  .Include(x =&gt; x.Drivers.Select(c =&gt; c.Car))
-</span><span class='line'>                                  .SingleOrDefault(e =&gt; e.Id == id);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InstructorById</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">InstructorById</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;()</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">Include</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Drivers</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">Car</span><span class="p">))</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">SingleOrDefault</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Notice to traverse a collection we have to use the <code>Select</code> method, this is a quark of LINQ and Entity Framework. As you see below in the NHibernate solution there is a slightly more elegant way they could have done this, but it comes with a hefty cost.</p>
@@ -224,7 +226,7 @@
 
 <p>In the NHibernate usage we will have to bind ourselves to their specific API, which means that we will have to use an <code>AdvancedQuery</code>.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -234,21 +236,22 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : AdvancedScalar&lt;Instructor&gt;
-</span><span class='line'>{
-</span><span class='line'>    public InstructorById(int id)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
-</span><span class='line'>                                  .FetchMany(x =&gt; x.Drivers)   
-</span><span class='line'>                                  .ThenFetch(x =&gt; x.Car)
-</span><span class='line'>                                  .SingleOrDefault(e =&gt; e.Id == id);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InstructorById</span> <span class="p">:</span> <span class="n">AdvancedScalar</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">InstructorById</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">Query</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;()</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">FetchMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Drivers</span><span class="p">)</span>    
+</span><span class='line'>                                  <span class="p">.</span><span class="n">ThenFetch</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Car</span><span class="p">)</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">SingleOrDefault</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This reads more fluently but causes us to be bound to NHibernate. <strong>It also has one massive bug in NHibernate&rsquo;s LINQ provider.</strong> In the above query you will only get one related driver and one related car. This is because it applies a Top 1 to the queries. To avoid this you must do the below query.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -260,18 +263,19 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public class InstructorById : AdvancedScalar&lt;Instructor&gt;
-</span><span class='line'>{
-</span><span class='line'>    public InstructorById(int id)
-</span><span class='line'>    {
-</span><span class='line'>        ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
-</span><span class='line'>                                  .FetchMany(x =&gt; x.Drivers)   
-</span><span class='line'>                                  .ThenFetch(x =&gt; x.Car)
-</span><span class='line'>                                  .Where(e =&gt; e.Id == id)
-</span><span class='line'>                                  .ToList() // This forces execution without the Top 1 of a single or default
-</span><span class='line'>                                  .SingleOrDefault();
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InstructorById</span> <span class="p">:</span> <span class="n">AdvancedScalar</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">InstructorById</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">Query</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;()</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">FetchMany</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Drivers</span><span class="p">)</span>    
+</span><span class='line'>                                  <span class="p">.</span><span class="n">ThenFetch</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Car</span><span class="p">)</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">ToList</span><span class="p">()</span> <span class="c1">// This forces execution without the Top 1 of a single or default</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">SingleOrDefault</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><strong>This is a bug in NHibernate</strong></p>
