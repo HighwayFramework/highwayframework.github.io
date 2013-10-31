@@ -37,7 +37,7 @@ public class Car
 }
 ```
 
-#Adding and Removing Items
+#Logging Output - It's Like Butter
 When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you. We want to know where the operations are executing and how the context is operating on a configurable level. This is going to use the standard log levels to get output from the system. Consider the following Test.
 
 ```
