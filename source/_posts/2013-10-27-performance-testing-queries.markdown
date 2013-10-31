@@ -20,7 +20,7 @@ Performance optimization should only be done when needed, but when you need to i
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
 
-```
+``` csharp
 public class Car
 {
     public int Id { get; set; }

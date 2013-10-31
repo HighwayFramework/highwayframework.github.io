@@ -18,7 +18,7 @@ All of the `AdvancedQuery`, `AdvancedScalar`, and `AdvancedCommand` are an opt i
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
 
-```
+``` csharp
 public class Instructor
 {
     public int Id { get; set; }

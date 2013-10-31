@@ -17,7 +17,7 @@ When we define a query, sometimes we need to load a graph of related objects as 
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
 
-```
+``` csharp
 public class Instructor
 {
     public int Id { get; set; }

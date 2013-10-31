@@ -7,13 +7,13 @@ no_homepage: true
 order: 21
 categories: data feature
 ---
-We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn't want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on [Common.Logging 2.1.1.0]() for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.
+We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn't want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on [Common.Logging](http://www.nuget.org/packages/Common.Logging) for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.
 
 # Example Domain
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
 
-```
+``` csharp
 public class Instructor
 {
     public int Id { get; set; }
@@ -71,51 +71,60 @@ public void ShouldLogAtDebugLevel()
 ```
 The output from this test is below
 
-	30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - 	Commited 5 Changes
-	30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	30/40/2013 05:40:07 [DEBUG] Testing - 	Commited 5 Changes
+``` plain
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - 	Commited 5 Changes
+30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+30/40/2013 05:40:07 [DEBUG] Testing - 	Commited 5 Changes
+```
 
 You can see that you get the step by step of what the application is doing on Debug but if you want even more information, you can up the game with LogLevel.Trace - This will trace every action start and finish.
 
-	10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
-	...
-	10/30/2013 5:49:10 PM [TRACE] Testing - 	Commit
-	10/30/2013 5:49:10 PM [DEBUG] Testing - 	Commited 5 Changes
-	10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
-	10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
-	10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-	10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object 
-	...
-	10/30/2013 5:49:10 PM [TRACE] Testing - 	Commit
-	10/30/2013 5:49:10 PM [DEBUG] Testing - 	Commited 5 Changes
+``` plain
+10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
+...
+10/30/2013 5:49:10 PM [TRACE] Testing - 	Commit
+10/30/2013 5:49:10 PM [DEBUG] Testing - 	Commited 5 Changes
+10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
+10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
+10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object 
+...
+10/30/2013 5:49:10 PM [TRACE] Testing - 	Commit
+10/30/2013 5:49:10 PM [DEBUG] Testing - 	Commited 5 Changes
+```
 
 This log level also lets you see the guts of when the model binding hits are being taken.
 
-	10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-	10/30/2013 5:51:47 PM [DEBUG] Testing - 	OnModelCreating
-	10/30/2013 5:51:47 PM [TRACE] Testing - 		Mapping : DriversEducationMappings
+``` plain
+10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
+10/30/2013 5:51:47 PM [DEBUG] Testing - 	OnModelCreating
+10/30/2013 5:51:47 PM [TRACE] Testing - 		Mapping : DriversEducationMappings
+```
 
 Or Even when we execute a function/stored procedure
 
-	10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String	
-
+``` plain
+10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String	
+```
 If you have code that is reloading objects to refresh them from the database using `Reload<T>(T item)` then you would see something like this.
-	
+
+``` plain	
 	10/30/2013 5:56:49 PM [TRACE] Testing - Retrieving State Entry For Object Highway.DriversEducation.GettingStarted.Driver
 	10/30/2013 5:56:49 PM [DEBUG] Testing - Reloading Object Highway.DriversEducation.GettingStarted.Driver
 	10/30/2013 5:56:49 PM [TRACE] Testing - Reloaded Object Highway.DriversEducation.GettingStarted.Driver
+```
 	
 Keep an eye out because in the next version we will be introducing the following logging features.
 	

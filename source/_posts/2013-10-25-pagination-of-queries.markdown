@@ -17,7 +17,7 @@ We have gone through how to define and use Queries in our [Queries / Commands / 
 
 In all of the examples below, we'll be working with the following business domain, from our Driver's Education company:
 
-```
+``` csharp
 public class Instructor
 {
     public int Id { get; set; }
