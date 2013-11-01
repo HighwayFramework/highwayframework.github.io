@@ -238,6 +238,19 @@ public class DriverEducationServiceTests
 ```
 This test uses the mock of IDataContext to provide a way for testing filter and query logic without having a database handy. It uses a great LINQ method `AsQueryable()` to help with the return. It is a bit heavier for normal queries.
 
+**When you are testing code that add/commits you can use a mixture of Mock levels, or the `InMemoryDataContext`**
+
+```csharp
+var context = MockRepository.GenerateMock<IDataContext>();
+var repository = MockRepository.GenerateMock<IRepository>();
+repository.Expect(x => x.Context).Return(context);
+```
+or
+```csharp
+var repository = new Repository(new InMemoryDataContext());
+```
+
+
 #InMemoryDataContext
 Just a few points to keep in mind with `InMemoryDataContext`.
 
