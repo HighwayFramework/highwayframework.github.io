@@ -66,10 +66,12 @@ This statement tells [Castle.Windsor] to scan the **current assembly**, looking 
 
 We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the `Installers` folder of your MVC solution.  Here are their names and purposes:
 
-* ControllerInstaller - Scans the current assembly for all types that implement `IController` from System.Web.Mvc and registers them with [Castle.Windsor].  This means you never have to register your controllers manually.
-* LoggingInstaller - Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.
-* FilterInstaller - Is where you register all MVC filters.  We will cover this in more detail when we discuss Filter Injection.
-* HighwayDataInstaller - Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.
+* `CommonLoggingInstaller` - Configures the Common.Logging installer used by Highway.Data to log to NLog
+* `ControllersInstaller` - Scans the current assembly for all types that implement `IController` from System.Web.Mvc and registers them with [Castle.Windsor].  This means you never have to register your controllers manually.
+* `DefaultConventionInstaller` - Automatically registers types based on naming conventions, the [details of which we discuss in this feature](/blog/2013/11/06/automatic-ioc-registration-convention/).
+* `EntityFrameworkInstaller` - Registers the configured DatabaseInitializer for Entity Framework.
+* `HighwayDataInstaller` - Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.
+* `LoggingInstaller` - Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.
 
 [SOLID]:						http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
 [Microsoft]:				http://microsoft.com
