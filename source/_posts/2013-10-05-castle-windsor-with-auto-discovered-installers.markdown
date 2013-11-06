@@ -11,35 +11,25 @@ order: 10
 
 Dependency injection is a key part of good software development, it is the D or [SOLID], and yet is not something [Microsoft] ships a solution for.  As such, we have turned to the community and the long standing, well supported, king of IoC : [Castle.Windsor]
 
-We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our `IoC.Startup()` method, we do the following:
+We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our `WindsorActivator.Startup()` method, we do the following:
 
 ``` csharp
-        [Obsolete("Container should never be accessed directly outside of App_Start")]
-        public static IWindsorContainer Container { get; set; }
-        
-        public static void Startup()
-        {
-	#pragma warning disable 618
             // Create the container
-            Container = new WindsorContainer();
+            IoC.Container = new WindsorContainer();
 
             // Add the Array Resolver, so we can take dependencies on T[]
             // while only registering T.
-            Container.Kernel.Resolver.AddSubResolver(new ArrayResolver(Container.Kernel));
+            IoC.Container.Kernel.Resolver.AddSubResolver(new ArrayResolver(IoC.Container.Kernel));
+            IoC.Container.AddFacility<TypedFactoryFacility>();
 
             // Register the kernel and container, in case an installer needs it.
-            Container.Register(
-                Component.For<IKernel>().Instance(Container.Kernel),
-                Component.For<IWindsorContainer>().Instance(Container)
+            IoC.Container.Register(
+                Component.For<IKernel>().Instance(IoC.Container.Kernel),
+                Component.For<IWindsorContainer>().Instance(IoC.Container)
                 );
-
-            // Search for an use all installers in this application.
-            Container.Install(FromAssembly.This());
-	#pragma warning restore 618
-        }
 ```
 
-We make your instance of [Castle.Windsor] available via `IoC.Container` but we have specifically marked that as `[Obsolete]` because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of App_Start.
+We make your instance of [Castle.Windsor] available via `IoC.Container` but we have specifically marked that as `[Obsolete]` because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of `App_Architecture`.
 
 ## Accessing the Container without an Obsolete Warning
 
@@ -54,7 +44,7 @@ You should keep such sections small, and should be aware that the `#pragma` stat
 
 # Discovering Installers
 
-Our code above includes one very small, but very powerful line that is worth highlighting:
+`WindsorActivator` also includes one very small, but very powerful line that is worth highlighting:
 
 ```
 Container.Install(FromAssembly.This());
