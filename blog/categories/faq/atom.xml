@@ -4,7 +4,7 @@
   <title><![CDATA[Category: faq | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-31T19:40:51-05:00</updated>
+  <updated>2013-11-06T08:02:14-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/"/>
+    <updated>2013-11-06T07:49:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error</id>
+    <content type="html"><![CDATA[<p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can&rsquo;t be fixed now that it&rsquo;s in the wild.  This most often presents itself as an error similar to :</p>
+
+<p><code>
+Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in 'C:\source\MyProject\packages\Highway.Data.4.0.5.3\lib\net40\Highway.Data.dll', but it could not be found
+</code></p>
+
+<p>The particular type that it complains about (<code>IContextConfiguration&lt;T&gt;</code> in this case) may vary case to case, but the combination of a <code>Reference to type * could not be found</code> and that error references a version prior to v4.1 are the signs that you&rsquo;ve encountered this bug.</p>
+
+<h2>Resolution</h2>
+
+<p>Unfortunately, any components that depended on the pre-v4.1 assemblies will need to be recompiled.  Because the SNK was added there is no Assembly Binding Redirect or other solution to this, we suck, and we&rsquo;re sorry.  Rest assured that all future Highway Framework assemblies will be signed from day one and that we&rsquo;ve learned this lesson.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Roadmaps]]></title>

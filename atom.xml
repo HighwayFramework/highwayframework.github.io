@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-10-31T19:40:51-05:00</updated>
+  <updated>2013-11-06T08:02:14-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/"/>
+    <updated>2013-11-06T07:49:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error</id>
+    <content type="html"><![CDATA[<p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can&rsquo;t be fixed now that it&rsquo;s in the wild.  This most often presents itself as an error similar to :</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in 'C:\source\MyProject\packages\Highway.Data.4.0.5.3\lib\net40\Highway.Data.dll', but it could not be found</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The particular type that it complains about (<code>IContextConfiguration&lt;T&gt;</code> in this case) may vary case to case, but the combination of a <code>Reference to type * could not be found</code> and that error references a version prior to v4.1 are the signs that you&rsquo;ve encountered this bug.</p>
+
+<h2>Resolution</h2>
+
+<p>Unfortunately, any components that depended on the pre-v4.1 assemblies will need to be recompiled.  Because the SNK was added there is no Assembly Binding Redirect or other solution to this, we suck, and we&rsquo;re sorry.  Rest assured that all future Highway Framework assemblies will be signed from day one and that we&rsquo;ve learned this lesson.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Configuring Highway.Data]]></title>
@@ -2910,46 +2929,6 @@ The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repo
 <ul>
 <li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Strong Names]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/04/strong-names/"/>
-    <updated>2013-10-04T20:05:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/04/strong-names</id>
-    <content type="html"><![CDATA[<p>We are thrilled to announce that we have today released an update to Highway.Pavement and Highway.Data which add strong name keys (SNKs) to the assemblies.  Furthermore, in keeping with good open source practices, the cryptographic keys to accomplish this signing are now checked into the source repository for each project.</p>
-
-<!--more-->
-
-
-<p>Thank you to friend of the project Michael Dudley for prompting us to do something which we should have done some time ago.</p>
-
-<p>Please note, that since we&rsquo;ve introduced these keys, there is a chance some Binding Redirects in your config files may need to be updated.  Here is the public key information if you should need it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Microsoft (R) .NET Framework Strong Name Utility  Version 4.0.30319.17929
-</span><span class='line'>Copyright (c) Microsoft Corporation.  All rights reserved.
-</span><span class='line'>
-</span><span class='line'>Public key (hash algorithm: sha1):
-</span><span class='line'>00240000048000009400000006020000002400005253413100040000010001000d9d9349bb0d52
-</span><span class='line'>9d9e45bda5d7c7e82852dfd8f8978b6499f712866db11623fb9ff9d616bb5e796f441b3ee5e681
-</span><span class='line'>16ba7f8a533a74e87d892226cb3dcf091b9fe476d41e862f5a5d8f768d5ced1c5816282ebdc7ef
-</span><span class='line'>8fb3d40709fb4e64b57141c1691f00dcc451a367671de255df03115b001923ec9590870772118e
-</span><span class='line'>2cbe65df
-</span><span class='line'>
-</span><span class='line'>Public key token is fe803c9600455796</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
