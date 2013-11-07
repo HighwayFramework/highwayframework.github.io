@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-07T15:29:12-06:00</updated>
+  <updated>2013-11-07T15:46:32-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/"/>
+    <updated>2013-11-07T15:32:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first</id>
+    <content type="html"><![CDATA[<h2>Short Answer</h2>
+
+<p>Yes, sort of.</p>
+
+<h2>Long Answer</h2>
+
+<p>Inject-able mappings and context configuration are not offered, for obvious reasons. Otherwise in this version all other features are supported.</p>
+
+<h2>A word about the future</h2>
+
+<p>In future versions of Highway.Data, it is highly likely that features will be introduced that are not compatible with Database First.  How we handle this will be decided later, but this is not a feature which we are committed to fully supporting, it is provided as a <strong>basic</strong> scenario.</p>
+
+<h3>Entity Framework Power Tools</h3>
+
+<p>As a quick word, most people who have chosen Database First, did so because they believed that Code First would require that their classes create, or otherwise control their database.  This is not the case.  <a href="http://visualstudiogallery.msdn.microsoft.com/72a60b14-1581-4b9b-89f2-846072eff19d">The Entity Framework team has for some time shipped a set of Power Tools</a> which allow the reverse engineering of existing database into Code First entities and mappings, which are then fully compatible with Highway.Data.  We encourage those currently using Database First to migrate using these tools to a Code First solution.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
@@ -2957,27 +2980,6 @@ The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repo
 <li>LoggingInstaller &ndash; Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
 <li>FilterInstaller &ndash; Is where you register all MVC filters.  We will cover this in more detail when we discuss Filter Injection.</li>
 <li>HighwayDataInstaller &ndash; Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Pavement v0.3]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/"/>
-    <updated>2013-10-05T12:22:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
-</ul>
-
-
-<h1>Notes</h1>
-
-<ul>
-<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
 </ul>
 
 ]]></content>

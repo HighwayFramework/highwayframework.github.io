@@ -101,8 +101,14 @@
         <lastmod>2013-11-07T15:25:39-06:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/
+        </loc>
+        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
+    </url>
+    <url>
         <loc>http://hwyfwk.com/blog/archives/</loc>
-        <lastmod>2013-11-07T15:28:52-06:00</lastmod>
+        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/contribute.html</loc>
@@ -114,7 +120,7 @@
     </url>
     <url>
         <loc>http://hwyfwk.com/</loc>
-        <lastmod>2013-11-07T15:28:52-06:00</lastmod>
+        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/license.html</loc>
