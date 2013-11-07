@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-06T08:02:14-06:00</updated>
+  <updated>2013-11-07T15:29:12-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/"/>
+    <updated>2013-11-07T15:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container</id>
+    <content type="html"><![CDATA[<p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
+
+<h2>Highway.Data</h2>
+
+<ul>
+<li><code>IRepository</code> should resolve to <code>Repository</code> on either a transient (new every request) or per web request (if you&rsquo;re in a website) object lifetime.</li>
+<li><code>IEventManager</code> should resolve to <code>EventManager</code></li>
+<li><code>ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code>NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
+</ul>
+
+
+<h2>Highway.Data.EntityFramework</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).
+
+<ul>
+<li>Your IoC will need to inject a connection string, named <code>connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
+</ul>
+</li>
+<li><code>IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
+<li><code>IContextConfiguration</code> should resolve to <code>DefaultContextConfiguration</code> <strong>or</strong> a class you&rsquo;ve created should you need to change how the Context is configured from our defaults.</li>
+</ul>
+
+
+<h2>Highway.Data.NHibernate</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>ISession</code> should resolve to a call to your configured <code>ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+
+<h2>Highway.Data.RavenDb</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
@@ -513,96 +561,6 @@ public class InstructorById : AdvancedScalar<Instructor>
 <p>}
 ```
 <strong>This is a bug in NHibernate</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Performance Testing Queries]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/"/>
-    <updated>2013-10-27T16:31:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/27/performance-testing-queries</id>
-    <content type="html"><![CDATA[<p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
-
-<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
-
-<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
-
-<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
-
-<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class DropMake : Command
-{</p>
-
-<pre><code>public DropMake(string make)
-{
-    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
-    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
-    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
-    ContextQuery = c =&gt;
-    {
-        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
-        foreach (var car in cars)
-        {
-            c.Remove(car);
-        }
-    };
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Performance Tests</h1>
-
-<h2>These should <em>ideally</em> run against production like data</h2>
-
-<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
-
-<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
-
-<p>```
-[TestMethod]
-public void ShouldDeleteInUnder250Milliseconds()
-{</p>
-
-<pre><code>var context = new DataContext(Settings.Default.Connection, new DataMappings());
-
-var dropMake = new DropMake("Chevy");
-
-dropMake.RunPerformanceTest(context,false,250);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
-
-<p>Let&rsquo;s take a closer look at this line
-<code>
-dropMake.RunPerformanceTest(context,false,250);
-</code>
-The 1st parameter, context, is the data connection we use to execute the test.</p>
-
-<p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
-
-<p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
 ]]></content>
   </entry>
   

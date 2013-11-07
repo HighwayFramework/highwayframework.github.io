@@ -4,7 +4,7 @@
   <title><![CDATA[Category: faq | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-06T08:02:14-06:00</updated>
+  <updated>2013-11-07T15:29:12-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/"/>
+    <updated>2013-11-07T15:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container</id>
+    <content type="html"><![CDATA[<p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
+
+<h2>Highway.Data</h2>
+
+<ul>
+<li><code>IRepository</code> should resolve to <code>Repository</code> on either a transient (new every request) or per web request (if you&rsquo;re in a website) object lifetime.</li>
+<li><code>IEventManager</code> should resolve to <code>EventManager</code></li>
+<li><code>ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code>NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
+</ul>
+
+
+<h2>Highway.Data.EntityFramework</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).
+
+<ul>
+<li>Your IoC will need to inject a connection string, named <code>connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
+</ul>
+</li>
+<li><code>IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
+<li><code>IContextConfiguration</code> should resolve to <code>DefaultContextConfiguration</code> <strong>or</strong> a class you&rsquo;ve created should you need to change how the Context is configured from our defaults.</li>
+</ul>
+
+
+<h2>Highway.Data.NHibernate</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>ISession</code> should resolve to a call to your configured <code>ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+
+<h2>Highway.Data.RavenDb</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-06T08:02:14-06:00</updated>
+  <updated>2013-11-07T15:29:12-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/"/>
+    <updated>2013-11-07T15:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container</id>
+    <content type="html"><![CDATA[<p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
+
+<h2>Highway.Data</h2>
+
+<ul>
+<li><code>IRepository</code> should resolve to <code>Repository</code> on either a transient (new every request) or per web request (if you&rsquo;re in a website) object lifetime.</li>
+<li><code>IEventManager</code> should resolve to <code>EventManager</code></li>
+<li><code>ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code>NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
+</ul>
+
+
+<h2>Highway.Data.EntityFramework</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).
+
+<ul>
+<li>Your IoC will need to inject a connection string, named <code>connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
+</ul>
+</li>
+<li><code>IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
+<li><code>IContextConfiguration</code> should resolve to <code>DefaultContextConfiguration</code> <strong>or</strong> a class you&rsquo;ve created should you need to change how the Context is configured from our defaults.</li>
+</ul>
+
+
+<h2>Highway.Data.NHibernate</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>ISession</code> should resolve to a call to your configured <code>ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+
+<h2>Highway.Data.RavenDb</h2>
+
+<ul>
+<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
+<li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
@@ -1686,6 +1734,29 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 
 
 <p></p>
+
+<p><a name="prebuilt"></a></p>
+
+<h1>Prebuilt Queries</h1>
+
+<p>In Highway.Data we ship a selection of prebuilt queries for standard data operations.  Those are:</p>
+
+<ul>
+<li><code>FindAll&lt;T&gt;</code> &ndash; Which retrieves all instances of the entity type <code>T</code></li>
+<li><code>GetById&lt;TId,T&gt;</code> &ndash; This retrieves an instance of your entity with a particular Id value.  This is powered via the <code>IIdentifiable&lt;T&gt;</code> interface, which is explained below.</li>
+</ul>
+
+
+<p>In order to make these queries more discoverable, we have included a fluent helper class named <code>Queries</code> which can be used to access the above queries, somewhat easier, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="n">Queries</span><span class="p">.</span><span class="n">GetById</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;(</span><span class="m">123</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>IIdentifiable&lt;T&gt;</h2>
+
+<p>This interface, which is required to empower <code>GetById</code> above, defines a property called <code>Id</code> with a type of <code>T</code>.  This is only required for the prebuilt queries, and is not otherwise required for Highway.Data.</p>
 ]]></content>
   </entry>
   
@@ -2900,27 +2971,6 @@ The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repo
 
 <ul>
 <li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
-</ul>
-
-
-<h1>Notes</h1>
-
-<ul>
-<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v4.1]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/"/>
-    <updated>2013-10-05T12:19:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>Adding a strong name key to all Highway.Data assemblies so they can be referenced from signed assemblies.</li>
 </ul>
 
 

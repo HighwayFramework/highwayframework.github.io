@@ -514,6 +514,29 @@
 
 <p></p>
 
+<p><a name="prebuilt"></a></p>
+
+<h1>Prebuilt Queries</h1>
+
+<p>In Highway.Data we ship a selection of prebuilt queries for standard data operations.  Those are:</p>
+
+<ul>
+<li><code>FindAll&lt;T&gt;</code> &ndash; Which retrieves all instances of the entity type <code>T</code></li>
+<li><code>GetById&lt;TId,T&gt;</code> &ndash; This retrieves an instance of your entity with a particular Id value.  This is powered via the <code>IIdentifiable&lt;T&gt;</code> interface, which is explained below.</li>
+</ul>
+
+
+<p>In order to make these queries more discoverable, we have included a fluent helper class named <code>Queries</code> which can be used to access the above queries, somewhat easier, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="n">Queries</span><span class="p">.</span><span class="n">GetById</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;(</span><span class="m">123</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>IIdentifiable&lt;T&gt;</h2>
+
+<p>This interface, which is required to empower <code>GetById</code> above, defines a property called <code>Id</code> with a type of <code>T</code>.  This is only required for the prebuilt queries, and is not otherwise required for Highway.Data.</p>
+
     </div>
   </div>
 
