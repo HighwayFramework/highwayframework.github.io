@@ -243,8 +243,8 @@ int passingDrivers = repository.Find(new PassingDrivers());
 
 In Highway.Data we ship a selection of prebuilt queries for standard data operations.  Those are:
 
-* FindAll<T> - Which retrieves all instances of the entity type `T`
-* GetById<TId,TEntity> - This retrieves an instance of your entity with a particular Id value.  This is powered via the `IIdentifiable<T>` interface, which is explained below.
+* `FindAll<T>` - Which retrieves all instances of the entity type `T`
+* `GetById<TId,T>` - This retrieves an instance of your entity with a particular Id value.  This is powered via the `IIdentifiable<T>` interface, which is explained below.
 
 In order to make these queries more discoverable, we have included a fluent helper class named `Queries` which can be used to access the above queries, somewhat easier, like so:
 
