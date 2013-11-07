@@ -6,7 +6,9 @@ comments: true
 order: 30
 categories: data feature
 ---
-#Using Queries, Commands and Scalars
+
+# Using Queries, Commands and Scalars
+
 The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the "How we get data" from the "What data do I get". In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data. 
 
 * [Patterns](/blog/2013/10/19/understanding-the-patterns/)
@@ -235,3 +237,21 @@ public void ShouldGetCountOfPassingDrivers()
 Driver driver = repository.Find(new DriverByLastName("Liles"));
 int passingDrivers = repository.Find(new PassingDrivers());
 ``` 
+
+<a name="prebuilt"></a>
+# Prebuilt Queries
+
+In Highway.Data we ship a selection of prebuilt queries for standard data operations.  Those are:
+
+* FindAll<T> - Which retrieves all instances of the entity type `T`
+* GetById<TId,TEntity> - This retrieves an instance of your entity with a particular Id value.  This is powered via the `IIdentifiable<T>` interface, which is explained below.
+
+In order to make these queries more discoverable, we have included a fluent helper class named `Queries` which can be used to access the above queries, somewhat easier, like so:
+
+``` csharp
+repo.Find(Queries.GetById<Driver>(123));
+```
+
+## IIdentifiable&lt;T&gt;
+
+This interface, which is required to empower `GetById` above, defines a property called `Id` with a type of `T`.  This is only required for the prebuilt queries, and is not otherwise required for Highway.Data.
