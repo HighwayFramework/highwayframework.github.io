@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-07T15:46:32-06:00</updated>
+  <updated>2013-11-14T11:18:07-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How do I get my DbContext?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
+    <updated>2013-11-14T11:10:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
+    <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
+
+<ul>
+<li>In Highway.Data.EntityFramework, the <code>DataContext</code> class is a child of <code>DbContext</code>.  As such anywhere you need <code>DbContext</code>, simply pass your instance of <code>IDataContext</code> as <code>DbContext</code>.  This may require a soft cast if your variable is of type <code>IDataContext</code> and not <code>DataContext</code>, which it normally should and will be.</li>
+<li>In Highway.OnRamp.MVC.Data we subclass the default <code>DataContext</code> class of Highway.Data.EntityFramework into a class called <code>HighwayDataContext</code> to change the constructor a bit.  As such, the type of of your <code>DbContext</code> is <code>HighwayDataContext</code>, but as above any <code>IDataContext</code> can be cast to <code>DbContext</code> with success.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
@@ -306,156 +321,6 @@ embeddableDocumentStore.Initialize();</p>
 <p>var context = new DataContext(embeddableDocumentStore.OpenSession());</p>
 
 <p>```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Logging]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/"/>
-    <updated>2013-10-28T17:59:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext</id>
-    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="http://www.nuget.org/packages/Common.Logging">Common.Logging</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Instructor
-{</p>
-
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Logging Output &ndash; It&rsquo;s Like Butter</h1>
-
-<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you. We want to know where the operations are executing and how the context is operating on a configurable level. This is going to use the standard log levels to get output from the system. Consider the following Test.</p>
-
-<p>```
-[TestMethod]
-public void ShouldLogAtDebugLevel()
-{</p>
-
-<pre><code>//arrange 
-var logger = new ConsoleOutLogger("Testing", LogLevel.Debug, true, true, true, @"dd/mm/yyyy hh:mm:ss");
-var target = new DataContext(Settings.Default.Connection, new DriversEducationMappings(), logger);
-
-//act
-target.Add(new Driver("Devlin", "Liles"));
-target.Add(new Driver("Tim", "Rayburn"));
-target.Add(new Driver("Jay", "Smith"));
-target.Add(new Driver("Brian", "Sullivan"));
-target.Add(new Driver("Cori", "Drew"));
-
-target.Commit();
-
-foreach (var driver in target.AsQueryable&lt;Driver&gt;())
-{
-    target.Remove(driver);
-}
-
-target.Commit();
-
-//assert
-Assert.Inconclusive("We fail here to get the output from console nice and easy");
-</code></pre>
-
-<p>}
-```
-The output from this test is below</p>
-
-<p><code>plain
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
-30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
-</code></p>
-
-<p>You can see that you get the step by step of what the application is doing on Debug but if you want even more information, you can up the game with LogLevel.Trace &ndash; This will trace every action start and finish.</p>
-
-<p><code>plain
-10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
-...
-10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
-10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
-10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
-10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
-10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object
-...
-10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
-10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
-</code></p>
-
-<p>This log level also lets you see the guts of when the model binding hits are being taken.</p>
-
-<p><code>plain
-10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:51:47 PM [DEBUG] Testing -     OnModelCreating
-10/30/2013 5:51:47 PM [TRACE] Testing -         Mapping : DriversEducationMappings
-</code></p>
-
-<p>Or Even when we execute a function/stored procedure</p>
-
-<p><code>plain
-10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String   
-</code>
-If you have code that is reloading objects to refresh them from the database using <code>Reload&lt;T&gt;(T item)</code> then you would see something like this.</p>
-
-<p>``` plain</p>
-
-<pre><code>10/30/2013 5:56:49 PM [TRACE] Testing - Retrieving State Entry For Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:56:49 PM [DEBUG] Testing - Reloading Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:56:49 PM [TRACE] Testing - Reloaded Object Highway.DriversEducation.GettingStarted.Driver
-</code></pre>
-
-<p>```</p>
-
-<p>Keep an eye out because in the next version we will be introducing the following logging features.</p>
-
-<ol>
-<li>Repository Level Logging of Queries/Commands/Scalars</li>
-<li>Non-Debugging Levels for always on health logging of the DataContext</li>
-<li>Performance Logging on Trace Level for Commits and Repository Level Items</li>
-</ol>
-
 ]]></content>
   </entry>
   

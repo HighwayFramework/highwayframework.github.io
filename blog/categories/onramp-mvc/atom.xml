@@ -4,7 +4,7 @@
   <title><![CDATA[Category: onramp-mvc | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/onramp-mvc/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-07T15:46:32-06:00</updated>
+  <updated>2013-11-14T11:18:07-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How do I get my DbContext?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
+    <updated>2013-11-14T11:10:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
+    <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
+
+<ul>
+<li>In Highway.Data.EntityFramework, the <code>DataContext</code> class is a child of <code>DbContext</code>.  As such anywhere you need <code>DbContext</code>, simply pass your instance of <code>IDataContext</code> as <code>DbContext</code>.  This may require a soft cast if your variable is of type <code>IDataContext</code> and not <code>DataContext</code>, which it normally should and will be.</li>
+<li>In Highway.OnRamp.MVC.Data we subclass the default <code>DataContext</code> class of Highway.Data.EntityFramework into a class called <code>HighwayDataContext</code> to change the constructor a bit.  As such, the type of of your <code>DbContext</code> is <code>HighwayDataContext</code>, but as above any <code>IDataContext</code> can be cast to <code>DbContext</code> with success.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
@@ -321,38 +336,6 @@ public class LoggingInstaller : IWindsorInstaller
 <li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WebActivator for Composable Startup]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/"/>
-    <updated>2013-10-05T15:09:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup</id>
-    <content type="html"><![CDATA[<p>The first and most important piece our OnRamp is the use of <a href="http://www.nuget.org/packages/WebActivatorEx/">WebActivator</a> to allow us to declare classes that will run either just before or just after the App_Start event of your ASP.NET application, or when your application shuts down.  This is accomplished using an assembly level attribute, pointing to a particular static class and method.</p>
-
-<p>Consider the following class declaration from our <code>IoC.cs</code> file:</p>
-
-<p>``` csharp
-[assembly: WebActivator.PreApplicationStartMethod(typeof(Templates.App_Start.IoC), &ldquo;Startup&rdquo;)]
-namespace Templates.App_Start
-{</p>
-
-<pre><code>public static class IoC
-{
-    public static void Startup()
-    {
-      // Details here described in the next feature…
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Note how we declare the <code>PreApplicationStartMethod</code>, and point to the type of <code>Templates.App_Start.IoC</code> and then the <code>"Startup"</code> string lets it know which method to run.  This results in our <code>IoC.Startup()</code> method being called before App_Start.</p>
-
-<p>Just as there is <code>PreApplicationStartMethod</code>, there is also <code>PostApplicationStartMethod</code> and <code>ApplicationShutdownMethod</code>, both of which are used in our Logging wire up which will be discussed later.</p>
 ]]></content>
   </entry>
   

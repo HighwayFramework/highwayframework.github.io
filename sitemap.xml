@@ -2,316 +2,320 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://hwyfwk.com/blog/2013/09/30/our-new-site/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/04/strong-names/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers/
         </loc>
-        <lastmod>2013-11-07T14:13:56-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/15/testable-data-access-at-every-level/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/repository/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/roadmaps/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/</loc>
-        <lastmod>2013-11-07T15:28:52-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/
         </loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/
         </loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/
         </loc>
-        <lastmod>2013-11-06T09:23:54-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/</loc>
-        <lastmod>2013-11-07T15:25:39-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>
             http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/
         </loc>
-        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
+    </url>
+    <url>
+        <loc>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/</loc>
+        <lastmod>2013-11-14T11:17:32-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/blog/archives/</loc>
-        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
+        <lastmod>2013-11-14T11:17:32-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/contribute.html</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/faq.html</loc>
-        <lastmod>2013-11-04T22:46:17-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/</loc>
-        <lastmod>2013-11-07T15:45:52-06:00</lastmod>
+        <lastmod>2013-11-14T11:17:32-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/license.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/data/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/insurance/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-mvc/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramp-services/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/onramper/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/pavement/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/api.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/faq.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/features.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/projects/roadcrew/start.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/releases.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/robots.txt</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/support.html</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
     <url>
         <loc>http://hwyfwk.com/team/</loc>
-        <lastmod>2013-11-04T22:46:18-06:00</lastmod>
+        <lastmod>2013-11-14T11:07:45-06:00</lastmod>
     </url>
 </urlset>

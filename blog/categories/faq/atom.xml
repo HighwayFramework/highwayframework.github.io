@@ -4,7 +4,7 @@
   <title><![CDATA[Category: faq | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-07T15:46:32-06:00</updated>
+  <updated>2013-11-14T11:18:07-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How do I get my DbContext?]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
+    <updated>2013-11-14T11:10:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
+    <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
+
+<ul>
+<li>In Highway.Data.EntityFramework, the <code>DataContext</code> class is a child of <code>DbContext</code>.  As such anywhere you need <code>DbContext</code>, simply pass your instance of <code>IDataContext</code> as <code>DbContext</code>.  This may require a soft cast if your variable is of type <code>IDataContext</code> and not <code>DataContext</code>, which it normally should and will be.</li>
+<li>In Highway.OnRamp.MVC.Data we subclass the default <code>DataContext</code> class of Highway.Data.EntityFramework into a class called <code>HighwayDataContext</code> to change the constructor a bit.  As such, the type of of your <code>DbContext</code> is <code>HighwayDataContext</code>, but as above any <code>IDataContext</code> can be cast to <code>DbContext</code> with success.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
