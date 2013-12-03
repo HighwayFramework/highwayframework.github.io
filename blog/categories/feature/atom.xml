@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-11-14T11:18:07-06:00</updated>
+  <updated>2013-12-02T20:01:46-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,29 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/"/>
-    <updated>2013-11-07T15:32:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first</id>
-    <content type="html"><![CDATA[<h2>Short Answer</h2>
-
-<p>Yes, sort of.</p>
-
-<h2>Long Answer</h2>
-
-<p>Inject-able mappings and context configuration are not offered, for obvious reasons. Otherwise in this version all other features are supported.</p>
-
-<h2>A word about the future</h2>
-
-<p>In future versions of Highway.Data, it is highly likely that features will be introduced that are not compatible with Database First.  How we handle this will be decided later, but this is not a feature which we are committed to fully supporting, it is provided as a <strong>basic</strong> scenario.</p>
-
-<h3>Entity Framework Power Tools</h3>
-
-<p>As a quick word, most people who have chosen Database First, did so because they believed that Code First would require that their classes create, or otherwise control their database.  This is not the case.  <a href="http://visualstudiogallery.msdn.microsoft.com/72a60b14-1581-4b9b-89f2-846072eff19d">The Entity Framework team has for some time shipped a set of Power Tools</a> which allow the reverse engineering of existing database into Code First entities and mappings, which are then fully compatible with Highway.Data.  We encourage those currently using Database First to migrate using these tools to a Code First solution.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Configuring Highway.Data]]></title>
@@ -607,6 +584,167 @@ The 1st parameter, context, is the data connection we use to execute the test.</
 <p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
 
 <p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Queries / Commands /Scalars]]></title>
+    <link href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/"/>
+    <updated>2013-10-25T15:11:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars</id>
+    <content type="html"><![CDATA[<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<p>All of the <code>AdvancedQuery</code>, <code>AdvancedScalar</code>, and <code>AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
+
+<h1>Example Domain</h1>
+
+<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+
+<p>``` csharp
+public class Instructor
+{</p>
+
+<pre><code>public int Id { get; set; }
+public ICollection&lt;Driver&gt; Drivers { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Driver
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string FirstName { get; set; }
+public string LastName { get; set; }
+public int Score { get; set; }
+public Instructor Instructor { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Car
+{</p>
+
+<pre><code>public int Id { get; set; }
+public string Make { get; set; }
+public string Model { get; set; }
+public string Year { get; set; }
+</code></pre>
+
+<p>}</p>
+
+<p>public class Top5PercentileOfDrivers : Query<Driver>
+{</p>
+
+<pre><code>public Top5PercentileOfDrivers()
+{
+    ContextQuery = context =&gt;
+    {
+        var scores = context.AsQueryable&lt;Driver&gt;().Select(x =&gt; x.Score);
+        int percentileScore =
+            Convert.ToInt32(Math.Round((5/100)*scores.Count() + 0.5, MidpointRounding.AwayFromZero));
+        return context.AsQueryable&lt;Driver&gt;().OrderByDescending(x =&gt; x.Score).Take(percentileScore);
+    };
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class SwapInstructors : Scalar<int>
+{</p>
+
+<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+{
+    ContextQuery = context =&gt;
+    {
+        foreach(var driver in currentInstructor.Drivers)
+        {
+            driver.Instructor = newInstructor;
+        }
+        context.Commit();
+    };
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class DropMake : Command
+{</p>
+
+<pre><code>public DropMake(string make)
+{
+    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+    ContextQuery = c =&gt;
+    {
+        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+        foreach (var car in cars)
+        {
+            c.Remove(car);
+        }
+    };
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Query &ndash; Sometimes you need a Stored Procedure</h1>
+
+<p>In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.</p>
+
+<p>```
+public class Top5PercentileOfDrivers : AdvancedQuery<Driver>
+{</p>
+
+<pre><code>public Top5PercentileOfDrivers()
+{
+    ContextQuery = context =&gt; context.ExecuteSqlQuery&lt;Driver&gt;("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Commands &ndash;  When you need a hammer</h1>
+
+<p>Surround your pullquote like this {" text to be quoted "}
+```
+public class DropMake : AdvancedCommand
+{</p>
+
+<pre><code>public DropMake(string make)
+{
+    ContextQuery = c =&gt; c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h1>Advanced Scalar</h1>
+
+<p>In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code>AdvancedScalar</code>.
+```
+public class SwapInstructores : AdvancedScalar<int>
+{</p>
+
+<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+{
+    DbParameter[] parameters = new DbParameter[]
+    {
+        new SqlParameter("old", currentInstructor.Id),
+        new SqlParameter("new", newInstructor.Id), 
+    };
+    ContextQuery = c =&gt; c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
 ]]></content>
   </entry>
   
