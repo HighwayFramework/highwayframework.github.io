@@ -4,7 +4,7 @@ title: "Does Highway.Data work with Database First?"
 date: 2013-11-07 15:32
 comments: true
 no_homepage: true
-categories: data onramp-mvc onramp-services pavement roadcrew onramper insurance release feature
+categories: data faq
 ---
 
 ## Short Answer 
