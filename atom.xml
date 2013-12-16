@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-02T20:01:46-06:00</updated>
+  <updated>2013-12-16T08:32:14-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.RoadCrew v0.1]]></title>
+    <link href="http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1/"/>
+    <updated>2013-12-16T08:26:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1</id>
+    <content type="html"><![CDATA[<p>We&rsquo;re thrilled to announce the initial release of Highway.RoadCrew.  This is a package installer, very similar to <code>bundler</code> from the Ruby world, but built on top of the amazing Chocolatey package manager, and PsGet PowerShell Module directory.  To get started, this is all you need to know:</p>
+
+<h1>Install</h1>
+
+<p>First, run the following two lines, which will download the current script, and run it.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(new-object Net.WebClient).DownloadString("http://bit.ly/hwyfwk-rc") &gt; RunMe.ps1
+</span><span class='line'>.\RunMe.ps1</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Configure</h1>
+
+<p>Now setup your configuration by editing the <code>RunMe.config.ps1</code> file.  This will always be the file you edit, you shouldn&rsquo;t ever need to modify <code>RunMe.ps1</code>.  The following commands are supported:</p>
+
+<ul>
+<li><code>chocolatey &lt;package-name&gt;</code> will install the named package (see <a href="http://chocolatey.org/">http://chocolatey.org/</a> for a list)
+
+<ul>
+<li><code>-source</code> is an optional switch that lets you specify another chocolatey feed or source</li>
+</ul>
+</li>
+<li><code>gem &lt;gem-name&gt;</code> will install a Ruby gem (see <a href="http://rubygems.org/">http://rubygems.org/</a> for a list)</li>
+<li><code>windows &lt;feature-name&gt;</code> will install the named feature (execute <code>clist -source windowsfeatures</code> to see a possible list, only available after you&rsquo;ve executed <code>RunMe.ps1</code> a second time currently)</li>
+<li><code>profile &lt;powershell-command&gt;</code> adds the listed PowerShell command to the current user&rsquo;s current profile.</li>
+<li><code>alias &lt;alias-name&gt; &lt;command&gt;</code> adds an alias to the current user&rsquo;s current PowerShell profile.</li>
+<li><code>psget &lt;module-name&gt;</code> will install a PsGet.net PowerShell module (see <a href="http://psget.net/">http://psget.net/</a> for a list)</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I get my DbContext?]]></title>
@@ -2857,46 +2895,6 @@ The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repo
 <li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WebActivator for Composable Startup]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/"/>
-    <updated>2013-10-05T15:09:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup</id>
-    <content type="html"><![CDATA[<p>The first and most important piece our OnRamp is the use of <a href="http://www.nuget.org/packages/WebActivatorEx/">WebActivator</a> to allow us to declare classes that will run either just before or just after the App_Start event of your ASP.NET application, or when your application shuts down.  This is accomplished using an assembly level attribute, pointing to a particular static class and method.</p>
-
-<p>Consider the following class declaration from our <code>IoC.cs</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[assembly: WebActivator.PreApplicationStartMethod(typeof(Templates.App_Start.IoC), &quot;Startup&quot;)]</span>
-</span><span class='line'><span class="k">namespace</span> <span class="nn">Templates.App_Start</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">IoC</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Startup</span><span class="p">()</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>          <span class="c1">// Details here described in the next feature…</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note how we declare the <code>PreApplicationStartMethod</code>, and point to the type of <code>Templates.App_Start.IoC</code> and then the <code>"Startup"</code> string lets it know which method to run.  This results in our <code>IoC.Startup()</code> method being called before App_Start.</p>
-
-<p>Just as there is <code>PreApplicationStartMethod</code>, there is also <code>PostApplicationStartMethod</code> and <code>ApplicationShutdownMethod</code>, both of which are used in our Logging wire up which will be discussed later.</p>
 ]]></content>
   </entry>
   
