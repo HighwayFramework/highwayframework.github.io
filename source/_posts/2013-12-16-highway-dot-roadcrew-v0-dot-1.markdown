@@ -1,6 +1,12 @@
 ---
-layout: project-roadcrew
+layout: post
+title: "Highway.RoadCrew v0.1"
+date: 2013-12-16 08:26
+comments: true
+categories: roadcrew release hp
 ---
+
+We're thrilled to announce the initial release of Highway.RoadCrew.  This is a package installer, very similar to `bundler` from the Ruby world, but built on top of the amazing Chocolatey package manager, and PsGet PowerShell Module directory.  To get started, this is all you need to know:
 
 # Install
 
@@ -23,15 +29,3 @@ Now setup your configuration by editing the `RunMe.config.ps1` file.  This will 
 * `alias <alias-name> <command>` adds an alias to the current user's current PowerShell profile.
 * `psget <module-name>` will install a PsGet.net PowerShell module (see http://psget.net/ for a list)
 
-
-[Home]:				/projects/data/
-[Start]:				/projects/data/start.html
-[api]:				/projects/data/api/index.html
-[Data]:				/projects/data/
-[Insurance]:		/projects/insurance/
-[OnRamper]:			/projects/onramper/
-[MVC]:				/projects/onramp/mvc/
-[Services]:			/projects/onramp/services/
-[Pavement]:			/projects/pavement/
-[RoadCrew]:			/projects/roadcrew/
-[Configuration]:	/projects/configuration/
