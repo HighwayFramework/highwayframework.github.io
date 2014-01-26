@@ -4,7 +4,7 @@
   <title><![CDATA[Category: onramp-mvc | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/onramp-mvc/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-16T08:32:14-06:00</updated>
+  <updated>2014-01-25T20:07:51-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,210 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
+    <updated>2014-01-25T19:33:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
+    <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
+
+<h1>Dictionary Adapter</h1>
+
+<p>Dictionary Adapter is a class which creates classes at runtime that implement an interface you specify, and wires the properties of said interface to access a key value store you specify.  For instance, let&rsquo;s assume you have the following interface:</p>
+
+<p>```
+public interface IConnectionStringConfig
+{</p>
+
+<pre><code>string ConnectionString { get; }
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And the following configuration settings in your web.config:</p>
+
+<p>```
+  <appSettings></p>
+
+<pre><code>&lt;add key="ConnectionString" value="Server=.;Database=ChangeMyConnectionString;Integrated Security=true;" /&gt;
+</code></pre>
+
+<p>  </appSettings>
+```</p>
+
+<p>Now we can ask Dictionary Adapter to create an instance of <code>IConnectionString</code>, and supply it the app settings from our web.config.  It will return to us a class which implements our interface, and when that when the <code>ConnectionString</code> property is accessed, will retrieve the value from app settings.</p>
+
+<p>Now instead of writing controllers, or other classes which access app settings directly from the <code>ConfigurationManager</code>, we can instead simply take a dependency on <code>IConnectionString</code>, and that class can in turn use a strongly typed (no magic strings) and testable (simply mock the interface) way of accessing app settings.</p>
+
+<p>Just as we can do this with the key value store of app settings, we can also do it with the key value store of <code>Session</code> as well.  This makes accessing session also no longer require magic strings, and addresses the problem of mocking an <code>HttpContext</code> for <code>Session</code>.</p>
+
+<h1>Wiring it up with Windsor</h1>
+
+<p>As awesome as that is, manually registering all of the configuration or session interfaces would be rather tedious in the extreme.  As such we&rsquo;ve created some conventions you can use that will automatically register these interfaces for you.</p>
+
+<h2>Config interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Config</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered as Singleton lifestyle, because they continue to directly access the <code>ConfigurationManager</code> and so even if your configuration values change at runtime, they will stay up to date.</p>
+
+<h2>Session interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Session</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered with a <code>PerWebRequest</code> lifestyle, because every request will have a different <code>HttpContext</code>.</p>
+
+<h1>What about keys which don&rsquo;t match property names?</h1>
+
+<p>A common scenario for users of DictionaryAdapter to run into is that they want properties on their interfaces which do not match their key value store&rsquo;s key values exactly.  This is easy to run into simply because of the limitations of property names, for instance &ldquo;ida:ClientSecret&rdquo; is not a valid property name.  So how do we handle this?</p>
+
+<p>DictionaryAdapter provides a set of attributes which can help address these concerns.  We&rsquo;ll talk about each in turn, here they are:</p>
+
+<ul>
+<li><code>KeyAttribute</code></li>
+<li><code>KeyPrefixAttribute</code></li>
+<li><code>KeySuffixAttribute</code></li>
+</ul>
+
+
+<h2>Key</h2>
+
+<p>The simplest and often most useful of our helper attributes is <code>KeyAttribute</code>.  This attribute when applied to a property completely changes the key in the key value store that is accessed for our property.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;Foo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyAttribute</code>.</p>
+
+<p>```
+public interface IExampleConfig
+{</p>
+
+<pre><code>[Key("Foo")]
+string ConnectionString { get; }
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>KeyPrefixAttribute</h2>
+
+<p>The next most common attribute to be used, and one which we use by default in the Data extension to the OnRamp, is <code>KeyPrefixAttirbute</code>.  This attribute is applied to the interface, not the properties, and affects the keys used in the key value store for all properties on that interface.  For instance, given the following interface, the ConnectionSting property returns &ldquo;FooConnectionString&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyPrefixAttribute</code>.</p>
+
+<p>```
+public interface IExampleConfig
+{</p>
+
+<pre><code>[KeyPrefix("Foo")]
+string ConnectionString { get; }
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>KeySuffixAttribute</h2>
+
+<p>The third and final attribute we will discuss here is <code>KeySuffixAttribute</code>.  Like <code>KeyPrefixAttribute</code> this is applied to the interface, not the property, and affects the key values for all properties on that interface.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;ConnectionStringFoo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeySuffixAttribute</code>.</p>
+
+<p>```
+public interface IExampleConfig
+{</p>
+
+<pre><code>[Key("Foo")]
+string ConnectionString { get; }
+</code></pre>
+
+<p>}
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
+    <updated>2014-01-25T19:27:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
+    <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
+
+<ul>
+<li>Major restructuring to organize and rename a lot of pieces</li>
+<li>ApiController dependency injection</li>
+<li>Automatic IoC registrations</li>
+<li>Session and Configuration access via Interfaces</li>
+<li>Easy RESTful ApiControllers</li>
+<li>Injectable Filters</li>
+<li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
+    <updated>2014-01-25T19:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
+    <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
+
+<ol>
+<li><code>IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
+<li><code>RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
+</ol>
+
+
+<p>An implementation controller would look like this:</p>
+
+<p>``` csharp
+public class DriverController : BaseRestApiController&lt;Domain, Driver, Guid>
+{</p>
+
+<pre><code>public DriverController(IDomainRepositoryFactory factory) :
+    base(factory, RestfulOperations.All) { }
+
+public override CopyEntityValues(Driver source, Driver destination)
+{
+    // copy values from one instance to another here.
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This class would support all five of our pre-built functions, because it passed <code>RestfulOperations.All</code>, these are:</p>
+
+<ul>
+<li>GetAll &ndash; This is the default get with no <code>id</code> and returns ALL Drivers</li>
+<li>GetOne &ndash; This returns one driver, by <code>id</code></li>
+<li>Put &ndash; Accepts a <code>PUT</code> verb and updates a singular Driver.  Uses <code>CopyEntityValues</code> above to control what can be updated.</li>
+<li>Delete &ndash; Deletes a Driver by <code>id</code></li>
+<li>Post &ndash; Accepts a <code>POST</code> verb and inserts a singular Driver.</li>
+</ul>
+
+
+<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR'ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
+
+<p>```</p>
+
+<pre><code>public DriverController(IDomainRepositoryFactory factory) :
+    base(factory, RestfulOperations.GetOne | RestfulOperations.Post) { }
+</code></pre>
+
+<p>```</p>
+
+<p>There are some logical pre-built combinations already supported in the enum, which is defined as follows:</p>
+
+<p>```</p>
+
+<pre><code>    [Flags]
+    public enum RestOperations
+    {
+        GetAll = 1,
+        GetOne = 2,
+        Post = 4,
+        Put = 8,
+        Delete = 16,
+        ReadOnly = 3,
+        WriteOnly = 28,
+        All = 31
+    }
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I get my DbContext?]]></title>
@@ -29,322 +233,43 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Roadmaps]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
-    <updated>2013-10-19T08:38:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
-    <content type="html"><![CDATA[<p>Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.</p>
+    <title type="html"><![CDATA[Naming Conventions]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/"/>
+    <updated>2013-11-06T11:37:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/naming-conventions</id>
+    <content type="html"><![CDATA[<p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
 
-<!-- MORE -->
+<h2>Naming Conventions</h2>
 
+<h3>Activators</h3>
 
-<h1>Highway.Data</h1>
+<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code>HttpApplication</code> cycle.  <a href="/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code>Activator</code> you know it runs during application startup.</p>
 
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
+<h3>Configs</h3>
 
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>By end of the year EF 6.0 major features that need additional work in the framework will be supported and documented</li>
-</ul>
+<p>Interfaces where the name ends with <code>Config</code> are configured automatically at run-time to provide values from <code>web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing configuration values.</p>
 
+<h3>Sessions</h3>
 
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
+<p>Interfaces where the name ends with <code>Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing session variables.</p>
 
-<ul>
-<li>Context and Repository will have factories for creation that control lifetime of the objects</li>
-<li>Projection based Scalars &ndash; Scalars will be converted to projection based to allow for SQL output,</li>
-<li>Documentation &ndash; Video Tutorials for 80% features</li>
-</ul>
+<h3>Installers</h3>
 
+<p>Classes that implement <code>IWindsorInstaller</code> are named with the <code>Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code>WindsorActivator</code> so anything it sets up can be assumed.</p>
 
-<h1>Highway.Insurance</h1>
+<h2>Organization Conventions</h2>
 
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
+<h3>App_Architecture</h3>
 
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>Version Support for VS 2013 APIs</li>
-</ul>
+<p>The <code>App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we&rsquo;ve achieved an organization structure that your business code should never need to take a <code>using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
 
+<h4>App_Architecture \ Services</h4>
 
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
+<p>This folder contains a <code>Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code>Data</code> folder which has classes required by that plug-in.</p>
 
-<ul>
-<li>Video Tutorials for 80% features</li>
-</ul>
+<h3>Entities &amp; Mappings</h3>
 
-
-<h1>Highway.Pavement</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-</ul>
-
-
-<h1>Highway.MVC &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>Package a set of classes that allow for MVVM Model hydration to Knockout or Angular by default from MVC Model</li>
-<li>All feature documentation and usage video tutorials</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC.MVVM &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>OnRamp to drop MVVM wire up and folder structure into any MVC project &ndash; Even Existing</li>
-<li>Video to walk through basic structure</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC</h1>
-
-<h2>vNext &ndash; Timeline &ndash; Q4 2013</h2>
-
-<ul>
-<li>Documentation of all current features (70%+ complete already)</li>
-<li>Reorganize solution structure to move most inserted classes into an App_Infrastructure folder</li>
-<li>Introduce default conventions for &ldquo;Post<em>&rdquo; and &ldquo;Get</em>&rdquo; actions to be limited to HttpPost and HttpGet respectively via Filter injection.</li>
-</ul>
-
-
-<h1>Highway.RoadCrew</h1>
-
-<h2>vFirst</h2>
-
-<ul>
-<li>Implement all currently listed stories/issues to establish a great foundation</li>
-<li>Document all those features on the website, as completed.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MVC Filters with Dependency Injection]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/"/>
-    <updated>2013-10-06T20:39:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection</id>
-    <content type="html"><![CDATA[<p>One of the most powerful features of the MVC OnRamp is the ability to have MVC Filters injected via our Inversion of Control (IoC) container, Castle.Windsor.  There are several types of filters supported by ASP.NET MVC that allow you to handle orthogonal issues such as:</p>
-
-<ul>
-<li><code>IExceptionFilter</code> which is invoked whenever unhandled exceptions occur.</li>
-<li><code>IActionFilter</code> which is invoked just before and just after specific actions.</li>
-<li><code>IAuthorizationFilter</code> which is invoked when authorizing requests.</li>
-<li><code>IResultFilter</code> which is invoked on just before and just after results are returned.</li>
-</ul>
-
-
-<p>Normally these filters are applied one of two ways:</p>
-
-<ul>
-<li>Globally via specification in the App_Start, which can easily be resolved from the IoC container but which must be global in scope, and hence somewhat limiting.</li>
-<li>Via Attribute on either a Controller or Action, which cannot be resolved from the IoC because we have no control over the instantiation of those attributes.</li>
-</ul>
-
-
-<p>But MVC allows for another option, which is an <code>IFilterProvider</code>, this interface is called at the outset of any request, and is allowed to return at runtime instances of filters which are to be applied.  Using this interface, we have created a class that resolves filters from within Castle.Windsor.  Consider the following class:</p>
-
-<p>``` csharp
-public class IoCFilterProvider : IFilterProvider
-{</p>
-
-<pre><code>private readonly IEnumerable&lt;Func&lt;ControllerContext, ActionDescriptor, Filter&gt;&gt; registeredFilters;
-
-public IoCFilterProvider(Func&lt;ControllerContext, ActionDescriptor, Filter&gt;[] registeredFilters)
-{
-    this.registeredFilters = registeredFilters;
-}
-
-public IEnumerable&lt;Filter&gt; GetFilters(ControllerContext controllerContext, ActionDescriptor actionDescriptor)
-{
-    return registeredFilters.Select(m =&gt; m.Invoke(controllerContext, actionDescriptor)).Where(m =&gt; m != null);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>This simple class takes as a dependencies an array of delegates, speficically an array of <code>Func&lt;&gt;</code> delegates which receive as parameters the <code>ControllerContext</code> and <code>ActionDescriptor</code> and which return an instance of the <code>Filter</code> class.</p>
-
-<ul>
-<li>The <code>ControllerContext</code> class describes the controller that is about to be called.</li>
-<li>The <code>ActionDescriptor</code> class describes the action on that controller which is about to be called.</li>
-</ul>
-
-
-<p>Given this information, you can decide to either return a <code>Filter</code> which will be applied, or return a null which will take no action.</p>
-
-<h1>How do I register a filter?</h1>
-
-<p>In our <code>FilterInstaller</code> class you will see an example of registering such a filter:</p>
-
-<p>``` csharp
-public class FilterInstaller : IWindsorInstaller
-{</p>
-
-<pre><code>public void Install(IWindsorContainer container, IConfigurationStore store)
-{
-    container.Register(
-        Component.For&lt;IFilterProvider&gt;().ImplementedBy&lt;IoCFilterProvider&gt;(),
-        Component.For&lt;ExceptionLoggingFilter&gt;().ImplementedBy&lt;ExceptionLoggingFilter&gt;(),
-        Component.For&lt;Func&lt;ControllerContext,ActionDescriptor,Filter&gt;&gt;().Instance(
-            (c,a) =&gt; new Filter(container.Resolve&lt;ExceptionLoggingFilter&gt;(), FilterScope.Last, int.MinValue))
-        );
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>On line 8, we register a <code>Func&lt;ControllerContext,ActionDescriptor,Filter&gt;</code> and state that we will provide a specific instance of that delegate to be used.</p>
-
-<p>On line 9, we use the lambda syntax to declare a delegate, which is provided <code>(c,a)</code> as the parameters of type <code>ControllerContext</code> and <code>ActionDescriptor</code>, and which has a body of:</p>
-
-<p><code>csharp
-new Filter(container.Resolve&lt;ExceptionLoggingFilter&gt;(), FilterScope.Last, int.MinValue)
-</code></p>
-
-<p>In this simple case, we create an instance of the <code>System.Web.Mvc.Filter</code> class and provide it our <code>ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code>FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code>int.MinValue</code>, aka I really mean last of all last filters.</p>
-
-<p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code>Filter</code> and when to return <code>null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code>null</code>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NLog and Castle Logging Facility for Logging]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/"/>
-    <updated>2013-10-06T08:50:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging</id>
-    <content type="html"><![CDATA[<p>One of the most important features of any application is a good logging strategy.  Because of this, <code>Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code>NLog.config</code> file.</p>
-
-<h1>How do I log from a class?</h1>
-
-<p>If you want to log from a class, there is a very simply pattern we recommend you follow:</p>
-
-<p>``` csharp
-using Castle.Core.Logging;</p>
-
-<p>public class MyNewClass
-{</p>
-
-<pre><code>public MyNewClass()
-{
-    Logger = NullLogger.Instance;
-}
-
-public ILogger Logger { get; set; }
-</code></pre>
-
-<p>}
-```</p>
-
-<p>The steps are quite simple:</p>
-
-<ul>
-<li>Declare a public property of type <code>ILogger</code></li>
-<li>Initialize that property in your constructor to <code>NullLogger.Instance</code></li>
-</ul>
-
-
-<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code>Logger</code> property.  But, if you ever remove the <code>LoggingInstaller</code> your code will continue to work because the <code>NullLogger</code> is a proper implementation of <code>ILogger</code> which does nothing.  This avoids <code>NullReferenceException</code>s when you don&rsquo;t have a Logger injected, for instance during tests.</p>
-
-<h1>How does that get setup to begin with?</h1>
-
-<p>The Logging Facility is setup in the <code>LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
-
-<p>``` csharp
-public class LoggingInstaller : IWindsorInstaller
-{</p>
-
-<pre><code>public void Install(IWindsorContainer container, IConfigurationStore store)
-{
-
-    container.AddFacility&lt;LoggingFacility&gt;(m =&gt; m.UseNLog().WithConfig("NLog.config"));
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>That really is all there is to it, we configure the facility to use NLog, and then tell it where the config file is.  Now, the config file we include is very simple:</p>
-
-<p>``` xml
-&lt;nlog xmlns=&ldquo;<a href="http://www.nlog-project.org/schemas/NLog.xsd">http://www.nlog-project.org/schemas/NLog.xsd</a>&rdquo;</p>
-
-<pre><code>  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  autoReload="true"
-  globalThreshold="Debug"&gt;
-</code></pre>
-
-<p>  <targets></p>
-
-<pre><code>&lt;target xsi:type="File"
-        name="file"
-        fileName="${basedir}/Logs/Log.txt"
-        archiveEvery="Day" /&gt;
-</code></pre>
-
-<p>  </targets></p>
-
-<p>  <rules></p>
-
-<pre><code>&lt;logger name="*" minlevel="Debug" writeTo="file" /&gt;
-</code></pre>
-
-<p>  </rules>
-</nlog>
-```</p>
-
-<p>This configuration sets up a <code>Logs</code> directory that will contain <code>Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says &ldquo;log everything to Logs.txt&rdquo;.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
-
-<h1>What is logged automatically for me?</h1>
-
-<p>We setup two types of loggers for you automatically;</p>
-
-<ul>
-<li>The App_Start component <code>LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
-<li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WebActivator for Composable Startup]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/"/>
-    <updated>2013-10-05T15:09:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup</id>
-    <content type="html"><![CDATA[<p>The first and most important piece our OnRamp is the use of <a href="http://www.nuget.org/packages/WebActivatorEx/">WebActivator</a> to allow us to declare classes that will run either just before or just after the App_Start event of your ASP.NET application, or when your application shuts down.  This is accomplished using an assembly level attribute, pointing to a particular static class and method.</p>
-
-<p>Consider the following class declaration from our <code>IoC.cs</code> file:</p>
-
-<p>``` csharp
-[assembly: WebActivator.PreApplicationStartMethod(typeof(Templates.App_Start.IoC), &ldquo;Startup&rdquo;)]
-namespace Templates.App_Start
-{</p>
-
-<pre><code>public static class IoC
-{
-    public static void Startup()
-    {
-      // Details here described in the next feature…
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Note how we declare the <code>PreApplicationStartMethod</code>, and point to the type of <code>Templates.App_Start.IoC</code> and then the <code>"Startup"</code> string lets it know which method to run.  This results in our <code>IoC.Startup()</code> method being called before App_Start.</p>
-
-<p>Just as there is <code>PreApplicationStartMethod</code>, there is also <code>PostApplicationStartMethod</code> and <code>ApplicationShutdownMethod</code>, both of which are used in our Logging wire up which will be discussed later.</p>
+<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code>Entities</code> folder, and it&rsquo;s sub-folder <code>Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code>Mappings</code> folder is meant to contain classes which implement <code>EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
 ]]></content>
   </entry>
   

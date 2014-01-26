@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-16T08:32:14-06:00</updated>
+  <updated>2014-01-25T20:07:51-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,198 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
+    <updated>2014-01-25T16:45:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
+    <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
+
+<h3>Repository Factory</h3>
+
+<p>We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
+
+<h4>Repository Factory</h4>
+
+<p>This allows you to construct a simple repository that doesn&rsquo;t need any of the <code>DomainRepository</code> features.</p>
+
+<p>```</p>
+
+<pre><code>public interface IRepositoryFactory
+{
+    /// &lt;summary&gt;
+    /// Creates a repository for the requested domain
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
+    IRepository Create();
+}
+</code></pre>
+
+<p>```</p>
+
+<h4>Domain Repository Factory</h4>
+
+<p>This allows you construct a repository specific to any domain that the factory is dependent on.</p>
+
+<p>```</p>
+
+<pre><code>public interface IDomainRepositoryFactory
+{
+
+    /// &lt;summary&gt;
+    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+    /// &lt;/summary&gt;
+    /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
+    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+    IRepository Create&lt;T&gt;() where T : class, IDomain;
+
+    /// &lt;summary&gt;
+    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+    /// &lt;/summary&gt;
+    /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
+    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+    IRepository Create(Type type);
+}
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Domain Context]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
+    <updated>2014-01-25T16:42:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
+    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
+
+<h2>Why did you support DDD?</h2>
+
+<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
+
+<h2>How did you support DDD?</h2>
+
+<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
+
+<h3>IDomainRepository</h3>
+
+<p>This repository has the event interception events, as well as the bounded context.</p>
+
+<p>``` csharp</p>
+
+<pre><code>public interface IDomainRepository&lt;in T&gt; where T : class
+{
+    event EventHandler&lt;BeforeQuery&gt; BeforeQuery;
+
+    event EventHandler&lt;BeforeScalar&gt; BeforeScalar;
+
+    event EventHandler&lt;BeforeCommand&gt; BeforeCommand;
+
+    event EventHandler&lt;AfterQuery&gt; AfterQuery;
+
+    event EventHandler&lt;AfterScalar&gt; AfterScalar;
+
+    event EventHandler&lt;AfterCommand&gt; AfterCommand;
+
+    IDomainContext&lt;T&gt; DomainContext { get; } 
+}
+</code></pre>
+
+<p>```</p>
+
+<h3>IDomainContext</h3>
+
+<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
+
+<p>```</p>
+
+<pre><code>public interface IDomainContext&lt;in T&gt; : IDataContext where T : class
+{
+    /// &lt;summary&gt;
+    ///     The event fired just before the commit of the persistence
+    /// &lt;/summary&gt;
+    event EventHandler&lt;BeforeSave&gt; BeforeSave;
+
+    /// &lt;summary&gt;
+    ///     The event fired just after the commit of the persistence
+    /// &lt;/summary&gt;
+    event EventHandler&lt;AfterSave&gt; AfterSave;
+}
+</code></pre>
+
+<p>```</p>
+
+<h3>IDomain</h3>
+
+<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
+
+<p>```</p>
+
+<pre><code>public interface IDomain
+{
+    string ConnectionString { get; }
+
+    IMappingConfiguration Mappings { get;}
+
+    IContextConfiguration Context { get; }
+
+    List&lt;IInterceptor&gt; Events { get; }
+}
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
+    <updated>2014-01-25T16:40:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
+    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
+
+<h2>New Features, and better Domain Driven Design support</h2>
+
+<h3>Domain Context</h3>
+
+<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
+
+<h4>More Details are here: <a href="/blog/2014/01/25/domain-context/">Domain Context</a></h4>
+
+<h3>Simplified Creation Pattern</h3>
+
+<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
+
+<h4>More Details are here: <a href="/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
+
+<h3>Entity Framework 6.0.0.2 Support</h3>
+
+<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
+
+<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
+
+<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
+
+<h2>Breaking Changes:</h2>
+
+<h3>AsQueryable off Repository.Context</h3>
+
+<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
+
+<h3>Interception</h3>
+
+<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
+
+<h4>More Details are here:</h4>
+
+<h2>Thanks to:</h2>
+
+<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
+
+<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How do I get my DbContext?]]></title>
@@ -48,279 +240,6 @@
 <h3>Entity Framework Power Tools</h3>
 
 <p>As a quick word, most people who have chosen Database First, did so because they believed that Code First would require that their classes create, or otherwise control their database.  This is not the case.  <a href="http://visualstudiogallery.msdn.microsoft.com/72a60b14-1581-4b9b-89f2-846072eff19d">The Entity Framework team has for some time shipped a set of Power Tools</a> which allow the reverse engineering of existing database into Code First entities and mappings, which are then fully compatible with Highway.Data.  We encourage those currently using Database First to migrate using these tools to a Code First solution.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/"/>
-    <updated>2013-11-07T15:09:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container</id>
-    <content type="html"><![CDATA[<p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
-
-<h2>Highway.Data</h2>
-
-<ul>
-<li><code>IRepository</code> should resolve to <code>Repository</code> on either a transient (new every request) or per web request (if you&rsquo;re in a website) object lifetime.</li>
-<li><code>IEventManager</code> should resolve to <code>EventManager</code></li>
-<li><code>ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code>NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
-</ul>
-
-
-<h2>Highway.Data.EntityFramework</h2>
-
-<ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).
-
-<ul>
-<li>Your IoC will need to inject a connection string, named <code>connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
-</ul>
-</li>
-<li><code>IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
-<li><code>IContextConfiguration</code> should resolve to <code>DefaultContextConfiguration</code> <strong>or</strong> a class you&rsquo;ve created should you need to change how the Context is configured from our defaults.</li>
-</ul>
-
-
-<h2>Highway.Data.NHibernate</h2>
-
-<ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
-<li><code>ISession</code> should resolve to a call to your configured <code>ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
-</ul>
-
-
-<h2>Highway.Data.RavenDb</h2>
-
-<ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
-<li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/"/>
-    <updated>2013-11-06T07:49:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error</id>
-    <content type="html"><![CDATA[<p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can&rsquo;t be fixed now that it&rsquo;s in the wild.  This most often presents itself as an error similar to :</p>
-
-<p><code>
-Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in 'C:\source\MyProject\packages\Highway.Data.4.0.5.3\lib\net40\Highway.Data.dll', but it could not be found
-</code></p>
-
-<p>The particular type that it complains about (<code>IContextConfiguration&lt;T&gt;</code> in this case) may vary case to case, but the combination of a <code>Reference to type * could not be found</code> and that error references a version prior to v4.1 are the signs that you&rsquo;ve encountered this bug.</p>
-
-<h2>Resolution</h2>
-
-<p>Unfortunately, any components that depended on the pre-v4.1 assemblies will need to be recompiled.  Because the SNK was added there is no Assembly Binding Redirect or other solution to this, we suck, and we&rsquo;re sorry.  Rest assured that all future Highway Framework assemblies will be signed from day one and that we&rsquo;ve learned this lesson.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Configuring Highway.Data]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/"/>
-    <updated>2013-10-30T20:20:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
-    <content type="html"><![CDATA[<p>If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.</p>
-
-<p><a href="#EntityFramework">Entity Framework</a></p>
-
-<p><a href="#NHibernate">NHibernate</a></p>
-
-<p><a href="#RavenDB">RavenDB</a></p>
-
-<p><a name="EntityFramework"></a></p>
-
-<h1>EntityFramework</h1>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.EntityFramework
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Instructor
-{</p>
-
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>Database to Entity Mappings</h2>
-
-<p>Now we need to create our database mappings. Highway.Data doesn&rsquo;t redefine the mapping syntax, it just makes them injectable into the <code>DataContext</code>. To do this we defined an interface <code>IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code>DataContext</code>.
-<strong>The best practice is to name this class after the aggregate root in your domain, so ours is DriverExams</strong></p>
-
-<p>``` csharp
-public class DriversExams : IMappingConfiguration
-{</p>
-
-<pre><code>public void ConfigureModelBuilder(DbModelBuilder modelBuilder)
-{
-    modelBuilder.Entity&lt;Driver&gt;(); //This is the inline/fluent config
-
-    modelBuilder.Configurations.Add(new DriverMap()); //This is the class based config
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class DriverMap : EntityTypeConfiguration<Driver>
-{</p>
-
-<pre><code>public DriverMap()
-{
-    this.ToTable("Drivers");
-    //You can do anything here that EF supports
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code>EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code>IMappingConfiguration</code></em></p>
-
-<h2>Context Level Configuration</h2>
-
-<p>We setup a <code>DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code>IContextConfiguration</code> like below.</p>
-
-<p>``` csharp
-public class DefaultContextConfiguration : IContextConfiguration
-{</p>
-
-<pre><code>public void ConfigureContext(DbContext context)
-{
-    context.Configuration.LazyLoadingEnabled = false;
-    context.Configuration.ProxyCreationEnabled = false;
-    //Here you can do any context level configuration changes that EF supports
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>This will let you change fundemental behavior of the context.</p>
-
-<h2>Logging Configuration</h2>
-
-<p>Then you need to send in a logger, but those details are covered in our <a href="/blog/2013/10/28/logging-with-datacontext/">Logging Post</a> because it is not Entity Framework specific.</p>
-
-<h2>Using it all</h2>
-
-<p>Last but not least we need to use our configured pieces like so:</p>
-
-<p><code>csharp
-var context = new DataContext("Your connection string here", new DriversExams(), new DefaultContextConfiguration(), new NoOpLogger());
-</code></p>
-
-<p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
-
-<p><a name="NHibernate"></a></p>
-
-<h1>NHibernate</h1>
-
-<p>Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code>DataContext</code>.</p>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.NHibernate
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<p>Everything else is out of the box NHibernate, isn&rsquo;t it great!!</p>
-
-<h2>Example</h2>
-
-<p>```csharp
-var nhibernateConfiguration = new Configuration().Configure();</p>
-
-<p>var model = AutoMap.AssemblyOf<Driver>()</p>
-
-<pre><code>.Where(type =&gt; typeof (Driver).IsAssignableFrom(type))
-.Conventions.AddFromAssemblyOf&lt;Driver&gt;()
-.UseOverridesFromAssemblyOf&lt;Driver&gt;();
-</code></pre>
-
-<p>var factory = Fluently.Configure(nhibernateConfiguration).Mappings(mappingConfiguration => mappingConfiguration.AutoMappings.Add(model)).BuildSessionFactory();</p>
-
-<p>var context = new DataContext(factory.OpenSession());</p>
-
-<p>```</p>
-
-<p><a name="RavenDB"></a></p>
-
-<h1>RavenDB</h1>
-
-<p>Highway.Data is very easy to configure with RavenDB, because we take in an <code>IDocumentSession</code> on Constructor for <code>DataContext</code>.</p>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.RavenDb
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<p>Everything else is out of the box RavenDB, isn&rsquo;t it great!!</p>
-
-<h2>Example</h2>
-
-<p>```csharp
-var embeddableDocumentStore = new EmbeddableDocumentStore()
-{</p>
-
-<pre><code>DataDirectory = "",
-RunInMemory = true
-</code></pre>
-
-<p>};
-embeddableDocumentStore.Initialize();</p>
-
-<p>var context = new DataContext(embeddableDocumentStore.OpenSession());</p>
-
-<p>```</p>
 ]]></content>
   </entry>
   

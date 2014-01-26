@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-16T08:32:14-06:00</updated>
+  <updated>2014-01-25T20:07:51-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,737 +14,370 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Configuring Highway.Data]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/"/>
-    <updated>2013-10-30T20:20:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework</id>
-    <content type="html"><![CDATA[<p>If you are using Highway.Data it is probably in conjunction with another underlying technology, so we have broken this guidance into several parts. Please feel free to jump to the part that pertains to you.</p>
+    <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
+    <updated>2014-01-25T19:33:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
+    <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
 
-<p><a href="#EntityFramework">Entity Framework</a></p>
+<h1>Dictionary Adapter</h1>
 
-<p><a href="#NHibernate">NHibernate</a></p>
+<p>Dictionary Adapter is a class which creates classes at runtime that implement an interface you specify, and wires the properties of said interface to access a key value store you specify.  For instance, let&rsquo;s assume you have the following interface:</p>
 
-<p><a href="#RavenDB">RavenDB</a></p>
-
-<p><a name="EntityFramework"></a></p>
-
-<h1>EntityFramework</h1>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.EntityFramework
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Instructor
+<p>```
+public interface IConnectionStringConfig
 {</p>
 
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
+<pre><code>string ConnectionString { get; }
 </code></pre>
 
 <p>}
 ```</p>
 
-<h2>Database to Entity Mappings</h2>
+<p>And the following configuration settings in your web.config:</p>
 
-<p>Now we need to create our database mappings. Highway.Data doesn&rsquo;t redefine the mapping syntax, it just makes them injectable into the <code>DataContext</code>. To do this we defined an interface <code>IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code>DataContext</code>.
-<strong>The best practice is to name this class after the aggregate root in your domain, so ours is DriverExams</strong></p>
+<p>```
+  <appSettings></p>
 
-<p>``` csharp
-public class DriversExams : IMappingConfiguration
-{</p>
-
-<pre><code>public void ConfigureModelBuilder(DbModelBuilder modelBuilder)
-{
-    modelBuilder.Entity&lt;Driver&gt;(); //This is the inline/fluent config
-
-    modelBuilder.Configurations.Add(new DriverMap()); //This is the class based config
-}
+<pre><code>&lt;add key="ConnectionString" value="Server=.;Database=ChangeMyConnectionString;Integrated Security=true;" /&gt;
 </code></pre>
 
-<p>}</p>
+<p>  </appSettings>
+```</p>
 
-<p>public class DriverMap : EntityTypeConfiguration<Driver>
+<p>Now we can ask Dictionary Adapter to create an instance of <code>IConnectionString</code>, and supply it the app settings from our web.config.  It will return to us a class which implements our interface, and when that when the <code>ConnectionString</code> property is accessed, will retrieve the value from app settings.</p>
+
+<p>Now instead of writing controllers, or other classes which access app settings directly from the <code>ConfigurationManager</code>, we can instead simply take a dependency on <code>IConnectionString</code>, and that class can in turn use a strongly typed (no magic strings) and testable (simply mock the interface) way of accessing app settings.</p>
+
+<p>Just as we can do this with the key value store of app settings, we can also do it with the key value store of <code>Session</code> as well.  This makes accessing session also no longer require magic strings, and addresses the problem of mocking an <code>HttpContext</code> for <code>Session</code>.</p>
+
+<h1>Wiring it up with Windsor</h1>
+
+<p>As awesome as that is, manually registering all of the configuration or session interfaces would be rather tedious in the extreme.  As such we&rsquo;ve created some conventions you can use that will automatically register these interfaces for you.</p>
+
+<h2>Config interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Config</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered as Singleton lifestyle, because they continue to directly access the <code>ConfigurationManager</code> and so even if your configuration values change at runtime, they will stay up to date.</p>
+
+<h2>Session interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Session</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered with a <code>PerWebRequest</code> lifestyle, because every request will have a different <code>HttpContext</code>.</p>
+
+<h1>What about keys which don&rsquo;t match property names?</h1>
+
+<p>A common scenario for users of DictionaryAdapter to run into is that they want properties on their interfaces which do not match their key value store&rsquo;s key values exactly.  This is easy to run into simply because of the limitations of property names, for instance &ldquo;ida:ClientSecret&rdquo; is not a valid property name.  So how do we handle this?</p>
+
+<p>DictionaryAdapter provides a set of attributes which can help address these concerns.  We&rsquo;ll talk about each in turn, here they are:</p>
+
+<ul>
+<li><code>KeyAttribute</code></li>
+<li><code>KeyPrefixAttribute</code></li>
+<li><code>KeySuffixAttribute</code></li>
+</ul>
+
+
+<h2>Key</h2>
+
+<p>The simplest and often most useful of our helper attributes is <code>KeyAttribute</code>.  This attribute when applied to a property completely changes the key in the key value store that is accessed for our property.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;Foo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyAttribute</code>.</p>
+
+<p>```
+public interface IExampleConfig
 {</p>
 
-<pre><code>public DriverMap()
-{
-    this.ToTable("Drivers");
-    //You can do anything here that EF supports
-}
+<pre><code>[Key("Foo")]
+string ConnectionString { get; }
 </code></pre>
 
 <p>}
 ```</p>
 
-<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code>EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code>IMappingConfiguration</code></em></p>
+<h2>KeyPrefixAttribute</h2>
 
-<h2>Context Level Configuration</h2>
+<p>The next most common attribute to be used, and one which we use by default in the Data extension to the OnRamp, is <code>KeyPrefixAttirbute</code>.  This attribute is applied to the interface, not the properties, and affects the keys used in the key value store for all properties on that interface.  For instance, given the following interface, the ConnectionSting property returns &ldquo;FooConnectionString&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyPrefixAttribute</code>.</p>
 
-<p>We setup a <code>DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code>IContextConfiguration</code> like below.</p>
-
-<p>``` csharp
-public class DefaultContextConfiguration : IContextConfiguration
+<p>```
+public interface IExampleConfig
 {</p>
 
-<pre><code>public void ConfigureContext(DbContext context)
-{
-    context.Configuration.LazyLoadingEnabled = false;
-    context.Configuration.ProxyCreationEnabled = false;
-    //Here you can do any context level configuration changes that EF supports
-}
+<pre><code>[KeyPrefix("Foo")]
+string ConnectionString { get; }
 </code></pre>
 
 <p>}
 ```</p>
 
-<p>This will let you change fundemental behavior of the context.</p>
+<h2>KeySuffixAttribute</h2>
 
-<h2>Logging Configuration</h2>
+<p>The third and final attribute we will discuss here is <code>KeySuffixAttribute</code>.  Like <code>KeyPrefixAttribute</code> this is applied to the interface, not the property, and affects the key values for all properties on that interface.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;ConnectionStringFoo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeySuffixAttribute</code>.</p>
 
-<p>Then you need to send in a logger, but those details are covered in our <a href="/blog/2013/10/28/logging-with-datacontext/">Logging Post</a> because it is not Entity Framework specific.</p>
-
-<h2>Using it all</h2>
-
-<p>Last but not least we need to use our configured pieces like so:</p>
-
-<p><code>csharp
-var context = new DataContext("Your connection string here", new DriversExams(), new DefaultContextConfiguration(), new NoOpLogger());
-</code></p>
-
-<p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
-
-<p><a name="NHibernate"></a></p>
-
-<h1>NHibernate</h1>
-
-<p>Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code>DataContext</code>.</p>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.NHibernate
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<p>Everything else is out of the box NHibernate, isn&rsquo;t it great!!</p>
-
-<h2>Example</h2>
-
-<p>```csharp
-var nhibernateConfiguration = new Configuration().Configure();</p>
-
-<p>var model = AutoMap.AssemblyOf<Driver>()</p>
-
-<pre><code>.Where(type =&gt; typeof (Driver).IsAssignableFrom(type))
-.Conventions.AddFromAssemblyOf&lt;Driver&gt;()
-.UseOverridesFromAssemblyOf&lt;Driver&gt;();
-</code></pre>
-
-<p>var factory = Fluently.Configure(nhibernateConfiguration).Mappings(mappingConfiguration => mappingConfiguration.AutoMappings.Add(model)).BuildSessionFactory();</p>
-
-<p>var context = new DataContext(factory.OpenSession());</p>
-
-<p>```</p>
-
-<p><a name="RavenDB"></a></p>
-
-<h1>RavenDB</h1>
-
-<p>Highway.Data is very easy to configure with RavenDB, because we take in an <code>IDocumentSession</code> on Constructor for <code>DataContext</code>.</p>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
-
-<p><code>plain
-Install-Package Highway.Data.RavenDb
-</code></p>
-
-<p>This will bring the install down and put it in our project.</p>
-
-<p>Everything else is out of the box RavenDB, isn&rsquo;t it great!!</p>
-
-<h2>Example</h2>
-
-<p>```csharp
-var embeddableDocumentStore = new EmbeddableDocumentStore()
+<p>```
+public interface IExampleConfig
 {</p>
 
-<pre><code>DataDirectory = "",
-RunInMemory = true
+<pre><code>[Key("Foo")]
+string ConnectionString { get; }
 </code></pre>
 
-<p>};
-embeddableDocumentStore.Initialize();</p>
-
-<p>var context = new DataContext(embeddableDocumentStore.OpenSession());</p>
-
-<p>```</p>
+<p>}
+```</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Logging]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext/"/>
-    <updated>2013-10-28T17:59:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/28/logging-with-datacontext</id>
-    <content type="html"><![CDATA[<p>We all have written/supported an application that had zero logging. It is like playing two sided blindfolded chess in the dark. We didn&rsquo;t want to pass that on to the users of Highway so logging is backed right into the toolset. We rely on <a href="http://www.nuget.org/packages/Common.Logging">Common.Logging</a> for our logging API, because this allows you, our users, to use your favorite logging facility. I am going to use a simple console logger for these examples, but it could be any Common.Logging adapter.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<p>``` csharp
-public class Instructor
-{</p>
-
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Logging Output &ndash; It&rsquo;s Like Butter</h1>
-
-<p>When you add an item there are several things that could/should happen. Knowing at which point the failure happens is important. This is where Highway Framework makes things easier on you. We want to know where the operations are executing and how the context is operating on a configurable level. This is going to use the standard log levels to get output from the system. Consider the following Test.</p>
-
-<p>```
-[TestMethod]
-public void ShouldLogAtDebugLevel()
-{</p>
-
-<pre><code>//arrange 
-var logger = new ConsoleOutLogger("Testing", LogLevel.Debug, true, true, true, @"dd/mm/yyyy hh:mm:ss");
-var target = new DataContext(Settings.Default.Connection, new DriversEducationMappings(), logger);
-
-//act
-target.Add(new Driver("Devlin", "Liles"));
-target.Add(new Driver("Tim", "Rayburn"));
-target.Add(new Driver("Jay", "Smith"));
-target.Add(new Driver("Brian", "Sullivan"));
-target.Add(new Driver("Cori", "Drew"));
-
-target.Commit();
-
-foreach (var driver in target.AsQueryable&lt;Driver&gt;())
-{
-    target.Remove(driver);
-}
-
-target.Commit();
-
-//assert
-Assert.Inconclusive("We fail here to get the output from console nice and easy");
-</code></pre>
-
-<p>}
-```
-The output from this test is below</p>
-
-<p><code>plain
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
-30/40/2013 05:40:07 [DEBUG] Testing - Querying Object Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Queried Object Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-30/40/2013 05:40:07 [DEBUG] Testing -   Commited 5 Changes
-</code></p>
-
-<p>You can see that you get the step by step of what the application is doing on Debug but if you want even more information, you can up the game with LogLevel.Trace &ndash; This will trace every action start and finish.</p>
-
-<p><code>plain
-10/30/2013 5:49:10 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:49:10 PM [TRACE] Testing - Added Object Highway.DriversEducation.GettingStarted.Driver
-...
-10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
-10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
-10/30/2013 5:49:10 PM [DEBUG] Testing - Querying Object Driver
-10/30/2013 5:49:10 PM [DEBUG] Testing - Queried Object Driver
-10/30/2013 5:49:10 PM [DEBUG] Testing - Removing Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:49:10 PM [TRACE] Testing - Removed Object
-...
-10/30/2013 5:49:10 PM [TRACE] Testing -     Commit
-10/30/2013 5:49:10 PM [DEBUG] Testing -     Commited 5 Changes
-</code></p>
-
-<p>This log level also lets you see the guts of when the model binding hits are being taken.</p>
-
-<p><code>plain
-10/30/2013 5:51:47 PM [DEBUG] Testing - Adding Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:51:47 PM [DEBUG] Testing -     OnModelCreating
-10/30/2013 5:51:47 PM [TRACE] Testing -         Mapping : DriversEducationMappings
-</code></p>
-
-<p>Or Even when we execute a function/stored procedure</p>
-
-<p><code>plain
-10/30/2013 5:54:16 PM [TRACE] Testing - Executing SQL Select * from Drivers Where LastName = @lastName, with parameters lastName : Liles : String   
-</code>
-If you have code that is reloading objects to refresh them from the database using <code>Reload&lt;T&gt;(T item)</code> then you would see something like this.</p>
-
-<p>``` plain</p>
-
-<pre><code>10/30/2013 5:56:49 PM [TRACE] Testing - Retrieving State Entry For Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:56:49 PM [DEBUG] Testing - Reloading Object Highway.DriversEducation.GettingStarted.Driver
-10/30/2013 5:56:49 PM [TRACE] Testing - Reloaded Object Highway.DriversEducation.GettingStarted.Driver
-</code></pre>
-
-<p>```</p>
-
-<p>Keep an eye out because in the next version we will be introducing the following logging features.</p>
+    <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
+    <updated>2014-01-25T19:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
+    <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
 
 <ol>
-<li>Repository Level Logging of Queries/Commands/Scalars</li>
-<li>Non-Debugging Levels for always on health logging of the DataContext</li>
-<li>Performance Logging on Trace Level for Commits and Repository Level Items</li>
+<li><code>IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
+<li><code>RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
 </ol>
 
+
+<p>An implementation controller would look like this:</p>
+
+<p>``` csharp
+public class DriverController : BaseRestApiController&lt;Domain, Driver, Guid>
+{</p>
+
+<pre><code>public DriverController(IDomainRepositoryFactory factory) :
+    base(factory, RestfulOperations.All) { }
+
+public override CopyEntityValues(Driver source, Driver destination)
+{
+    // copy values from one instance to another here.
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This class would support all five of our pre-built functions, because it passed <code>RestfulOperations.All</code>, these are:</p>
+
+<ul>
+<li>GetAll &ndash; This is the default get with no <code>id</code> and returns ALL Drivers</li>
+<li>GetOne &ndash; This returns one driver, by <code>id</code></li>
+<li>Put &ndash; Accepts a <code>PUT</code> verb and updates a singular Driver.  Uses <code>CopyEntityValues</code> above to control what can be updated.</li>
+<li>Delete &ndash; Deletes a Driver by <code>id</code></li>
+<li>Post &ndash; Accepts a <code>POST</code> verb and inserts a singular Driver.</li>
+</ul>
+
+
+<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR'ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
+
+<p>```</p>
+
+<pre><code>public DriverController(IDomainRepositoryFactory factory) :
+    base(factory, RestfulOperations.GetOne | RestfulOperations.Post) { }
+</code></pre>
+
+<p>```</p>
+
+<p>There are some logical pre-built combinations already supported in the enum, which is defined as follows:</p>
+
+<p>```</p>
+
+<pre><code>    [Flags]
+    public enum RestOperations
+    {
+        GetAll = 1,
+        GetOne = 2,
+        Post = 4,
+        Put = 8,
+        Delete = 16,
+        ReadOnly = 3,
+        WriteOnly = 28,
+        All = 31
+    }
+</code></pre>
+
+<p>```</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Eager Loading with Queries and Scalars]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars/"/>
-    <updated>2013-10-28T17:38:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/28/eager-loading-with-queries-and-scalars</id>
-    <content type="html"><![CDATA[<p>When we define a query, sometimes we need to load a graph of related objects as well. This can be impressively helpful with an ORM, but it is also more expensive per query. We have to balance the cost of the query graph with the ease of loading related objects in the code base. The approach to this varies by the underlying ORM that you are using, so please click the link for the section that pertains to you.</p>
+    <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
+    <updated>2014-01-25T16:45:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
+    <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
 
-<p><a href="#ef">Entity Framework</a></p>
+<h3>Repository Factory</h3>
 
-<p><a href="#nhibernate">NHibernate</a></p>
+<p>We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
 
-<h1>Example Domain</h1>
+<h4>Repository Factory</h4>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>This allows you to construct a simple repository that doesn&rsquo;t need any of the <code>DomainRepository</code> features.</p>
 
-<p>``` csharp
-public class Instructor
-{</p>
+<p>```</p>
 
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Driver
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public Car Car { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class Car
-{</p>
-
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class InstructorById : Scalar<Instructor>
-{</p>
-
-<pre><code>public InstructorById(int id)
+<pre><code>public interface IRepositoryFactory
 {
-    ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
-                                     .SingleOrDefault(e =&gt; e.Id == id);
+    /// &lt;summary&gt;
+    /// Creates a repository for the requested domain
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
+    IRepository Create();
 }
 </code></pre>
 
-<p>}
-```</p>
+<p>```</p>
 
-<h2>Use Case</h2>
+<h4>Domain Repository Factory</h4>
 
-<p>Let&rsquo;s assume that we now need to load Drivers and Cars for the instructor. Because we are only loading one Instructor this should be fairly light weight on the database.</p>
+<p>This allows you construct a repository specific to any domain that the factory is dependent on.</p>
 
-<p><a name="ef"></a></p>
+<p>```</p>
 
-<h1>Entity Framework</h1>
-
-<p>Entity Framework got the API for this correct, so when you unit test this without a database it does nothing with the include call. This allows us to not need an advanced query for the Entity Framework version of the query.</p>
-
-<p>```
-public class InstructorById : Scalar<Instructor>
-{</p>
-
-<pre><code>public InstructorById(int id)
+<pre><code>public interface IDomainRepositoryFactory
 {
-    ContextQuery = context =&gt; context.AsQueryable&lt;Instructor&gt;()
-                                .Include(x =&gt; x.Drivers.Select(c =&gt; c.Car))
-                                .SingleOrDefault(e =&gt; e.Id == id);
+
+    /// &lt;summary&gt;
+    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+    /// &lt;/summary&gt;
+    /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
+    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+    IRepository Create&lt;T&gt;() where T : class, IDomain;
+
+    /// &lt;summary&gt;
+    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+    /// &lt;/summary&gt;
+    /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
+    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+    IRepository Create(Type type);
 }
 </code></pre>
 
-<p>}
-<code>``
-Notice to traverse a collection we have to use the</code>Select` method, this is a quark of LINQ and Entity Framework. As you see below in the NHibernate solution there is a slightly more elegant way they could have done this, but it comes with a hefty cost.</p>
-
-<p><a name="nhibernate"></a></p>
-
-<h1>NHibernate</h1>
-
-<p>In the NHibernate usage we will have to bind ourselves to their specific API, which means that we will have to use an <code>AdvancedQuery</code>.
-```
-public class InstructorById : AdvancedScalar<Instructor>
-{</p>
-
-<pre><code>public InstructorById(int id)
-{
-    ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
-                                .FetchMany(x =&gt; x.Drivers)  
-                                .ThenFetch(x =&gt; x.Car)
-                                .SingleOrDefault(e =&gt; e.Id == id);
-}
-</code></pre>
-
-<p>}
-<code>
-This reads more fluently but causes us to be bound to NHibernate. **It also has one massive bug in NHibernate's LINQ provider.** In the above query you will only get one related driver and one related car. This is because it applies a Top 1 to the queries. To avoid this you must do the below query.
-</code>
-public class InstructorById : AdvancedScalar<Instructor>
-{</p>
-
-<pre><code>public InstructorById(int id)
-{
-    ContextQuery = context =&gt; context.Query&lt;Instructor&gt;()
-                                .FetchMany(x =&gt; x.Drivers)  
-                                .ThenFetch(x =&gt; x.Car)
-                                .Where(e =&gt; e.Id == id)
-                                .ToList() // This forces execution without the Top 1 of a single or default
-                                .SingleOrDefault();
-}
-</code></pre>
-
-<p>}
-```
-<strong>This is a bug in NHibernate</strong></p>
+<p>```</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Performance Testing Queries]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/"/>
-    <updated>2013-10-27T16:31:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/27/performance-testing-queries</id>
-    <content type="html"><![CDATA[<p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
+    <title type="html"><![CDATA[Domain Context]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
+    <updated>2014-01-25T16:42:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
+    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
 
-<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
+<h2>Why did you support DDD?</h2>
 
-<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
+<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
 
-<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
+<h2>How did you support DDD?</h2>
 
-<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
+<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
 
-<h1>Example Domain</h1>
+<h3>IDomainRepository</h3>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>This repository has the event interception events, as well as the bounded context.</p>
 
-<p>``` csharp
-public class Car
-{</p>
+<p>``` csharp</p>
 
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
-
-<p>}</p>
-
-<p>public class DropMake : Command
-{</p>
-
-<pre><code>public DropMake(string make)
+<pre><code>public interface IDomainRepository&lt;in T&gt; where T : class
 {
-    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
-    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
-    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
-    ContextQuery = c =&gt;
-    {
-        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
-        foreach (var car in cars)
-        {
-            c.Remove(car);
-        }
-    };
+    event EventHandler&lt;BeforeQuery&gt; BeforeQuery;
+
+    event EventHandler&lt;BeforeScalar&gt; BeforeScalar;
+
+    event EventHandler&lt;BeforeCommand&gt; BeforeCommand;
+
+    event EventHandler&lt;AfterQuery&gt; AfterQuery;
+
+    event EventHandler&lt;AfterScalar&gt; AfterScalar;
+
+    event EventHandler&lt;AfterCommand&gt; AfterCommand;
+
+    IDomainContext&lt;T&gt; DomainContext { get; } 
 }
 </code></pre>
 
-<p>}
-```</p>
+<p>```</p>
 
-<h1>Performance Tests</h1>
+<h3>IDomainContext</h3>
 
-<h2>These should <em>ideally</em> run against production like data</h2>
+<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
 
-<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
+<p>```</p>
 
-<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
+<pre><code>public interface IDomainContext&lt;in T&gt; : IDataContext where T : class
+{
+    /// &lt;summary&gt;
+    ///     The event fired just before the commit of the persistence
+    /// &lt;/summary&gt;
+    event EventHandler&lt;BeforeSave&gt; BeforeSave;
 
-<p>```
-[TestMethod]
-public void ShouldDeleteInUnder250Milliseconds()
-{</p>
-
-<pre><code>var context = new DataContext(Settings.Default.Connection, new DataMappings());
-
-var dropMake = new DropMake("Chevy");
-
-dropMake.RunPerformanceTest(context,false,250);
+    /// &lt;summary&gt;
+    ///     The event fired just after the commit of the persistence
+    /// &lt;/summary&gt;
+    event EventHandler&lt;AfterSave&gt; AfterSave;
+}
 </code></pre>
 
-<p>}
-```</p>
+<p>```</p>
 
-<p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
+<h3>IDomain</h3>
 
-<p>Let&rsquo;s take a closer look at this line
-<code>
-dropMake.RunPerformanceTest(context,false,250);
-</code>
-The 1st parameter, context, is the data connection we use to execute the test.</p>
+<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
 
-<p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
+<p>```</p>
 
-<p>The 3rd parameter, 250, is the total milliseconds allowed for the execution. If it exceeds this the test fails.</p>
+<pre><code>public interface IDomain
+{
+    string ConnectionString { get; }
+
+    IMappingConfiguration Mappings { get;}
+
+    IContextConfiguration Context { get; }
+
+    List&lt;IInterceptor&gt; Events { get; }
+}
+</code></pre>
+
+<p>```</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Queries / Commands /Scalars]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/"/>
-    <updated>2013-10-25T15:11:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars</id>
-    <content type="html"><![CDATA[<p>Surround your pullquote like this {" text to be quoted "}</p>
+    <title type="html"><![CDATA[Naming Conventions]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/"/>
+    <updated>2013-11-06T11:37:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/naming-conventions</id>
+    <content type="html"><![CDATA[<p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
 
-<p>All of the <code>AdvancedQuery</code>, <code>AdvancedScalar</code>, and <code>AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
+<h2>Naming Conventions</h2>
 
-<h1>Example Domain</h1>
+<h3>Activators</h3>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code>HttpApplication</code> cycle.  <a href="/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code>Activator</code> you know it runs during application startup.</p>
 
-<p>``` csharp
-public class Instructor
-{</p>
+<h3>Configs</h3>
 
-<pre><code>public int Id { get; set; }
-public ICollection&lt;Driver&gt; Drivers { get; set; }
-</code></pre>
+<p>Interfaces where the name ends with <code>Config</code> are configured automatically at run-time to provide values from <code>web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing configuration values.</p>
 
-<p>}</p>
+<h3>Sessions</h3>
 
-<p>public class Driver
-{</p>
+<p>Interfaces where the name ends with <code>Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing session variables.</p>
 
-<pre><code>public int Id { get; set; }
-public string FirstName { get; set; }
-public string LastName { get; set; }
-public int Score { get; set; }
-public Instructor Instructor { get; set; }
-</code></pre>
+<h3>Installers</h3>
 
-<p>}</p>
+<p>Classes that implement <code>IWindsorInstaller</code> are named with the <code>Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code>WindsorActivator</code> so anything it sets up can be assumed.</p>
 
-<p>public class Car
-{</p>
+<h2>Organization Conventions</h2>
 
-<pre><code>public int Id { get; set; }
-public string Make { get; set; }
-public string Model { get; set; }
-public string Year { get; set; }
-</code></pre>
+<h3>App_Architecture</h3>
 
-<p>}</p>
+<p>The <code>App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we&rsquo;ve achieved an organization structure that your business code should never need to take a <code>using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
 
-<p>public class Top5PercentileOfDrivers : Query<Driver>
-{</p>
+<h4>App_Architecture \ Services</h4>
 
-<pre><code>public Top5PercentileOfDrivers()
-{
-    ContextQuery = context =&gt;
-    {
-        var scores = context.AsQueryable&lt;Driver&gt;().Select(x =&gt; x.Score);
-        int percentileScore =
-            Convert.ToInt32(Math.Round((5/100)*scores.Count() + 0.5, MidpointRounding.AwayFromZero));
-        return context.AsQueryable&lt;Driver&gt;().OrderByDescending(x =&gt; x.Score).Take(percentileScore);
-    };
-}
-</code></pre>
+<p>This folder contains a <code>Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code>Data</code> folder which has classes required by that plug-in.</p>
 
-<p>}</p>
+<h3>Entities &amp; Mappings</h3>
 
-<p>public class SwapInstructors : Scalar<int>
-{</p>
-
-<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
-{
-    ContextQuery = context =&gt;
-    {
-        foreach(var driver in currentInstructor.Drivers)
-        {
-            driver.Instructor = newInstructor;
-        }
-        context.Commit();
-    };
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class DropMake : Command
-{</p>
-
-<pre><code>public DropMake(string make)
-{
-    // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
-    // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
-    // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
-    ContextQuery = c =&gt;
-    {
-        var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
-        foreach (var car in cars)
-        {
-            c.Remove(car);
-        }
-    };
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Advanced Query &ndash; Sometimes you need a Stored Procedure</h1>
-
-<p>In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.</p>
-
-<p>```
-public class Top5PercentileOfDrivers : AdvancedQuery<Driver>
-{</p>
-
-<pre><code>public Top5PercentileOfDrivers()
-{
-    ContextQuery = context =&gt; context.ExecuteSqlQuery&lt;Driver&gt;("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Advanced Commands &ndash;  When you need a hammer</h1>
-
-<p>Surround your pullquote like this {" text to be quoted "}
-```
-public class DropMake : AdvancedCommand
-{</p>
-
-<pre><code>public DropMake(string make)
-{
-    ContextQuery = c =&gt; c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h1>Advanced Scalar</h1>
-
-<p>In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code>AdvancedScalar</code>.
-```
-public class SwapInstructores : AdvancedScalar<int>
-{</p>
-
-<pre><code>public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
-{
-    DbParameter[] parameters = new DbParameter[]
-    {
-        new SqlParameter("old", currentInstructor.Id),
-        new SqlParameter("new", newInstructor.Id), 
-    };
-    ContextQuery = c =&gt; c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
+<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code>Entities</code> folder, and it&rsquo;s sub-folder <code>Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code>Mappings</code> folder is meant to contain classes which implement <code>EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
 ]]></content>
   </entry>
   

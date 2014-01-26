@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-16T08:32:14-06:00</updated>
+  <updated>2014-01-25T20:07:51-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,466 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
+    <updated>2014-01-25T19:33:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
+    <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
+
+<h1>Dictionary Adapter</h1>
+
+<p>Dictionary Adapter is a class which creates classes at runtime that implement an interface you specify, and wires the properties of said interface to access a key value store you specify.  For instance, let&rsquo;s assume you have the following interface:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IConnectionStringConfig
+</span><span class='line'>{
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the following configuration settings in your web.config:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  &lt;appSettings&gt;
+</span><span class='line'>    &lt;add key="ConnectionString" value="Server=.;Database=ChangeMyConnectionString;Integrated Security=true;" /&gt;
+</span><span class='line'>  &lt;/appSettings&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can ask Dictionary Adapter to create an instance of <code>IConnectionString</code>, and supply it the app settings from our web.config.  It will return to us a class which implements our interface, and when that when the <code>ConnectionString</code> property is accessed, will retrieve the value from app settings.</p>
+
+<p>Now instead of writing controllers, or other classes which access app settings directly from the <code>ConfigurationManager</code>, we can instead simply take a dependency on <code>IConnectionString</code>, and that class can in turn use a strongly typed (no magic strings) and testable (simply mock the interface) way of accessing app settings.</p>
+
+<p>Just as we can do this with the key value store of app settings, we can also do it with the key value store of <code>Session</code> as well.  This makes accessing session also no longer require magic strings, and addresses the problem of mocking an <code>HttpContext</code> for <code>Session</code>.</p>
+
+<h1>Wiring it up with Windsor</h1>
+
+<p>As awesome as that is, manually registering all of the configuration or session interfaces would be rather tedious in the extreme.  As such we&rsquo;ve created some conventions you can use that will automatically register these interfaces for you.</p>
+
+<h2>Config interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Config</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered as Singleton lifestyle, because they continue to directly access the <code>ConfigurationManager</code> and so even if your configuration values change at runtime, they will stay up to date.</p>
+
+<h2>Session interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Session</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered with a <code>PerWebRequest</code> lifestyle, because every request will have a different <code>HttpContext</code>.</p>
+
+<h1>What about keys which don&rsquo;t match property names?</h1>
+
+<p>A common scenario for users of DictionaryAdapter to run into is that they want properties on their interfaces which do not match their key value store&rsquo;s key values exactly.  This is easy to run into simply because of the limitations of property names, for instance &ldquo;ida:ClientSecret&rdquo; is not a valid property name.  So how do we handle this?</p>
+
+<p>DictionaryAdapter provides a set of attributes which can help address these concerns.  We&rsquo;ll talk about each in turn, here they are:</p>
+
+<ul>
+<li><code>KeyAttribute</code></li>
+<li><code>KeyPrefixAttribute</code></li>
+<li><code>KeySuffixAttribute</code></li>
+</ul>
+
+
+<h2>Key</h2>
+
+<p>The simplest and often most useful of our helper attributes is <code>KeyAttribute</code>.  This attribute when applied to a property completely changes the key in the key value store that is accessed for our property.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;Foo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [Key("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>KeyPrefixAttribute</h2>
+
+<p>The next most common attribute to be used, and one which we use by default in the Data extension to the OnRamp, is <code>KeyPrefixAttirbute</code>.  This attribute is applied to the interface, not the properties, and affects the keys used in the key value store for all properties on that interface.  For instance, given the following interface, the ConnectionSting property returns &ldquo;FooConnectionString&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyPrefixAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [KeyPrefix("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>KeySuffixAttribute</h2>
+
+<p>The third and final attribute we will discuss here is <code>KeySuffixAttribute</code>.  Like <code>KeyPrefixAttribute</code> this is applied to the interface, not the property, and affects the key values for all properties on that interface.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;ConnectionStringFoo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeySuffixAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [Key("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
+    <updated>2014-01-25T19:27:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
+    <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
+
+<ul>
+<li>Major restructuring to organize and rename a lot of pieces</li>
+<li>ApiController dependency injection</li>
+<li>Automatic IoC registrations</li>
+<li>Session and Configuration access via Interfaces</li>
+<li>Easy RESTful ApiControllers</li>
+<li>Injectable Filters</li>
+<li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
+    <updated>2014-01-25T19:09:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
+    <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
+
+<ol>
+<li><code>IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
+<li><code>RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
+</ol>
+
+
+<p>An implementation controller would look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverController</span> <span class="p">:</span> <span class="n">BaseRestApiController</span><span class="p">&lt;</span><span class="n">Domain</span><span class="p">,</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Guid</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>      <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">All</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="nf">CopyEntityValues</span><span class="p">(</span><span class="n">Driver</span> <span class="n">source</span><span class="p">,</span> <span class="n">Driver</span> <span class="n">destination</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// copy values from one instance to another here.</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This class would support all five of our pre-built functions, because it passed <code>RestfulOperations.All</code>, these are:</p>
+
+<ul>
+<li>GetAll &ndash; This is the default get with no <code>id</code> and returns ALL Drivers</li>
+<li>GetOne &ndash; This returns one driver, by <code>id</code></li>
+<li>Put &ndash; Accepts a <code>PUT</code> verb and updates a singular Driver.  Uses <code>CopyEntityValues</code> above to control what can be updated.</li>
+<li>Delete &ndash; Deletes a Driver by <code>id</code></li>
+<li>Post &ndash; Accepts a <code>POST</code> verb and inserts a singular Driver.</li>
+</ul>
+
+
+<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR&#8217;ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>  <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">GetOne</span> <span class="p">|</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">Post</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are some logical pre-built combinations already supported in the enum, which is defined as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">    [Flags]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">enum</span> <span class="n">RestOperations</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">GetAll</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">GetOne</span> <span class="p">=</span> <span class="m">2</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Post</span> <span class="p">=</span> <span class="m">4</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Put</span> <span class="p">=</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Delete</span> <span class="p">=</span> <span class="m">16</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">ReadOnly</span> <span class="p">=</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">WriteOnly</span> <span class="p">=</span> <span class="m">28</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">All</span> <span class="p">=</span> <span class="m">31</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
+    <updated>2014-01-25T16:45:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
+    <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
+
+<h3>Repository Factory</h3>
+
+<p>We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
+
+<h4>Repository Factory</h4>
+
+<p>This allows you to construct a simple repository that doesn&rsquo;t need any of the <code>DomainRepository</code> features.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>     public interface IRepositoryFactory
+</span><span class='line'>    {
+</span><span class='line'>        /// &lt;summary&gt;
+</span><span class='line'>        /// Creates a repository for the requested domain
+</span><span class='line'>        /// &lt;/summary&gt;
+</span><span class='line'>        /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
+</span><span class='line'>        IRepository Create();
+</span><span class='line'>    }
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Domain Repository Factory</h4>
+
+<p>This allows you construct a repository specific to any domain that the factory is dependent on.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IDomainRepositoryFactory
+</span><span class='line'>{
+</span><span class='line'>
+</span><span class='line'>    /// &lt;summary&gt;
+</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+</span><span class='line'>    /// &lt;/summary&gt;
+</span><span class='line'>    /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
+</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+</span><span class='line'>    IRepository Create&lt;T&gt;() where T : class, IDomain;
+</span><span class='line'>
+</span><span class='line'>    /// &lt;summary&gt;
+</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+</span><span class='line'>    /// &lt;/summary&gt;
+</span><span class='line'>    /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
+</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+</span><span class='line'>    IRepository Create(Type type);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Domain Context]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
+    <updated>2014-01-25T16:42:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
+    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
+
+<h2>Why did you support DDD?</h2>
+
+<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
+
+<h2>How did you support DDD?</h2>
+
+<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
+
+<h3>IDomainRepository</h3>
+
+<p>This repository has the event interception events, as well as the bounded context.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainRepository</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeQuery</span><span class="p">&gt;</span> <span class="n">BeforeQuery</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeScalar</span><span class="p">&gt;</span> <span class="n">BeforeScalar</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeCommand</span><span class="p">&gt;</span> <span class="n">BeforeCommand</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterQuery</span><span class="p">&gt;</span> <span class="n">AfterQuery</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterScalar</span><span class="p">&gt;</span> <span class="n">AfterScalar</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterCommand</span><span class="p">&gt;</span> <span class="n">AfterCommand</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">DomainContext</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>IDomainContext</h3>
+
+<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IDataContext</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>    <span class="c1">///     The event fired just before the commit of the persistence</span>
+</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeSave</span><span class="p">&gt;</span> <span class="n">BeforeSave</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>    <span class="c1">///     The event fired just after the commit of the persistence</span>
+</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterSave</span><span class="p">&gt;</span> <span class="n">AfterSave</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>IDomain</h3>
+
+<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomain</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">string</span> <span class="n">ConnectionString</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IMappingConfiguration</span> <span class="n">Mappings</span> <span class="p">{</span> <span class="k">get</span><span class="p">;}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IContextConfiguration</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">List</span><span class="p">&lt;</span><span class="n">IInterceptor</span><span class="p">&gt;</span> <span class="n">Events</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
+    <updated>2014-01-25T16:40:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
+    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
+
+<h2>New Features, and better Domain Driven Design support</h2>
+
+<h3>Domain Context</h3>
+
+<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
+
+<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/domain-context/">Domain Context</a></h4>
+
+<h3>Simplified Creation Pattern</h3>
+
+<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
+
+<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
+
+<h3>Entity Framework 6.0.0.2 Support</h3>
+
+<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
+
+<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
+
+<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
+
+<h2>Breaking Changes:</h2>
+
+<h3>AsQueryable off Repository.Context</h3>
+
+<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
+
+<h3>Interception</h3>
+
+<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
+
+<h4>More Details are here:</h4>
+
+<h2>Thanks to:</h2>
+
+<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
+
+<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.RoadCrew v0.1]]></title>
@@ -133,6 +593,151 @@
 <li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
 <li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
 </ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Naming Conventions]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/"/>
+    <updated>2013-11-06T11:37:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/naming-conventions</id>
+    <content type="html"><![CDATA[<p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
+
+<h2>Naming Conventions</h2>
+
+<h3>Activators</h3>
+
+<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code>HttpApplication</code> cycle.  <a href="http://hwyfwk.com/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code>Activator</code> you know it runs during application startup.</p>
+
+<h3>Configs</h3>
+
+<p>Interfaces where the name ends with <code>Config</code> are configured automatically at run-time to provide values from <code>web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing configuration values.</p>
+
+<h3>Sessions</h3>
+
+<p>Interfaces where the name ends with <code>Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing session variables.</p>
+
+<h3>Installers</h3>
+
+<p>Classes that implement <code>IWindsorInstaller</code> are named with the <code>Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code>WindsorActivator</code> so anything it sets up can be assumed.</p>
+
+<h2>Organization Conventions</h2>
+
+<h3>App_Architecture</h3>
+
+<p>The <code>App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we&rsquo;ve achieved an organization structure that your business code should never need to take a <code>using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
+
+<h4>App_Architecture \ Services</h4>
+
+<p>This folder contains a <code>Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code>Data</code> folder which has classes required by that plug-in.</p>
+
+<h3>Entities &amp; Mappings</h3>
+
+<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code>Entities</code> folder, and it&rsquo;s sub-folder <code>Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code>Mappings</code> folder is meant to contain classes which implement <code>EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Data - Entities and Mappings]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/data-entities-and-mappings/"/>
+    <updated>2013-11-06T10:34:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/data-entities-and-mappings</id>
+    <content type="html"><![CDATA[<p>As part of Highway.OnRamp.MVC.Data we include several classes which help you in creating Entity Framework entities and mappings.  These types are not required, but they are meant to assist you.</p>
+
+<h2>Base Type for Entities</h2>
+
+<p>The first of these is our <code>BaseEntity</code> which we encourage you to inherit all of your entities from.  This type is located in the <code>Entities</code> folder, and defines a singular <code>Id</code> property, which in this case is a <code>Guid</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">BaseEntity</span> <span class="p">:</span> <span class="n">IIdentifiable</span><span class="p">&lt;</span><span class="n">Guid</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>What is IIdentifiable&lt;T&gt;?</h3>
+
+<p>Our sister project Highway.Data has a little known feature called PreBuilt Queries.  It defines a set of queries for you, including <code>GetById</code> and <code>FindAll</code>.  These queries use an interface <code>IIdentifiable&lt;T&gt;</code> to know what your Primary Key is.  <strong>There is no requirement that your entities implement this interface, but if they do there are several features which are added.</strong>  Note that the <code>T</code> defined the type of your key, and it can be changed to an <code>int</code> or any other type you prefer for your primary keys.</p>
+
+<h2>Base Type for Mappings</h2>
+
+<p>We also provide a base type for all of your <code>EntityTypeConfiguration&lt;T&gt;</code> classes called <code>BaseMapping&lt;T&gt;</code>.  Aside from being a short name, which in and of itself is awesome, this class also maps your key and sets it to be database generated as an identity.  One important note is that the <code>T</code> for <code>BaseMapping&lt;T&gt;</code> is restricted being a <code>BaseEntity</code> so we can map the <code>Id</code> property.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">BaseMapping</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">EntityTypeConfiguration</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">BaseEntity</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">BaseMapping</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">HasKey</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">Property</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span><span class="p">).</span><span class="n">HasDatabaseGeneratedOption</span><span class="p">(</span><span class="n">DatabaseGeneratedOption</span><span class="p">.</span><span class="n">Identity</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Automatic Mappings Inclusion</h2>
+
+<p>Building on an awesome feature of Entity Framework 6.0, we automatically detect all <code>EntityTypeConfiguration&lt;T&gt;</code> classes in the MVC project.  This means you don&rsquo;t need to update our <code>IMappingConfiguration</code> every time you add a new entity.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HighwayMappingConfiguration</span> <span class="p">:</span> <span class="n">IMappingConfiguration</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureModelBuilder</span><span class="p">(</span><span class="n">DbModelBuilder</span> <span class="n">modelBuilder</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Configurations</span><span class="p">.</span><span class="n">AddFromAssembly</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">GetType</span><span class="p">().</span><span class="n">Assembly</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Automatic IoC Registration Convention]]></title>
+    <link href="http://hwyfwk.com/blog/2013/11/06/automatic-ioc-registration-convention/"/>
+    <updated>2013-11-06T09:27:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2013/11/06/automatic-ioc-registration-convention</id>
+    <content type="html"><![CDATA[<p><span class='pullquote-right' data-pullquote='The class Foo will be automatically registered to interface IFoo'>
+In order to ease the pains of registering types to an IoC container, we include a <code>DefaultConventionInstaller</code> which registers components automatically to the IoC container based on naming conventions. The class Foo will be automatically registered to interface IFoo, provided of course that it implements IFoo.  This is accomplished using Windsor&rsquo;s registration conventions <a href="http://docs.castleproject.org/Windsor.Registering-components-by-conventions.ashx">which are documented here</a>.  By default we register all components with a Lifestyle of <code>PerWebRequest</code>, so one instance will be created per web request.  If you need to register a component with a different lifestyle than this, you will also need to exclude it from the default convention.  You can see an example of this below, where we exclude anything that is an <code>IController</code> because they are registered with a Transient Lifestyle in another installer
+</span></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
+</span><span class='line'>        <span class="n">Classes</span><span class="p">.</span><span class="n">FromThisAssembly</span><span class="p">().</span><span class="n">Pick</span><span class="p">()</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">WithServiceDefaultInterfaces</span><span class="p">()</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">Unless</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span><span class="p">(</span><span class="n">IController</span><span class="p">).</span><span class="n">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">LifestylePerWebRequest</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
@@ -1299,1602 +1904,6 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
 
 
 <p>This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v4.1.0.2]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2/"/>
-    <updated>2013-10-22T15:26:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/22/highway-dot-data-v4-dot-1-0-dot-2</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>Removed an extraneous extension method called <code>Include</code> which was creating a conflict with the <code>System.Data.Entity</code> method of the same name.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Understanding the Patterns]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/"/>
-    <updated>2013-10-19T10:40:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns</id>
-    <content type="html"><![CDATA[<h1>Patterns</h1>
-
-<p>Highway.Data is based on a blended use of <strong>3 major patterns</strong>, and to understand the intent of the Queries / Commands / Scalars that make highway smooth, we must first talk about the patterns.</p>
-
-<p>There are a lot of places where you can find the academic explanation of these patterns, but here we are going to focus on the outcomes we are using it for. If you would like to read more about these, check out the <a href="#furtherReading">Further Reading</a> below.</p>
-
-<h2>Repository</h2>
-
-<p>Repository is a way to abstract the &ldquo;guts&rdquo; of the data access and persistence knowledge away from my logic. This is a lot of the time misused. Typed Repositories, Repositories with more than 5 methods, repositories that manage their own statefulness are all examples of a good pattern meeting a bad implementation. We use Repository in combination with Unit of Work and a modern interpretation of Query Object pattern.</p>
-
-<h3>Signs of a well built Repository</h3>
-
-<ul>
-<li>The user of the repository ask for data, but no information about the persistence is leaked to the caller.</li>
-<li>It is not specific to any domain, and can be portable</li>
-<li>It has state, but doesn&rsquo;t manage it</li>
-<li>It has no control of the Update/Add/Delete side of the operations, but gives access to that API. Repositories are meant as an abstraction for reading data.</li>
-</ul>
-
-
-<h2>Unit Of Work</h2>
-
-<p>Unit of Work allows us to track in memory changes of an object that are made in series and then commit those changes to some persistence layer. This is an atomic unit of work that is transaction during the commit but in our code is just changes to objects.</p>
-
-<h3>Signs of a well built unit of work</h3>
-
-<ul>
-<li>Commit-able</li>
-<li>Abandon/Rollback-able</li>
-<li>Not specific to any one API</li>
-<li>Give the basic Add/Remove/Update functionality</li>
-<li>Are not query-able</li>
-</ul>
-
-
-<h2>Query Object</h2>
-
-<p>Query Object is a way of encapsulating the details of a single query into an object that can be reused without being stateful. This helps us avoid duplication in the code base and we can codify and test our queries.</p>
-
-<h3>Signs of a well built query object</h3>
-
-<ul>
-<li>It doesn&rsquo;t manager state outside a single execution</li>
-<li>It is reuse-able</li>
-<li>It is able to be functionally tested</li>
-<li>It is able to be performance tested</li>
-<li>It can output it&rsquo;s persistence query ( SQL statement for example )</li>
-<li>If it returns multiple rows, it can have pagination applied without modification</li>
-</ul>
-
-
-<p><a name="furtherReading"></a></p>
-
-<h2>Further Reading</h2>
-
-<p>We hold our opinions because of years of software development on all sizes of projects, but understand that many opinions exist that are valid. In an effort to present the information as impartially as possible below does include links to content that disagrees with our opinions. Please read on and form your own opinions.</p>
-
-<h3>Repository</h3>
-
-<p><a href="http://www.martinfowler.com/eaaCatalog/repository.html">Martin Fowler Repository Pattern</a></p>
-
-<p><a href="http://weblogs.asp.net/fredriknormen/archive/2008/04/24/what-purpose-does-the-repository-pattern-have.aspx">Fredik Normén Repository Pattern Purpose Discussion</a></p>
-
-<p><a href="http://msdn.microsoft.com/en-us/library/ff649690.aspx">MSDN Repository Article</a></p>
-
-<p><a href="http://ayende.com/blog/4784/architecting-in-the-pit-of-doom-the-evils-of-the-repository-abstraction-layer">Ayende@Rahien Repository Pit Of Doom</a></p>
-
-<p><a href="http://www.devlinliles.com/post/I-disagree-with-the-pit-of-Doom">Devlin Liles Discussion of the Pit Of Doom</a></p>
-
-<h3>Unit of Work</h3>
-
-<p><a href="http://www.martinfowler.com/eaaCatalog/unitOfWork.html">Martin Fowler Unit of Work</a></p>
-
-<p><a href="http://msdn.microsoft.com/en-us/magazine/dd882510.aspx">Jeremy Miller Unit of Work and Persistence Ignorance</a></p>
-
-<p><a href="http://rlacovara.blogspot.com/2009/04/entity-framework-patterns-unit-of-work.html">Ruby Lacovara Entity Framework Patterns Unit of Work</a></p>
-
-<h3>Query Object</h3>
-
-<p><a href="http://martinfowler.com/eaaCatalog/queryObject.html">Martin Fowler Query Object</a></p>
-
-<p><a href="http://coderkarl.wordpress.com/2012/05/02/the-query-object-pattern-2/">Karl Nilsson Query Object Pattern</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Queries / Commands / Scalars]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars/"/>
-    <updated>2013-10-19T09:21:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/queries-slash-commands-slash-scalars</id>
-    <content type="html"><![CDATA[<h1>Using Queries, Commands and Scalars</h1>
-
-<p>The basis for separating concerns in Highway.Data is that the query object itself is the smallest level of data access and can be used to encapsulate the concerns of the &ldquo;How we get data&rdquo; from the &ldquo;What data do I get&rdquo;. In this post will we be diving into the reasoning, implementation, and usage of the different types of Query Objects included with Highway.Data.</p>
-
-<ul>
-<li><a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Patterns</a></li>
-<li><a href="#query">Query</a></li>
-<li><a href="#command">Command</a></li>
-<li><a href="#scalar">Scalar</a></li>
-</ul>
-
-
-<p><a name="query"></a></p>
-
-<h1>Queries</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Query interface</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IQuery</span><span class="p">&lt;</span><span class="k">out</span> <span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IQueryBase</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Execute</span><span class="p">(</span><span class="n">IDataContext</span> <span class="n">context</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Execute is the function that our <code>Repository</code> will use to execute the query, and it will hand it the context to execute upon. This allows us to create queries without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our queries.</p>
-
-<h3>IEnumerable<T> Vs IQueryable<T></h3>
-
-<p>Notice how the Execution of the query returns an <code>IEnumerable</code> instead of an <code>IQueryable</code>. This is to basically &ldquo;seal&rdquo; the SQL so that additional operations happen in memory. The horrors of lazy loading and LINQ allow us, as developers without realizing it, to load tremendous amounts of data into memory. We have taken steps to make sure that is an intentional choice rather than an unintended consequence.</p>
-
-<h2>Usage</h2>
-
-<p>The basic query selects a collection of objects that you tell it to as one operation. If we need to get drivers by last name, consider the following classes and tests.</p>
-
-<h3>Classes Involved</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span> <span class="p">{</span> <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversByLastName</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Notice how we inherit from the <code>Query&lt;Driver&gt;</code> class. This class has most of the base logic for deferred execution and gives us an easy way to define queries. The type parameter of Driver tells us what the query will return. In one line we assign the <code>ContextQuery</code>, which is just a delegate to get called when we need the results.</p>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldGetDriversByLastName</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="c1">//Arrange</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Liles&quot;</span> <span class="p">});</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Rayburn&quot;</span> <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">query</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Act</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">results</span> <span class="p">=</span> <span class="n">query</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Assert</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">results</span><span class="p">.</span><span class="n">Count</span><span class="p">());</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">,</span><span class="n">results</span><span class="p">.</span><span class="n">Single</span><span class="p">().</span><span class="n">LastName</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<h3>Example Usage with repository</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">repository</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a name="command"></a></p>
-
-<h1>Command</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Command Interface</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ICommand</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IDataContext</span> <span class="n">context</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Execute is the function that our Repository will use to execute the command, and it will hand it the context to execute upon. This allows us to create commands without external dependencies, but also allows us to add additional behavior by creating our own context without breaking our commands.</p>
-
-<h2>Usage</h2>
-
-<p>The basic command allows us to fire off a set of operations without a return against our persistence store. This command could be updates, deletes, or even firing SQL Jobs. Lets consider the classes and tests involved</p>
-
-<h3>Classes Involved</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="kt">int</span> <span class="n">Score</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>  <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">SetDriverScoreByLastName</span> <span class="p">:</span> <span class="n">Command</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">SetDriverScoreByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">,</span> <span class="kt">int</span> <span class="n">score</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>          <span class="kt">var</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">driver</span> <span class="k">in</span> <span class="n">drivers</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">{</span>
-</span><span class='line'>              <span class="n">driver</span><span class="p">.</span><span class="n">Score</span> <span class="p">=</span> <span class="n">score</span><span class="p">;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>          <span class="n">context</span><span class="p">.</span><span class="n">Commit</span><span class="p">();</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Notice how we inherit from the <code>Command</code> class. This class has most of the base logic for deferred execution and gives us an easy way to define commands. We can set the <code>ContextQuery</code> to be a multiple line delegate like above, or a single operation.</p>
-
-<blockquote><h3><strong><em>Commands are not deferred, they execute immediately</em></strong></h3></blockquote>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldSetScoresByLastName</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="c1">//Arrange</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Liles&quot;</span> <span class="p">});</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Rayburn&quot;</span> <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SetDriverScoreByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">,</span> <span class="m">100</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Act</span>
-</span><span class='line'>  <span class="n">command</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Assert</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Single</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="s">&quot;Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">.</span><span class="n">LastName</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="n">results</span><span class="p">.</span><span class="n">Score</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Example Usage with repository</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">repository</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="k">new</span> <span class="n">SetDriverScoreByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">,</span> <span class="m">100</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a name="scalar"></a></p>
-
-<h1>Scalar</h1>
-
-<h2>Implementation</h2>
-
-<p>Lets take a look at the definition of out basic Scalar interface</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IScalar</span><span class="p">&lt;</span><span class="k">out</span> <span class="n">T</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">T</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IDataContext</span> <span class="n">context</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Usage</h2>
-
-<p>The basic scalar selects a single object that you tell it to as one operation. If we need to get a driver by last name, consider the following classes and tests. we can also return out non entity types such as a count of drivers by score;</p>
-
-<h3>Classes Involved</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="kt">int</span> <span class="n">Score</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>  <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FirstDriverByLastName</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">FirstDriverByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">FirstOrDefault</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">PassingDrivers</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">PassingDrivers</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Count</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Score</span> <span class="p">&gt;</span> <span class="m">75</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Notice how we inherit from the <code>Scalar&lt;Driver&gt;</code> or <code>Scalar&lt;int&gt;</code> class. The type parameter defines the type we are returning with the scalar, and the base class gives us all the logic to execute and log the information about the execution.</p>
-
-<blockquote><h3><strong><em>Scalars are not deferred, they execute immediately</em></strong></h3></blockquote>
-
-<h3>Tests</h3>
-
-<p>For these tests we are using the <code>InMemoryDataContext</code> that ships with Highway.Data as a testable stub.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldGetFirstDriverByLastName</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="c1">//Arrange</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Liles&quot;</span> <span class="p">});</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Rayburn&quot;</span> <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">query</span> <span class="p">=</span> <span class="k">new</span> <span class="n">FirstDriverByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Act</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">query</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Assert</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">.</span><span class="n">LastName</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="na">[TestMethod]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldGetCountOfPassingDrivers</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="c1">//Arrange</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Liles&quot;</span><span class="p">,</span> <span class="n">Score</span> <span class="p">=</span> <span class="m">50</span> <span class="p">});</span>
-</span><span class='line'>  <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(){</span> <span class="n">LastName</span> <span class="p">=</span> <span class="s">&quot;Rayburn&quot;</span><span class="p">,</span> <span class="n">Score</span> <span class="p">=</span> <span class="m">100</span> <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">query</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PassingDrivers</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Act</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">query</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Assert</span>
-</span><span class='line'>  <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="n">result</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Example Usage with repository</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Driver</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">repository</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriverByLastName</span><span class="p">(</span><span class="s">&quot;Liles&quot;</span><span class="p">));</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">passingDrivers</span> <span class="p">=</span> <span class="n">repository</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">PassingDrivers</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p><a name="prebuilt"></a></p>
-
-<h1>Prebuilt Queries</h1>
-
-<p>In Highway.Data we ship a selection of prebuilt queries for standard data operations.  Those are:</p>
-
-<ul>
-<li><code>FindAll&lt;T&gt;</code> &ndash; Which retrieves all instances of the entity type <code>T</code></li>
-<li><code>GetById&lt;TId,T&gt;</code> &ndash; This retrieves an instance of your entity with a particular Id value.  This is powered via the <code>IIdentifiable&lt;T&gt;</code> interface, which is explained below.</li>
-</ul>
-
-
-<p>In order to make these queries more discoverable, we have included a fluent helper class named <code>Queries</code> which can be used to access the above queries, somewhat easier, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="n">Queries</span><span class="p">.</span><span class="n">GetById</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;(</span><span class="m">123</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>IIdentifiable&lt;T&gt;</h2>
-
-<p>This interface, which is required to empower <code>GetById</code> above, defines a property called <code>Id</code> with a type of <code>T</code>.  This is only required for the prebuilt queries, and is not otherwise required for Highway.Data.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Roadmaps]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
-    <updated>2013-10-19T08:38:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
-    <content type="html"><![CDATA[<p>Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.</p>
-
-<!-- MORE -->
-
-
-<h1>Highway.Data</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>By end of the year EF 6.0 major features that need additional work in the framework will be supported and documented</li>
-</ul>
-
-
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
-
-<ul>
-<li>Context and Repository will have factories for creation that control lifetime of the objects</li>
-<li>Projection based Scalars &ndash; Scalars will be converted to projection based to allow for SQL output,</li>
-<li>Documentation &ndash; Video Tutorials for 80% features</li>
-</ul>
-
-
-<h1>Highway.Insurance</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>Version Support for VS 2013 APIs</li>
-</ul>
-
-
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
-
-<ul>
-<li>Video Tutorials for 80% features</li>
-</ul>
-
-
-<h1>Highway.Pavement</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-</ul>
-
-
-<h1>Highway.MVC &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>Package a set of classes that allow for MVVM Model hydration to Knockout or Angular by default from MVC Model</li>
-<li>All feature documentation and usage video tutorials</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC.MVVM &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>OnRamp to drop MVVM wire up and folder structure into any MVC project &ndash; Even Existing</li>
-<li>Video to walk through basic structure</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC</h1>
-
-<h2>vNext &ndash; Timeline &ndash; Q4 2013</h2>
-
-<ul>
-<li>Documentation of all current features (70%+ complete already)</li>
-<li>Reorganize solution structure to move most inserted classes into an App_Infrastructure folder</li>
-<li>Introduce default conventions for &ldquo;Post<em>&rdquo; and &ldquo;Get</em>&rdquo; actions to be limited to HttpPost and HttpGet respectively via Filter injection.</li>
-</ul>
-
-
-<h1>Highway.RoadCrew</h1>
-
-<h2>vFirst</h2>
-
-<ul>
-<li>Implement all currently listed stories/issues to establish a great foundation</li>
-<li>Document all those features on the website, as completed.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Repository]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/repository/"/>
-    <updated>2013-10-19T08:17:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/repository</id>
-    <content type="html"><![CDATA[<p><span class='pullquote-right' data-pullquote='IRepository is the singular interface which your business code should be aware of from Highway.Data.'>
-The <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Repository Pattern</a> describes an intermediary between code which uses data, and the particulars of how that data is retrieved.  In Highway.Data, we have a <code>Repository</code> class which is meant for this exact purpose, and it implements an <code>IRepository</code> interface which your code should take as a dependency.  IRepository is the singular interface which your business code should be aware of from Highway.Data.  Through it we can accomplish any database operation that is needed.
-</span></p>
-
-<p>In Highway.Data, we define our <code>IRepository</code> interface as follows:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRepository</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">IDataContext</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IQuery</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IScalar</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The interface first has two properties, those being <code>Context</code> and <code>EventManager</code>.  The details of those are covered elsewhere, though we will touch lightly on <code>Context</code> in this article.  The other three methods are very interesting, and each deserve a section of their own.</p>
-
-<h1>Example Domain</h1>
-
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Find Multiple Things &ndash; IEnumerable&lt;T&gt; Find&lt;T&gt;(IQuery&lt;T&gt; query)</h1>
-
-<p>This method is used when you want to retrieve multiple things from the database.  Let&rsquo;s assume we had a MVC controller which wanted to query for all drivers who had taken a class from Instructor #5.  First thing we&rsquo;ll need is a controller which has a dependency of our <code>IRepository</code> interface.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now then, we&rsquo;ll add an action method to this controller, which is called <code>ByInstructor</code> which takes an <code>int</code> of the Instructor&rsquo;s <code>Id</code>.  Then we call to the repository, passing in an instance of our Query object called <code>FindDriversByInstructorId</code>.  Like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByInstructor</span><span class="p">(</span><span class="kt">int</span> <span class="n">instructorId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindDriversByInstructorId</span><span class="p">(</span><span class="n">instructorId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note how our <code>DriversController</code> is not aware of anything database specific, like connection strings, or even which Object Relational Mapper (ORM) is servicing the request.  All it knows is that it is asking for multiple drivers, and receiving them.  Now, you might be curious what&rsquo;s going on inside of <code>FindDriversByInstructorId</code>, and while we&rsquo;re not discussing queries here, I want to show you the code so you don&rsquo;t think there is magic going on:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FindDriversByInstructorId</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">FindDriversByInstructorId</span><span class="p">(</span><span class="kt">int</span> <span class="n">instructorId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;().</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Find One Thing &ndash; T Find&lt;T&gt;(IScalar&lt;T&gt; query)</h1>
-
-<p>Our next method is used when we want to retrieve a singular thing from the database.  That one thing might be an <code>int</code>, for instance a count of rows, or it might be an entity like <code>Car</code>, for instance getting the car for a particular driver.  This time we&rsquo;ll be working with the <code>CarController</code>, and we&rsquo;re going to retrieve a <code>Car</code> by it&rsquo;s <code>Driver</code>&rsquo;s <code>Id</code>.  Our controller would use <code>IRepository</code> like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CarController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">CarController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByDriver</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">Car</span> <span class="n">car</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindCarByDriverId</span><span class="p">(</span><span class="n">driverId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see, we return a singular object, once again completely unaware of which ORM is doing the work, or anything related to the database.  Like before, while we&rsquo;re not discussing Scalars here, this is the query being used :</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FindCarByDriverId</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">FindCarByDriverId</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Car</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">FirstOrDefault</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Do Something &ndash; void Execute(ICommand command)</h1>
-
-<p>Our final method is used to perform a command that has no return value.  There are often times when you want the database to do some work, but you don&rsquo;t need it to return anything as a result of that work, this is what <code>Execute</code> is for.  In our example, we&rsquo;re going to add another method to our <code>CarController</code> class from the previous example, which will remove all Chevy vehicles from our database.  Our <code>CarController</code> will now look like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CarController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">CarController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByDriver</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">Car</span> <span class="n">car</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindCarByDriverId</span><span class="p">(</span><span class="n">driverId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">RemoveChevy</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">repo</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="k">new</span> <span class="n">DropMake</span><span class="p">(</span><span class="s">&quot;Chevy&quot;</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">&quot;Index&quot;</span><span class="p">,</span> <span class="s">&quot;Home&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note how <code>Execute</code> returns no value.  Our <code>DropMake</code> command looks like this :</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
-</span><span class='line'>        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
-</span><span class='line'>        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As the comment says, this is an inefficient way to remove multiple rows, please review the documentation on <code>AdvancedCommand</code> if you really need to perform a delete like this.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Testable Data Access At Every Layer]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/15/testable-data-access-at-every-level/"/>
-    <updated>2013-10-15T12:58:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/15/testable-data-access-at-every-level</id>
-    <content type="html"><![CDATA[<h1>Installing Highway.Data</h1>
-
-<p>Our first and most important feature of Highway.Data is wrapping the Highway.Data <code>IDataContext</code> interface around the specific ( normally leaky ) implementation of the persistence technology.  You get started with Highway.Data by simply opening the Package Manager Console and typeing which ever of our adapters you decide to use:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">Install-Package</span> <span class="n">Highway</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">EntityFramework</span>
-</span><span class='line'><span class="n">Install-Package</span> <span class="n">Highway</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">NHibernate</span>
-</span><span class='line'><span class="n">Install-Package</span> <span class="n">Highway</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">RavenDb</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will bring in your chosen persistence framework, Highway.Data, Highway.Pavement, and some common wrappers around Logging and Service location.</p>
-
-<h1>Mocking Framework</h1>
-
-<p>Chose any one you like.</p>
-
-<ol>
-<li><a href="http://hibernatingrhinos.com/oss/rhino-mocks">Rhino Mocks</a> We use this in developing the Highway Framework, so this will be what we use in examples.</li>
-<li><a href="http://www.moqthis.com/">Moq</a></li>
-<li><a href="http://msdn.microsoft.com/en-us/library/hh549175%28v=vs.120%29.aspx">Microsoft Fakes</a></li>
-<li><a href="http://www.telerik.com/products/mocking.aspx">JustMock</a></li>
-<li><a href="http://sourceforge.net/projects/easymocknet/">EasyMock.NET</a></li>
-<li><a href="http://www.typemock.com/">TypeMock</a></li>
-<li><a href="http://nsubstitute.github.io/">NSubstitute</a></li>
-<li><a href="http://nmock3.codeplex.com/">NMock</a></li>
-<li><a href="https://github.com/fakeiteasy">FakeItEasy</a></li>
-<li>the other dozens we didn&rsquo;t enumerate</li>
-</ol>
-
-
-<h1>Introducing the IRepository</h1>
-
-<p>Let&rsquo;s create a variable of type <code>IRepository</code> and provide it a mock, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">IRepository</span> <span class="n">repository</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IRepository</span><span class="p">&gt;();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, Let&rsquo;s look at the definition of <code>IRepository</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRepository</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">IDataContext</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IQuery</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IScalar</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The interface provides a way to do Query Object based execution for Queries / Commands / Scalars.If you would like to know more about how these are wired together at a fundemental level, check out our <a href="http://hwyfwk.com/blog/2013/10/19/understanding-the-patterns/">Patterns Post</a>.</p>
-
-<ul>
-<li>Unit of Work &ndash; <code>Context</code></li>
-<li>Event/Interceptor Management &ndash; <code>EventManager</code></li>
-<li>Data Access &ndash; <code>Find&lt;T&gt;(IQuery&lt;T&gt; query) &amp;&amp; Find&lt;T&gt;(IScalar&lt;T&gt; query)</code></li>
-<li>Data Execution &ndash; <code>Execute(ICommand command)</code></li>
-</ul>
-
-
-<p>From a testing perspective this provides great abstractions. We can test our business logic without having to worry about even the structure of our queries.  Consider the following classes and test:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span> <span class="p">{</span> <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationService</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repository</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriverEducationService</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repository</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Driver</span> <span class="nf">GetDriver</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">repository</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriverByName</span><span class="p">(</span><span class="n">name</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A simple class that retrieves driver by name. This query is just the way we have codified that query into something that would make sense for logic to know. My logic should know it needs to find a driver by name, but shouldn&rsquo;t know how to do that. This gives us that testable abstraction.</p>
-
-<p>Now let&rsquo;s write a test that ensures that works, without having to touch a database:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationServiceTests</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="na">    [TestMethod]</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">GetDriver_ShouldRetrieveADriverByName</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// Arrange</span>
-</span><span class='line'>        <span class="n">IRepository</span> <span class="n">repository</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IRepository</span><span class="p">&gt;();</span>
-</span><span class='line'>        <span class="n">repository</span><span class="p">.</span><span class="n">Expect</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="n">Arg</span><span class="p">&lt;</span><span class="n">DriverByName</span><span class="p">&gt;.</span><span class="n">Is</span><span class="p">.</span><span class="n">NotNull</span><span class="p">)).</span><span class="n">Return</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">));</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriverEducationService</span><span class="p">(</span><span class="n">repository</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Act</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Assert</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now this lets us test up, but we still need to test our selection criteria in the query. Aka, test down. I would like to do this without a database. Let&rsquo;s give it a shot.</p>
-
-<h1>Introducing the IDataContext</h1>
-
-<p>Now, let&rsquo;s create a variable of type <code>IDataContext</code> and provide it an instance of the class <code>DataContext</code>, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">IDataContext</span> <span class="n">context</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IDataContext</span><span class="p">&gt;();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, Let&rsquo;s look at the definition of <code>IDataContext</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDataContext</span> <span class="p">:</span> <span class="n">IDisposable</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Add</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="nf">Commit</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Reload</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Remove</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Update</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">class</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The interface provides a way to do all of the CRUD operations:</p>
-
-<ul>
-<li><strong>C</strong>reate &ndash; <code>Add&lt;T&gt;(T item)</code></li>
-<li><strong>R</strong>ead &ndash; <code>AsQueryable&lt;T&gt;()</code></li>
-<li><strong>U</strong>pdate &ndash; <code>Update&lt;T&gt;(T item)</code></li>
-<li><strong>D</strong>elete &ndash; <code>Remove&lt;T&gt;(T item)</code></li>
-</ul>
-
-
-<p>In addition we&rsquo;ve provided a way to do two other important things:</p>
-
-<ul>
-<li>Refresh an object from the Database via <code>Reload&lt;T&gt;(T item)</code></li>
-<li>Commit all work as a single transaction via <code>Commit()</code></li>
-</ul>
-
-
-<h2>Framework Specifics</h2>
-
-<h3>Entity Framework &ndash; DbContext</h3>
-
-<p>Inside the Highway.Data.EntityFramework version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an instance of <code>DbContext</code>.  Our declaration looks like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DataContext</span> <span class="p">:</span> <span class="n">DbContext</span><span class="p">,</span> <span class="n">IEntityDataContext</span><span class="p">,</span> <span class="n">IObservableDataContext</span><span class="p">,</span> <span class="n">IDataContext</span><span class="p">,</span> <span class="n">IDisposable</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Anytime you have existing code which requires a DbContext, you can instead provide an instance of the DataContext class.</p>
-
-<h3>NHibernate &ndash; ISession</h3>
-
-<p>Inside the Highway.Data.NHibernate version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an implementor of <code>ISession</code>.  Our declaration looks like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DataContext</span> <span class="p">:</span> <span class="n">ISession</span><span class="p">,</span> <span class="n">IObservableDataContext</span><span class="p">,</span> <span class="n">IDisposable</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Anytime you have existing code which requires a <code>ISession</code>, you can instead provide an instance of the DataContext class.</p>
-
-<h3>RavenDb &ndash; IDocumentSession</h3>
-
-<p>Inside the Highway.Data.RavenDb version of <code>DataContext</code>, it is worth of note that our <code>DataContext</code> class <strong>is</strong> an implementor of <code>IDocumentSession</code>.  Our declaration looks like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DataContext</span> <span class="p">:</span> <span class="n">IDocumentSession</span><span class="p">,</span> <span class="n">IObservableDataContext</span><span class="p">,</span> <span class="n">IDisposable</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Anytime you have existing code which requires a <code>IDocumentSession</code>, you can instead provide an instance of the DataContext class.</p>
-
-<h1>Testing with DataContext</h1>
-
-<p>From a testing perspective this provides great abstractions.  Consider the following classes and test:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span> <span class="p">{</span> <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverByName</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nf">DriverByName</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;().</span><span class="n">SingleOrDefault</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="n">name</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A simple class that retrieves driver by name.</p>
-
-<p>Now let&rsquo;s write a test that ensures that works, without having to touch a database:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationServiceTests</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="na">    [TestMethod]</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">GetDriver_ShouldRetrieveADriverByName</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// Arrange</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">();</span>
-</span><span class='line'>      <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Devlin Liles&quot;</span> <span class="p">});</span>
-</span><span class='line'>      <span class="n">context</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Tim Rayburn&quot;</span> <span class="p">});</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriverEducationService</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Act</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Assert</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, this test doesn&rsquo;t use mocking because we provide an <code>InMemoryDataContext</code> with Highway.Data which removes the need for it in most cases.  But when it doesn&rsquo;t remove that need, we can also re-write the same test using a mocking framework like Rhino.Mocks very simply:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestClass]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverEducationServiceTests</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="na">    [TestMethod]</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">GetDriver_ShouldRetrieveADriverByName</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// Arrange</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IDataContext</span><span class="p">&gt;();</span>
-</span><span class='line'>      <span class="n">context</span><span class="p">.</span><span class="n">Expect</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;())</span>
-</span><span class='line'>          <span class="p">.</span><span class="n">Return</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
-</span><span class='line'>              <span class="p">{</span>
-</span><span class='line'>                  <span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Devlin Liles&quot;</span> <span class="p">},</span>
-</span><span class='line'>                  <span class="k">new</span> <span class="n">Driver</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Tim Rayburn&quot;</span> <span class="p">}</span>
-</span><span class='line'>              <span class="p">}.</span><span class="n">AsQueryable</span><span class="p">());</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DriverEducationService</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Act</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">driver</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Assert</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;Devlin Liles&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This test uses the mock of IDataContext to provide a way for testing filter and query logic without having a database handy. It uses a great LINQ method <code>AsQueryable()</code> to help with the return. It is a bit heavier for normal queries.</p>
-
-<p><strong>When you are testing code that add/commits you can use a mixture of Mock levels, or the <code>InMemoryDataContext</code></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IDataContext</span><span class="p">&gt;();</span>
-</span><span class='line'><span class="kt">var</span> <span class="n">repository</span> <span class="p">=</span> <span class="n">MockRepository</span><span class="p">.</span><span class="n">GenerateMock</span><span class="p">&lt;</span><span class="n">IRepository</span><span class="p">&gt;();</span>
-</span><span class='line'><span class="n">repository</span><span class="p">.</span><span class="n">Expect</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Context</span><span class="p">).</span><span class="n">Return</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>or</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">repository</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Repository</span><span class="p">(</span><span class="k">new</span> <span class="n">InMemoryDataContext</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>InMemoryDataContext</h1>
-
-<p>Just a few points to keep in mind with <code>InMemoryDataContext</code>.</p>
-
-<ol>
-<li>It does not now, nor will it ever support AdvancedQuery, AdvancedCommand, or AdvancedScalar.</li>
-<li>It modifies objects by ref in real time, so Commit will only rescan the graph for added or removed objects. <strong>This means changing a primitive property will change it even if you don&rsquo;t call commit</strong></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v4.1.0.1]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1/"/>
-    <updated>2013-10-08T17:55:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/08/highway-dot-data-v4-dot-1-0-dot-1</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>No code changes, correcting NuGet metadata for Highway.Data.* not pointing at the correct version of Highway.Data after the introduction of strong naming.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MVC Filters with Dependency Injection]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/"/>
-    <updated>2013-10-06T20:39:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection</id>
-    <content type="html"><![CDATA[<p>One of the most powerful features of the MVC OnRamp is the ability to have MVC Filters injected via our Inversion of Control (IoC) container, Castle.Windsor.  There are several types of filters supported by ASP.NET MVC that allow you to handle orthogonal issues such as:</p>
-
-<ul>
-<li><code>IExceptionFilter</code> which is invoked whenever unhandled exceptions occur.</li>
-<li><code>IActionFilter</code> which is invoked just before and just after specific actions.</li>
-<li><code>IAuthorizationFilter</code> which is invoked when authorizing requests.</li>
-<li><code>IResultFilter</code> which is invoked on just before and just after results are returned.</li>
-</ul>
-
-
-<p>Normally these filters are applied one of two ways:</p>
-
-<ul>
-<li>Globally via specification in the App_Start, which can easily be resolved from the IoC container but which must be global in scope, and hence somewhat limiting.</li>
-<li>Via Attribute on either a Controller or Action, which cannot be resolved from the IoC because we have no control over the instantiation of those attributes.</li>
-</ul>
-
-
-<p>But MVC allows for another option, which is an <code>IFilterProvider</code>, this interface is called at the outset of any request, and is allowed to return at runtime instances of filters which are to be applied.  Using this interface, we have created a class that resolves filters from within Castle.Windsor.  Consider the following class:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">IoCFilterProvider</span> <span class="p">:</span> <span class="n">IFilterProvider</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;&gt;</span> <span class="n">registeredFilters</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">IoCFilterProvider</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;[]</span> <span class="n">registeredFilters</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">registeredFilters</span> <span class="p">=</span> <span class="n">registeredFilters</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Filter</span><span class="p">&gt;</span> <span class="n">GetFilters</span><span class="p">(</span><span class="n">ControllerContext</span> <span class="n">controllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span> <span class="n">actionDescriptor</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">registeredFilters</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Invoke</span><span class="p">(</span><span class="n">controllerContext</span><span class="p">,</span> <span class="n">actionDescriptor</span><span class="p">)).</span><span class="n">Where</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This simple class takes as a dependencies an array of delegates, speficically an array of <code>Func&lt;&gt;</code> delegates which receive as parameters the <code>ControllerContext</code> and <code>ActionDescriptor</code> and which return an instance of the <code>Filter</code> class.</p>
-
-<ul>
-<li>The <code>ControllerContext</code> class describes the controller that is about to be called.</li>
-<li>The <code>ActionDescriptor</code> class describes the action on that controller which is about to be called.</li>
-</ul>
-
-
-<p>Given this information, you can decide to either return a <code>Filter</code> which will be applied, or return a null which will take no action.</p>
-
-<h1>How do I register a filter?</h1>
-
-<p>In our <code>FilterInstaller</code> class you will see an example of registering such a filter:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FilterInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilterProvider</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">IoCFilterProvider</span><span class="p">&gt;(),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span><span class="n">ActionDescriptor</span><span class="p">,</span><span class="n">Filter</span><span class="p">&gt;&gt;().</span><span class="n">Instance</span><span class="p">(</span>
-</span><span class='line'>                <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">))</span>
-</span><span class='line'>            <span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On line 8, we register a <code>Func&lt;ControllerContext,ActionDescriptor,Filter&gt;</code> and state that we will provide a specific instance of that delegate to be used.</p>
-
-<p>On line 9, we use the lambda syntax to declare a delegate, which is provided <code>(c,a)</code> as the parameters of type <code>ControllerContext</code> and <code>ActionDescriptor</code>, and which has a body of:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">new</span> <span class="nf">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this simple case, we create an instance of the <code>System.Web.Mvc.Filter</code> class and provide it our <code>ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code>FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code>int.MinValue</code>, aka I really mean last of all last filters.</p>
-
-<p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code>Filter</code> and when to return <code>null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code>null</code>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NLog and Castle Logging Facility for Logging]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/"/>
-    <updated>2013-10-06T08:50:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging</id>
-    <content type="html"><![CDATA[<p>One of the most important features of any application is a good logging strategy.  Because of this, <code>Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code>NLog.config</code> file.</p>
-
-<h1>How do I log from a class?</h1>
-
-<p>If you want to log from a class, there is a very simply pattern we recommend you follow:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">Castle.Core.Logging</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyNewClass</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nf">MyNewClass</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="n">Logger</span> <span class="p">=</span> <span class="n">NullLogger</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">public</span> <span class="n">ILogger</span> <span class="n">Logger</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The steps are quite simple:</p>
-
-<ul>
-<li>Declare a public property of type <code>ILogger</code></li>
-<li>Initialize that property in your constructor to <code>NullLogger.Instance</code></li>
-</ul>
-
-
-<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code>Logger</code> property.  But, if you ever remove the <code>LoggingInstaller</code> your code will continue to work because the <code>NullLogger</code> is a proper implementation of <code>ILogger</code> which does nothing.  This avoids <code>NullReferenceException</code>s when you don&rsquo;t have a Logger injected, for instance during tests.</p>
-
-<h1>How does that get setup to begin with?</h1>
-
-<p>The Logging Facility is setup in the <code>LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">LoggingInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">LoggingFacility</span><span class="p">&gt;(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">UseNLog</span><span class="p">().</span><span class="n">WithConfig</span><span class="p">(</span><span class="s">&quot;NLog.config&quot;</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That really is all there is to it, we configure the facility to use NLog, and then tell it where the config file is.  Now, the config file we include is very simple:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
-</span><span class='line'>      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>      <span class="na">autoReload=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>      <span class="na">globalThreshold=</span><span class="s">&quot;Debug&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;targets&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;target</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span>
-</span><span class='line'>            <span class="na">name=</span><span class="s">&quot;file&quot;</span>
-</span><span class='line'>            <span class="na">fileName=</span><span class="s">&quot;${basedir}/Logs/Log.txt&quot;</span>
-</span><span class='line'>            <span class="na">archiveEvery=</span><span class="s">&quot;Day&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/targets&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;rules&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Debug&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;file&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/rules&gt;</span>
-</span><span class='line'><span class="nt">&lt;/nlog&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This configuration sets up a <code>Logs</code> directory that will contain <code>Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says &ldquo;log everything to Logs.txt&rdquo;.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
-
-<h1>What is logged automatically for me?</h1>
-
-<p>We setup two types of loggers for you automatically;</p>
-
-<ul>
-<li>The App_Start component <code>LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
-<li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
-</ul>
-
 ]]></content>
   </entry>
   

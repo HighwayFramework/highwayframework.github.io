@@ -4,7 +4,7 @@
   <title><![CDATA[Category: release | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/release/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2013-12-16T08:32:14-06:00</updated>
+  <updated>2014-01-25T20:07:51-06:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,75 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
+    <updated>2014-01-25T19:27:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
+    <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
+
+<ul>
+<li>Major restructuring to organize and rename a lot of pieces</li>
+<li>ApiController dependency injection</li>
+<li>Automatic IoC registrations</li>
+<li>Session and Configuration access via Interfaces</li>
+<li>Easy RESTful ApiControllers</li>
+<li>Injectable Filters</li>
+<li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
+    <updated>2014-01-25T16:40:00-06:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
+    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
+
+<h2>New Features, and better Domain Driven Design support</h2>
+
+<h3>Domain Context</h3>
+
+<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
+
+<h4>More Details are here: <a href="/blog/2014/01/25/domain-context/">Domain Context</a></h4>
+
+<h3>Simplified Creation Pattern</h3>
+
+<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
+
+<h4>More Details are here: <a href="/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
+
+<h3>Entity Framework 6.0.0.2 Support</h3>
+
+<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
+
+<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
+
+<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
+
+<h2>Breaking Changes:</h2>
+
+<h3>AsQueryable off Repository.Context</h3>
+
+<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
+
+<h3>Interception</h3>
+
+<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
+
+<h4>More Details are here:</h4>
+
+<h2>Thanks to:</h2>
+
+<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
+
+<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.RoadCrew v0.1]]></title>
@@ -73,48 +142,6 @@
 
 <ul>
 <li>No code changes, correcting NuGet metadata for Highway.Data.* not pointing at the correct version of Highway.Data after the introduction of strong naming.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Pavement v0.3]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/"/>
-    <updated>2013-10-05T12:22:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
-</ul>
-
-
-<h1>Notes</h1>
-
-<ul>
-<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v4.1]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1/"/>
-    <updated>2013-10-05T12:19:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-data-v4-dot-1</id>
-    <content type="html"><![CDATA[<h1>Changes</h1>
-
-<ul>
-<li>Adding a strong name key to all Highway.Data assemblies so they can be referenced from signed assemblies.</li>
-</ul>
-
-
-<h1>Notes</h1>
-
-<ul>
-<li>Thank you to friend of the project Michael Dudley for pointing out this oversight.</li>
 </ul>
 
 ]]></content>

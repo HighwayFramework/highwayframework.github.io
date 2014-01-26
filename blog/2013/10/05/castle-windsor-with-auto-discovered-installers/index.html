@@ -118,7 +118,7 @@
 
 <p>Dependency injection is a key part of good software development, it is the D or <a href="http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID</a>, and yet is not something <a href="http://microsoft.com">Microsoft</a> ships a solution for.  As such, we have turned to the community and the long standing, well supported, king of IoC : <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a></p>
 
-<p>We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our <code>IoC.Startup()</code> method, we do the following:</p>
+<p>We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our <code>WindsorActivator.Startup()</code> method, we do the following:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -133,43 +133,23 @@
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">    [Obsolete(&quot;Container should never be accessed directly outside of App_Start&quot;)]</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="n">IWindsorContainer</span> <span class="n">Container</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Startup</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'><span class="cp">#pragma warning disable 618</span>
-</span><span class='line'>        <span class="c1">// Create the container</span>
-</span><span class='line'>        <span class="n">Container</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WindsorContainer</span><span class="p">();</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>        <span class="c1">// Create the container</span>
+</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WindsorContainer</span><span class="p">();</span>
 </span><span class='line'>
 </span><span class='line'>        <span class="c1">// Add the Array Resolver, so we can take dependencies on T[]</span>
 </span><span class='line'>        <span class="c1">// while only registering T.</span>
-</span><span class='line'>        <span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="n">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="n">ArrayResolver</span><span class="p">(</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="n">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="n">ArrayResolver</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
 </span><span class='line'>
 </span><span class='line'>        <span class="c1">// Register the kernel and container, in case an installer needs it.</span>
-</span><span class='line'>        <span class="n">Container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IKernel</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWindsorContainer</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">Container</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
+</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IKernel</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWindsorContainer</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">)</span>
 </span><span class='line'>            <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Search for an use all installers in this application.</span>
-</span><span class='line'>        <span class="n">Container</span><span class="p">.</span><span class="n">Install</span><span class="p">(</span><span class="n">FromAssembly</span><span class="p">.</span><span class="n">This</span><span class="p">());</span>
-</span><span class='line'><span class="cp">#pragma warning restore 618</span>
-</span><span class='line'>    <span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>We make your instance of <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> available via <code>IoC.Container</code> but we have specifically marked that as <code>[Obsolete]</code> because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of App_Start.</p>
+<p>We make your instance of <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> available via <code>IoC.Container</code> but we have specifically marked that as <code>[Obsolete]</code> because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of <code>App_Architecture</code>.</p>
 
 <h2>Accessing the Container without an Obsolete Warning</h2>
 
@@ -186,7 +166,7 @@
 
 <h1>Discovering Installers</h1>
 
-<p>Our code above includes one very small, but very powerful line that is worth highlighting:</p>
+<p><code>WindsorActivator</code> also includes one very small, but very powerful line that is worth highlighting:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Container</span><span class="p">.</span><span class="n">Install</span><span class="p">(</span><span class="n">FromAssembly</span><span class="p">.</span><span class="n">This</span><span class="p">());</span>
@@ -200,10 +180,12 @@
 <p>We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the <code>Installers</code> folder of your MVC solution.  Here are their names and purposes:</p>
 
 <ul>
-<li>ControllerInstaller &ndash; Scans the current assembly for all types that implement <code>IController</code> from System.Web.Mvc and registers them with <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a>.  This means you never have to register your controllers manually.</li>
-<li>LoggingInstaller &ndash; Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
-<li>FilterInstaller &ndash; Is where you register all MVC filters.  We will cover this in more detail when we discuss Filter Injection.</li>
-<li>HighwayDataInstaller &ndash; Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
+<li><code>CommonLoggingInstaller</code> &ndash; Configures the Common.Logging installer used by Highway.Data to log to NLog</li>
+<li><code>ControllersInstaller</code> &ndash; Scans the current assembly for all types that implement <code>IController</code> from System.Web.Mvc and registers them with <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a>.  This means you never have to register your controllers manually.</li>
+<li><code>DefaultConventionInstaller</code> &ndash; Automatically registers types based on naming conventions, the <a href="/blog/2013/11/06/automatic-ioc-registration-convention/">details of which we discuss in this feature</a>.</li>
+<li><code>EntityFrameworkInstaller</code> &ndash; Registers the configured DatabaseInitializer for Entity Framework.</li>
+<li><code>HighwayDataInstaller</code> &ndash; Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
+<li><code>LoggingInstaller</code> &ndash; Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
 </ul>
 
 
@@ -273,7 +255,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2013 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2014 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 
