@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "domain context"
+title: "Domain Context"
 date: 2014-01-25 16:42
 comments: true
 no_homepage: true
@@ -16,7 +16,7 @@ We added a few classes to help support the ability to create domain bounded cont
 ###IDomainRepository
 This repository has the event interception events, as well as the bounded context.
 
-```
+``` csharp
 	public interface IDomainRepository<in T> where T : class
 	{
 	    event EventHandler<BeforeQuery> BeforeQuery;
