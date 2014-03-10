@@ -20,6 +20,8 @@ He is an avid soccer player and hobbyist gamer.
 
 # Contributors
 
+* Eric Burcham - Contributed to [Data]
+* Long Mai - Contributed to [Data]
 * Brian Sullivan - Contributed to [Data]
 * Jay Smith - Contributed to [Data]
 * Cori Drew - Contributed to [Data] and the [Services OnRamp][Services]
