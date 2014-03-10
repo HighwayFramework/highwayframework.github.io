@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-01-25T20:07:51-06:00</updated>
+  <updated>2014-03-10T10:52:39-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,38 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.5 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released/"/>
+    <updated>2014-03-10T10:47:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released</id>
+    <content type="html"><![CDATA[<p>This release is brought to you by two new contributors, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/52">Support adding element directly and indirectly to InMemoryDataContext.</a></li>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/51">Improved documentation for IDomainRepositoryFactory</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data 5.0.5 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/09/highway-dot-data-5-dot-0-5-released/"/>
+    <updated>2014-03-09T12:35:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/09/highway-dot-data-5-dot-0-5-released</id>
+    <content type="html"><![CDATA[<h1>Highway.Data 5.0.5 Released</h1>
+
+<h2>Better Documentation and Enhanced InMemoryDataContext</h2>
+
+<p>Thanks to Eric Burcham and Long Mai ( Two new contributors!!!! ) we have shipped a bug fix version that includes better API documentation and fixed several issues with the InMemoryDataContext.</p>
+
+<h3>InMemoryDataContext</h3>
+
+<p>We now have a fix for both empty collection traversal and dependent entity duplication. If you had either of these issues good news!! If not, you now don&rsquo;t have to stay up late at night worrying if you will run into these issues. Sleep soundly and code well!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
@@ -202,44 +234,6 @@
 <h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
 
 <h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How do I get my DbContext?]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
-    <updated>2013-11-14T11:10:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
-    <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
-
-<ul>
-<li>In Highway.Data.EntityFramework, the <code>DataContext</code> class is a child of <code>DbContext</code>.  As such anywhere you need <code>DbContext</code>, simply pass your instance of <code>IDataContext</code> as <code>DbContext</code>.  This may require a soft cast if your variable is of type <code>IDataContext</code> and not <code>DataContext</code>, which it normally should and will be.</li>
-<li>In Highway.OnRamp.MVC.Data we subclass the default <code>DataContext</code> class of Highway.Data.EntityFramework into a class called <code>HighwayDataContext</code> to change the constructor a bit.  As such, the type of of your <code>DbContext</code> is <code>HighwayDataContext</code>, but as above any <code>IDataContext</code> can be cast to <code>DbContext</code> with success.</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/"/>
-    <updated>2013-11-07T15:32:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first</id>
-    <content type="html"><![CDATA[<h2>Short Answer</h2>
-
-<p>Yes, sort of.</p>
-
-<h2>Long Answer</h2>
-
-<p>Inject-able mappings and context configuration are not offered, for obvious reasons. Otherwise in this version all other features are supported.</p>
-
-<h2>A word about the future</h2>
-
-<p>In future versions of Highway.Data, it is highly likely that features will be introduced that are not compatible with Database First.  How we handle this will be decided later, but this is not a feature which we are committed to fully supporting, it is provided as a <strong>basic</strong> scenario.</p>
-
-<h3>Entity Framework Power Tools</h3>
-
-<p>As a quick word, most people who have chosen Database First, did so because they believed that Code First would require that their classes create, or otherwise control their database.  This is not the case.  <a href="http://visualstudiogallery.msdn.microsoft.com/72a60b14-1581-4b9b-89f2-846072eff19d">The Entity Framework team has for some time shipped a set of Power Tools</a> which allow the reverse engineering of existing database into Code First entities and mappings, which are then fully compatible with Highway.Data.  We encourage those currently using Database First to migrate using these tools to a Code First solution.</p>
 ]]></content>
   </entry>
   
