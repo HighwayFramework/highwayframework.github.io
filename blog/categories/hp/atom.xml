@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hp | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/hp/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-03-13T11:29:45-05:00</updated>
+  <updated>2014-03-22T10:00:56-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.6 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released/"/>
+    <updated>2014-03-15T10:47:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released</id>
+    <content type="html"><![CDATA[<p>More contributions from @longility in this release, and an incubating feature, which will be promoted to a full feature in a future release:</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/54">Support for bidirectional and circular entity references for InMemoryDataContext</a></li>
+<li>Incubating Feature : <a href="https://github.com/HighwayFramework/Highway.Data/pull/53">New SQL Query objects for EF</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.5 Released]]></title>
@@ -129,104 +144,6 @@
 <li><code>profile &lt;powershell-command&gt;</code> adds the listed PowerShell command to the current user&rsquo;s current profile.</li>
 <li><code>alias &lt;alias-name&gt; &lt;command&gt;</code> adds an alias to the current user&rsquo;s current PowerShell profile.</li>
 <li><code>psget &lt;module-name&gt;</code> will install a PsGet.net PowerShell module (see <a href="http://psget.net/">http://psget.net/</a> for a list)</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Roadmaps]]></title>
-    <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
-    <updated>2013-10-19T08:38:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
-    <content type="html"><![CDATA[<p>Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.</p>
-
-<!-- MORE -->
-
-
-<h1>Highway.Data</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>By end of the year EF 6.0 major features that need additional work in the framework will be supported and documented</li>
-</ul>
-
-
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
-
-<ul>
-<li>Context and Repository will have factories for creation that control lifetime of the objects</li>
-<li>Projection based Scalars &ndash; Scalars will be converted to projection based to allow for SQL output,</li>
-<li>Documentation &ndash; Video Tutorials for 80% features</li>
-</ul>
-
-
-<h1>Highway.Insurance</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-<li>Version Support for VS 2013 APIs</li>
-</ul>
-
-
-<h2>vNext + 1 &ndash; Time line &ndash; Q1 2014</h2>
-
-<ul>
-<li>Video Tutorials for 80% features</li>
-</ul>
-
-
-<h1>Highway.Pavement</h1>
-
-<h2>vNext &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>By end of the year all features release to have written tutorials, and the API to have updated documentation</li>
-</ul>
-
-
-<h1>Highway.MVC &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>Package a set of classes that allow for MVVM Model hydration to Knockout or Angular by default from MVC Model</li>
-<li>All feature documentation and usage video tutorials</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC.MVVM &ndash; New Project</h1>
-
-<h2>vFirst &ndash; Time line &ndash; Q4 2013</h2>
-
-<ul>
-<li>OnRamp to drop MVVM wire up and folder structure into any MVC project &ndash; Even Existing</li>
-<li>Video to walk through basic structure</li>
-</ul>
-
-
-<h1>Highway.OnRamp.MVC</h1>
-
-<h2>vNext &ndash; Timeline &ndash; Q4 2013</h2>
-
-<ul>
-<li>Documentation of all current features (70%+ complete already)</li>
-<li>Reorganize solution structure to move most inserted classes into an App_Infrastructure folder</li>
-<li>Introduce default conventions for &ldquo;Post<em>&rdquo; and &ldquo;Get</em>&rdquo; actions to be limited to HttpPost and HttpGet respectively via Filter injection.</li>
-</ul>
-
-
-<h1>Highway.RoadCrew</h1>
-
-<h2>vFirst</h2>
-
-<ul>
-<li>Implement all currently listed stories/issues to establish a great foundation</li>
-<li>Document all those features on the website, as completed.</li>
 </ul>
 
 ]]></content>
