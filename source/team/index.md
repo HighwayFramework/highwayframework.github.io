@@ -20,12 +20,13 @@ He is an avid soccer player and hobbyist gamer.
 
 # Contributors
 
-* Eric Burcham - Contributed to [Data]
+* [Eric Burcham][eric] - Contributed to [Data]
 * Long Mai - Contributed to [Data]
 * Brian Sullivan - Contributed to [Data]
 * Jay Smith - Contributed to [Data]
 * Cori Drew - Contributed to [Data] and the [Services OnRamp][Services]
 
+[eric]:				http://improvingenterprises.com/about/people/eric-burcham/eric-burcham-bio/
 [Data]: 			/projects/data/
 [Insurance]:	/projects/insurance/
 [OnRamper]:		/projects/onramper/
