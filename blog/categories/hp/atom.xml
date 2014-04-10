@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hp | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/hp/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-03-22T10:00:56-05:00</updated>
+  <updated>2014-04-10T11:22:35-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,38 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released/"/>
+    <updated>2014-04-10T11:18:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released</id>
+    <content type="html"><![CDATA[<p>Today we released a minor bug fix to the Highway.OnRamp.MVC packages, this included the following changes:</p>
+
+<ul>
+<li>Moving <code>BaseRestApiController</code> from Highway.OnRamp.MVC to Highway.OnRamp.MVC.Data.  This was an error in packaging previously which resulted in errors if you only installed Highway.OnRamp.MVC.</li>
+<li>Increased the dependency version of Highway.OnRamp.MVC.Data for Highway.Data from v5.0 to v5.0.6.  This removes the requirement for you to be using .NET Framework v4.5.1 and now merely required .NET Framework v4.5.</li>
+</ul>
+
+
+<p>All other functionality is unchanged, all current documentation is still accurate.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.7 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released/"/>
+    <updated>2014-03-22T10:47:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released</id>
+    <content type="html"><![CDATA[<p>More contributions from, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/56">GetById Documentation</a></li>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/55">Additional Identity Strategies and Auto-increment Id for IIdentifiable&rsquo;s</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.6 Released]]></title>
@@ -58,92 +90,6 @@
 <li>Easy RESTful ApiControllers</li>
 <li>Injectable Filters</li>
 <li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
-    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
-    <updated>2014-01-25T16:40:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
-    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
-
-<h2>New Features, and better Domain Driven Design support</h2>
-
-<h3>Domain Context</h3>
-
-<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
-
-<h4>More Details are here: <a href="/blog/2014/01/25/domain-context/">Domain Context</a></h4>
-
-<h3>Simplified Creation Pattern</h3>
-
-<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
-
-<h4>More Details are here: <a href="/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
-
-<h3>Entity Framework 6.0.0.2 Support</h3>
-
-<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
-
-<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
-
-<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
-
-<h2>Breaking Changes:</h2>
-
-<h3>AsQueryable off Repository.Context</h3>
-
-<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
-
-<h3>Interception</h3>
-
-<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
-
-<h4>More Details are here:</h4>
-
-<h2>Thanks to:</h2>
-
-<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
-
-<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.RoadCrew v0.1]]></title>
-    <link href="http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1/"/>
-    <updated>2013-12-16T08:26:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1</id>
-    <content type="html"><![CDATA[<p>We&rsquo;re thrilled to announce the initial release of Highway.RoadCrew.  This is a package installer, very similar to <code>bundler</code> from the Ruby world, but built on top of the amazing Chocolatey package manager, and PsGet PowerShell Module directory.  To get started, this is all you need to know:</p>
-
-<h1>Install</h1>
-
-<p>First, run the following two lines, which will download the current script, and run it.</p>
-
-<p><code>
-(new-object Net.WebClient).DownloadString("http://bit.ly/hwyfwk-rc") &gt; RunMe.ps1
-.\RunMe.ps1
-</code></p>
-
-<h1>Configure</h1>
-
-<p>Now setup your configuration by editing the <code>RunMe.config.ps1</code> file.  This will always be the file you edit, you shouldn&rsquo;t ever need to modify <code>RunMe.ps1</code>.  The following commands are supported:</p>
-
-<ul>
-<li><code>chocolatey &lt;package-name&gt;</code> will install the named package (see <a href="http://chocolatey.org/">http://chocolatey.org/</a> for a list)
-
-<ul>
-<li><code>-source</code> is an optional switch that lets you specify another chocolatey feed or source</li>
-</ul>
-</li>
-<li><code>gem &lt;gem-name&gt;</code> will install a Ruby gem (see <a href="http://rubygems.org/">http://rubygems.org/</a> for a list)</li>
-<li><code>windows &lt;feature-name&gt;</code> will install the named feature (execute <code>clist -source windowsfeatures</code> to see a possible list, only available after you&rsquo;ve executed <code>RunMe.ps1</code> a second time currently)</li>
-<li><code>profile &lt;powershell-command&gt;</code> adds the listed PowerShell command to the current user&rsquo;s current profile.</li>
-<li><code>alias &lt;alias-name&gt; &lt;command&gt;</code> adds an alias to the current user&rsquo;s current PowerShell profile.</li>
-<li><code>psget &lt;module-name&gt;</code> will install a PsGet.net PowerShell module (see <a href="http://psget.net/">http://psget.net/</a> for a list)</li>
 </ul>
 
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: onramp-mvc | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/onramp-mvc/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-03-22T10:00:56-05:00</updated>
+  <updated>2014-04-10T11:22:35-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released/"/>
+    <updated>2014-04-10T11:18:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released</id>
+    <content type="html"><![CDATA[<p>Today we released a minor bug fix to the Highway.OnRamp.MVC packages, this included the following changes:</p>
+
+<ul>
+<li>Moving <code>BaseRestApiController</code> from Highway.OnRamp.MVC to Highway.OnRamp.MVC.Data.  This was an error in packaging previously which resulted in errors if you only installed Highway.OnRamp.MVC.</li>
+<li>Increased the dependency version of Highway.OnRamp.MVC.Data for Highway.Data from v5.0 to v5.0.6.  This removes the requirement for you to be using .NET Framework v4.5.1 and now merely required .NET Framework v4.5.</li>
+</ul>
+
+
+<p>All other functionality is unchanged, all current documentation is still accurate.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
@@ -229,47 +246,6 @@ public override CopyEntityValues(Driver source, Driver destination)
 <li>In Highway.OnRamp.MVC.Data we subclass the default <code>DataContext</code> class of Highway.Data.EntityFramework into a class called <code>HighwayDataContext</code> to change the constructor a bit.  As such, the type of of your <code>DbContext</code> is <code>HighwayDataContext</code>, but as above any <code>IDataContext</code> can be cast to <code>DbContext</code> with success.</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Naming Conventions]]></title>
-    <link href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/"/>
-    <updated>2013-11-06T11:37:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2013/11/06/naming-conventions</id>
-    <content type="html"><![CDATA[<p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
-
-<h2>Naming Conventions</h2>
-
-<h3>Activators</h3>
-
-<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code>HttpApplication</code> cycle.  <a href="/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code>Activator</code> you know it runs during application startup.</p>
-
-<h3>Configs</h3>
-
-<p>Interfaces where the name ends with <code>Config</code> are configured automatically at run-time to provide values from <code>web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing configuration values.</p>
-
-<h3>Sessions</h3>
-
-<p>Interfaces where the name ends with <code>Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing session variables.</p>
-
-<h3>Installers</h3>
-
-<p>Classes that implement <code>IWindsorInstaller</code> are named with the <code>Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code>WindsorActivator</code> so anything it sets up can be assumed.</p>
-
-<h2>Organization Conventions</h2>
-
-<h3>App_Architecture</h3>
-
-<p>The <code>App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we&rsquo;ve achieved an organization structure that your business code should never need to take a <code>using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
-
-<h4>App_Architecture \ Services</h4>
-
-<p>This folder contains a <code>Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code>Data</code> folder which has classes required by that plug-in.</p>
-
-<h3>Entities &amp; Mappings</h3>
-
-<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code>Entities</code> folder, and it&rsquo;s sub-folder <code>Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code>Mappings</code> folder is meant to contain classes which implement <code>EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
 ]]></content>
   </entry>
   
