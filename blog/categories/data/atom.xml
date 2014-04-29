@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-04-10T11:22:35-05:00</updated>
+  <updated>2014-04-28T22:42:13-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.1.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released/"/>
+    <updated>2014-04-28T22:37:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released</id>
+    <content type="html"><![CDATA[<ul>
+<li><code>DomainRepositoryFactory</code> doesn’t throw on null event collection – Eric Burcham</li>
+<li>Added <code>InMemoryActiveDataContext</code> to allow for multiple repositories using a single in memory – The beginnings of a “prod” in memory context – Long Mai</li>
+<li>Queued Add and Remove – <code>InMemoryDataContext</code> now acts more like a real database as it doesn’t return added records or modify collections in loops. – Long Mai</li>
+<li>Identity Strategies are invoked automatically on commit – Long Mai</li>
+<li>Brought back .NET 4.0 support</li>
+<li>Updated to Entity Framework 6.0.2</li>
+<li>Updated to CommonServiceLocator 1.2</li>
+<li>Updated to Common.Logging 2.2.0</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.7 Released]]></title>
@@ -109,91 +128,6 @@
     /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
     /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
     IRepository Create(Type type);
-}
-</code></pre>
-
-<p>```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Domain Context]]></title>
-    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
-    <updated>2014-01-25T16:42:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
-    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
-
-<h2>Why did you support DDD?</h2>
-
-<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
-
-<h2>How did you support DDD?</h2>
-
-<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
-
-<h3>IDomainRepository</h3>
-
-<p>This repository has the event interception events, as well as the bounded context.</p>
-
-<p>``` csharp</p>
-
-<pre><code>public interface IDomainRepository&lt;in T&gt; where T : class
-{
-    event EventHandler&lt;BeforeQuery&gt; BeforeQuery;
-
-    event EventHandler&lt;BeforeScalar&gt; BeforeScalar;
-
-    event EventHandler&lt;BeforeCommand&gt; BeforeCommand;
-
-    event EventHandler&lt;AfterQuery&gt; AfterQuery;
-
-    event EventHandler&lt;AfterScalar&gt; AfterScalar;
-
-    event EventHandler&lt;AfterCommand&gt; AfterCommand;
-
-    IDomainContext&lt;T&gt; DomainContext { get; } 
-}
-</code></pre>
-
-<p>```</p>
-
-<h3>IDomainContext</h3>
-
-<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
-
-<p>```</p>
-
-<pre><code>public interface IDomainContext&lt;in T&gt; : IDataContext where T : class
-{
-    /// &lt;summary&gt;
-    ///     The event fired just before the commit of the persistence
-    /// &lt;/summary&gt;
-    event EventHandler&lt;BeforeSave&gt; BeforeSave;
-
-    /// &lt;summary&gt;
-    ///     The event fired just after the commit of the persistence
-    /// &lt;/summary&gt;
-    event EventHandler&lt;AfterSave&gt; AfterSave;
-}
-</code></pre>
-
-<p>```</p>
-
-<h3>IDomain</h3>
-
-<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
-
-<p>```</p>
-
-<pre><code>public interface IDomain
-{
-    string ConnectionString { get; }
-
-    IMappingConfiguration Mappings { get;}
-
-    IContextConfiguration Context { get; }
-
-    List&lt;IInterceptor&gt; Events { get; }
 }
 </code></pre>
 

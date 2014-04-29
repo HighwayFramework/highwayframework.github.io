@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hp | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/hp/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2014-04-10T11:22:35-05:00</updated>
+  <updated>2014-04-28T22:42:13-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.1.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released/"/>
+    <updated>2014-04-28T22:37:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released</id>
+    <content type="html"><![CDATA[<ul>
+<li><code>DomainRepositoryFactory</code> doesn’t throw on null event collection – Eric Burcham</li>
+<li>Added <code>InMemoryActiveDataContext</code> to allow for multiple repositories using a single in memory – The beginnings of a “prod” in memory context – Long Mai</li>
+<li>Queued Add and Remove – <code>InMemoryDataContext</code> now acts more like a real database as it doesn’t return added records or modify collections in loops. – Long Mai</li>
+<li>Identity Strategies are invoked automatically on commit – Long Mai</li>
+<li>Brought back .NET 4.0 support</li>
+<li>Updated to Entity Framework 6.0.2</li>
+<li>Updated to CommonServiceLocator 1.2</li>
+<li>Updated to Common.Logging 2.2.0</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
@@ -70,26 +89,6 @@
 <ul>
 <li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/52">Support adding element directly and indirectly to InMemoryDataContext.</a></li>
 <li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/51">Improved documentation for IDomainRepositoryFactory</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
-    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
-    <updated>2014-01-25T19:27:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
-    <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
-
-<ul>
-<li>Major restructuring to organize and rename a lot of pieces</li>
-<li>ApiController dependency injection</li>
-<li>Automatic IoC registrations</li>
-<li>Session and Configuration access via Interfaces</li>
-<li>Easy RESTful ApiControllers</li>
-<li>Injectable Filters</li>
-<li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
 </ul>
 
 ]]></content>
