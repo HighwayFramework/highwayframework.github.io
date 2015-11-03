@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: data | The fastest and smoothest way to good architecture]]></title>
+  <link href="http://hwyfwk.com/blog/categories/data/atom.xml" rel="self"/>
+  <link href="http://hwyfwk.com/"/>
+  <updated>2015-11-03T10:35:34-08:00</updated>
+  <id>http://hwyfwk.com/</id>
+  <author>
+    <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
+    <email><![CDATA[Team@HwyFwk.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released/"/>
+    <updated>2015-10-20T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Updated to remove chance of calling non-writable properties – Thanks Ed Blakes</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released/"/>
+    <updated>2015-10-13T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Updated Async API and Sync API to be independent</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released/"/>
+    <updated>2015-07-29T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Added <code>Context</code> on <code>Command</code> and <code>Scalar</code> Interceptors – Thanks Marcin Dzwonnik</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.3 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released/"/>
+    <updated>2015-07-17T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Fixed bug that allowed <code>InMemoryDataContext</code> to return null results</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released/"/>
+    <updated>2015-07-07T16:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Fixing null reference in adding back reference to non-existent collection</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

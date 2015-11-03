@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
+  <link href="http://hwyfwk.com/atom.xml" rel="self"/>
+  <link href="http://hwyfwk.com/"/>
+  <updated>2015-11-03T10:35:34-08:00</updated>
+  <id>http://hwyfwk.com/</id>
+  <author>
+    <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
+    <email><![CDATA[Team@HwyFwk.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released/"/>
+    <updated>2015-10-20T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Updated to remove chance of calling non-writable properties – Thanks Ed Blakes</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released/"/>
+    <updated>2015-10-13T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Updated Async API and Sync API to be independent</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.4 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released/"/>
+    <updated>2015-07-29T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Added <code>Context</code> on <code>Command</code> and <code>Scalar</code> Interceptors – Thanks Marcin Dzwonnik</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.3 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released/"/>
+    <updated>2015-07-17T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Fixed bug that allowed <code>InMemoryDataContext</code> to return null results</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released/"/>
+    <updated>2015-07-07T16:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Fixing null reference in adding back reference to non-existent collection</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v6.0.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-0-released/"/>
+    <updated>2015-07-07T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-0-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Adding back reference population for <code>InMemoryDataContext</code></li>
+<li>Adding Async API for <code>DataContext</code></li>
+<li>Adding Expand behavior config option for OData provider</li>
+<li>Adding Enum to Text and Enum to Number support for OData provider</li>
+<li>Updated Entity Framework minimum dependency to 6.1.3</li>
+<li>Fixed an issue with inherited objects not returning for queries on <code>InMemoryDataContext</code></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.2.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2015/02/03/highway-dot-data-v5-dot-2-0-released/"/>
+    <updated>2015-02-03T12:00:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2015/02/03/highway-dot-data-v5-dot-2-0-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Adding Virtual keyword for <code>DataContext</code> extension to most methods</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.1.3 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/12/29/highway-dot-data-v5-dot-1-3-released/"/>
+    <updated>2014-12-29T12:00:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/12/29/highway-dot-data-v5-dot-1-3-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Fixed <code>StackOverflowException</code> in <code>InMemoryDataContext</code></li>
+<li>Alignment fix in Readme.markdown – Thanks Ken Dale</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.1.1 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/06/11/highway-dot-data-v5-dot-1-1-released/"/>
+    <updated>2014-06-11T12:00:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/06/11/highway-dot-data-v5-dot-1-1-released</id>
+    <content type="html"><![CDATA[<ul>
+<li>Adding Fluent query for testing <code>FindWhere</code> under prebuilt queries. – Thanks Philip Mateescu</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.1.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released/"/>
+    <updated>2014-04-28T22:37:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released</id>
+    <content type="html"><![CDATA[<ul>
+<li><code>DomainRepositoryFactory</code> doesn’t throw on null event collection – Eric Burcham</li>
+<li>Added <code>InMemoryActiveDataContext</code> to allow for multiple repositories using a single in memory – The beginnings of a “prod” in memory context – Long Mai</li>
+<li>Queued Add and Remove – <code>InMemoryDataContext</code> now acts more like a real database as it doesn’t return added records or modify collections in loops. – Long Mai</li>
+<li>Identity Strategies are invoked automatically on commit – Long Mai</li>
+<li>Brought back .NET 4.0 support</li>
+<li>Updated to Entity Framework 6.0.2</li>
+<li>Updated to CommonServiceLocator 1.2</li>
+<li>Updated to Common.Logging 2.2.0</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released/"/>
+    <updated>2014-04-10T11:18:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released</id>
+    <content type="html"><![CDATA[<p>Today we released a minor bug fix to the Highway.OnRamp.MVC packages, this included the following changes:</p>
+
+<ul>
+<li>Moving <code>BaseRestApiController</code> from Highway.OnRamp.MVC to Highway.OnRamp.MVC.Data.  This was an error in packaging previously which resulted in errors if you only installed Highway.OnRamp.MVC.</li>
+<li>Increased the dependency version of Highway.OnRamp.MVC.Data for Highway.Data from v5.0 to v5.0.6.  This removes the requirement for you to be using .NET Framework v4.5.1 and now merely required .NET Framework v4.5.</li>
+</ul>
+
+
+<p>All other functionality is unchanged, all current documentation is still accurate.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.7 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released/"/>
+    <updated>2014-03-22T10:47:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released</id>
+    <content type="html"><![CDATA[<p>More contributions from, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/56">GetById Documentation</a></li>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/55">Additional Identity Strategies and Auto-increment Id for IIdentifiable&rsquo;s</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.6 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released/"/>
+    <updated>2014-03-15T10:47:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released</id>
+    <content type="html"><![CDATA[<p>More contributions from @longility in this release, and an incubating feature, which will be promoted to a full feature in a future release:</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/54">Support for bidirectional and circular entity references for InMemoryDataContext</a></li>
+<li>Incubating Feature : <a href="https://github.com/HighwayFramework/Highway.Data/pull/53">New SQL Query objects for EF</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0.5 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released/"/>
+    <updated>2014-03-10T10:47:00-07:00</updated>
+    <id>http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released</id>
+    <content type="html"><![CDATA[<p>This release is brought to you by two new contributors, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
+
+<ul>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/52">Support adding element directly and indirectly to InMemoryDataContext.</a></li>
+<li>Bug Fix : <a href="https://github.com/HighwayFramework/Highway.Data/pull/51">Improved documentation for IDomainRepositoryFactory</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
+    <updated>2014-01-25T19:33:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
+    <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
+
+<h1>Dictionary Adapter</h1>
+
+<p>Dictionary Adapter is a class which creates classes at runtime that implement an interface you specify, and wires the properties of said interface to access a key value store you specify.  For instance, let&rsquo;s assume you have the following interface:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IConnectionStringConfig
+</span><span class='line'>{
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the following configuration settings in your web.config:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  &lt;appSettings&gt;
+</span><span class='line'>    &lt;add key="ConnectionString" value="Server=.;Database=ChangeMyConnectionString;Integrated Security=true;" /&gt;
+</span><span class='line'>  &lt;/appSettings&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can ask Dictionary Adapter to create an instance of <code>IConnectionString</code>, and supply it the app settings from our web.config.  It will return to us a class which implements our interface, and when that when the <code>ConnectionString</code> property is accessed, will retrieve the value from app settings.</p>
+
+<p>Now instead of writing controllers, or other classes which access app settings directly from the <code>ConfigurationManager</code>, we can instead simply take a dependency on <code>IConnectionString</code>, and that class can in turn use a strongly typed (no magic strings) and testable (simply mock the interface) way of accessing app settings.</p>
+
+<p>Just as we can do this with the key value store of app settings, we can also do it with the key value store of <code>Session</code> as well.  This makes accessing session also no longer require magic strings, and addresses the problem of mocking an <code>HttpContext</code> for <code>Session</code>.</p>
+
+<h1>Wiring it up with Windsor</h1>
+
+<p>As awesome as that is, manually registering all of the configuration or session interfaces would be rather tedious in the extreme.  As such we&rsquo;ve created some conventions you can use that will automatically register these interfaces for you.</p>
+
+<h2>Config interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Config</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered as Singleton lifestyle, because they continue to directly access the <code>ConfigurationManager</code> and so even if your configuration values change at runtime, they will stay up to date.</p>
+
+<h2>Session interfaces</h2>
+
+<p>Any interface in your application&rsquo;s assembly which has a name that ends in <strong>Session</strong> will automatically be registered with our IoC container with a class instance provided by <code>DictionaryAdapter</code>.  These classes are registered with a <code>PerWebRequest</code> lifestyle, because every request will have a different <code>HttpContext</code>.</p>
+
+<h1>What about keys which don&rsquo;t match property names?</h1>
+
+<p>A common scenario for users of DictionaryAdapter to run into is that they want properties on their interfaces which do not match their key value store&rsquo;s key values exactly.  This is easy to run into simply because of the limitations of property names, for instance &ldquo;ida:ClientSecret&rdquo; is not a valid property name.  So how do we handle this?</p>
+
+<p>DictionaryAdapter provides a set of attributes which can help address these concerns.  We&rsquo;ll talk about each in turn, here they are:</p>
+
+<ul>
+<li><code>KeyAttribute</code></li>
+<li><code>KeyPrefixAttribute</code></li>
+<li><code>KeySuffixAttribute</code></li>
+</ul>
+
+
+<h2>Key</h2>
+
+<p>The simplest and often most useful of our helper attributes is <code>KeyAttribute</code>.  This attribute when applied to a property completely changes the key in the key value store that is accessed for our property.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;Foo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [Key("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>KeyPrefixAttribute</h2>
+
+<p>The next most common attribute to be used, and one which we use by default in the Data extension to the OnRamp, is <code>KeyPrefixAttirbute</code>.  This attribute is applied to the interface, not the properties, and affects the keys used in the key value store for all properties on that interface.  For instance, given the following interface, the ConnectionSting property returns &ldquo;FooConnectionString&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeyPrefixAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [KeyPrefix("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>KeySuffixAttribute</h2>
+
+<p>The third and final attribute we will discuss here is <code>KeySuffixAttribute</code>.  Like <code>KeyPrefixAttribute</code> this is applied to the interface, not the property, and affects the key values for all properties on that interface.  For instance, given the following interface, the <code>ConnectionSting</code> property returns &ldquo;ConnectionStringFoo&rdquo; setting instead of &ldquo;ConnectionString&rdquo; because of the <code>KeySuffixAttribute</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IExampleConfig
+</span><span class='line'>{
+</span><span class='line'>  [Key("Foo")]
+</span><span class='line'>  string ConnectionString { get; }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
+    <updated>2014-01-25T19:27:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
+    <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
+
+<ul>
+<li>Major restructuring to organize and rename a lot of pieces</li>
+<li>ApiController dependency injection</li>
+<li>Automatic IoC registrations</li>
+<li>Session and Configuration access via Interfaces</li>
+<li>Easy RESTful ApiControllers</li>
+<li>Injectable Filters</li>
+<li>Support for Highway.Data v5 (and through it Entity Framework v6)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
+    <updated>2014-01-25T19:09:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
+    <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
+
+<ol>
+<li><code>IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
+<li><code>RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
+</ol>
+
+
+<p>An implementation controller would look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverController</span> <span class="p">:</span> <span class="n">BaseRestApiController</span><span class="p">&lt;</span><span class="n">Domain</span><span class="p">,</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Guid</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>      <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">All</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="nf">CopyEntityValues</span><span class="p">(</span><span class="n">Driver</span> <span class="n">source</span><span class="p">,</span> <span class="n">Driver</span> <span class="n">destination</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// copy values from one instance to another here.</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This class would support all five of our pre-built functions, because it passed <code>RestfulOperations.All</code>, these are:</p>
+
+<ul>
+<li>GetAll &ndash; This is the default get with no <code>id</code> and returns ALL Drivers</li>
+<li>GetOne &ndash; This returns one driver, by <code>id</code></li>
+<li>Put &ndash; Accepts a <code>PUT</code> verb and updates a singular Driver.  Uses <code>CopyEntityValues</code> above to control what can be updated.</li>
+<li>Delete &ndash; Deletes a Driver by <code>id</code></li>
+<li>Post &ndash; Accepts a <code>POST</code> verb and inserts a singular Driver.</li>
+</ul>
+
+
+<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR&#8217;ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>  <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">GetOne</span> <span class="p">|</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">Post</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are some logical pre-built combinations already supported in the enum, which is defined as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">    [Flags]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">enum</span> <span class="n">RestOperations</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">GetAll</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">GetOne</span> <span class="p">=</span> <span class="m">2</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Post</span> <span class="p">=</span> <span class="m">4</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Put</span> <span class="p">=</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Delete</span> <span class="p">=</span> <span class="m">16</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">ReadOnly</span> <span class="p">=</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">WriteOnly</span> <span class="p">=</span> <span class="m">28</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">All</span> <span class="p">=</span> <span class="m">31</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
+    <updated>2014-01-25T16:45:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
+    <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
+
+<h3>Repository Factory</h3>
+
+<p>We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
+
+<h4>Repository Factory</h4>
+
+<p>This allows you to construct a simple repository that doesn&rsquo;t need any of the <code>DomainRepository</code> features.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>     public interface IRepositoryFactory
+</span><span class='line'>    {
+</span><span class='line'>        /// &lt;summary&gt;
+</span><span class='line'>        /// Creates a repository for the requested domain
+</span><span class='line'>        /// &lt;/summary&gt;
+</span><span class='line'>        /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
+</span><span class='line'>        IRepository Create();
+</span><span class='line'>    }
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Domain Repository Factory</h4>
+
+<p>This allows you construct a repository specific to any domain that the factory is dependent on.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IDomainRepositoryFactory
+</span><span class='line'>{
+</span><span class='line'>
+</span><span class='line'>    /// &lt;summary&gt;
+</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+</span><span class='line'>    /// &lt;/summary&gt;
+</span><span class='line'>    /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
+</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+</span><span class='line'>    IRepository Create&lt;T&gt;() where T : class, IDomain;
+</span><span class='line'>
+</span><span class='line'>    /// &lt;summary&gt;
+</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+</span><span class='line'>    /// &lt;/summary&gt;
+</span><span class='line'>    /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
+</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+</span><span class='line'>    IRepository Create(Type type);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Domain Context]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
+    <updated>2014-01-25T16:42:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
+    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
+
+<h2>Why did you support DDD?</h2>
+
+<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
+
+<h2>How did you support DDD?</h2>
+
+<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
+
+<h3>IDomainRepository</h3>
+
+<p>This repository has the event interception events, as well as the bounded context.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainRepository</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeQuery</span><span class="p">&gt;</span> <span class="n">BeforeQuery</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeScalar</span><span class="p">&gt;</span> <span class="n">BeforeScalar</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeCommand</span><span class="p">&gt;</span> <span class="n">BeforeCommand</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterQuery</span><span class="p">&gt;</span> <span class="n">AfterQuery</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterScalar</span><span class="p">&gt;</span> <span class="n">AfterScalar</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterCommand</span><span class="p">&gt;</span> <span class="n">AfterCommand</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">DomainContext</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>IDomainContext</h3>
+
+<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IDataContext</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>    <span class="c1">///     The event fired just before the commit of the persistence</span>
+</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeSave</span><span class="p">&gt;</span> <span class="n">BeforeSave</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>    <span class="c1">///     The event fired just after the commit of the persistence</span>
+</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterSave</span><span class="p">&gt;</span> <span class="n">AfterSave</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>IDomain</h3>
+
+<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomain</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">string</span> <span class="n">ConnectionString</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IMappingConfiguration</span> <span class="n">Mappings</span> <span class="p">{</span> <span class="k">get</span><span class="p">;}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">IContextConfiguration</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">List</span><span class="p">&lt;</span><span class="n">IInterceptor</span><span class="p">&gt;</span> <span class="n">Events</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
+    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
+    <updated>2014-01-25T16:40:00-08:00</updated>
+    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
+    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
+
+<h2>New Features, and better Domain Driven Design support</h2>
+
+<h3>Domain Context</h3>
+
+<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
+
+<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/domain-context/">Domain Context</a></h4>
+
+<h3>Simplified Creation Pattern</h3>
+
+<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
+
+<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
+
+<h3>Entity Framework 6.0.0.2 Support</h3>
+
+<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
+
+<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
+
+<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
+
+<h2>Breaking Changes:</h2>
+
+<h3>AsQueryable off Repository.Context</h3>
+
+<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
+
+<h3>Interception</h3>
+
+<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
+
+<h4>More Details are here:</h4>
+
+<h2>Thanks to:</h2>
+
+<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
+
+<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
+]]></content>
+  </entry>
+  
+</feed>
