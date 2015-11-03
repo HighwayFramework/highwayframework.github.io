@@ -20,6 +20,10 @@ He is an avid soccer player and hobbyist gamer.
 
 # Contributors
 
+* Ed Blakes - Contributed to [Data]
+* Marcin Dzwonnik - Contributed to [Data]
+* Ken Dale - Contributed to [Data]
+* Philip Mateescu - Contributed to [Data]
 * [Eric Burcham][eric] - Contributed to [Data]
 * Long Mai - Contributed to [Data]
 * Brian Sullivan - Contributed to [Data]
