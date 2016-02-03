@@ -18,6 +18,7 @@ public class DriversEducationServiceTests
 		 
 	   //act
 		service.AddDriver("Devlin");
+		context.Commit();
     
 		//assert
 		context.AsQueryable<Driver>().Count(x => x.Name == "Devlin").Should().Be(1);
@@ -75,6 +76,7 @@ Once we have added an object we will obviously need to query the object back out
 
         //act
         Driver driver = service.GetDriver("Devlin");
+        context.Commit();
 
         //assert
         driver.Should().NotBeNull();
