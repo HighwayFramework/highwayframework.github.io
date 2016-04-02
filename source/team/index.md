@@ -5,7 +5,7 @@ title: Core Team
 
 # Devlin Liles - Lead for [Data] and [Insurance]
 {% img left /images/devlin-liles.png %}
-[Devlin Liles][devlin] is a Principal Consultant at [Improving Enterprises][improving] and a passionate technologist. Devlin prides himself on staying a generalist, but his passion in development is data and its interactions. These passions gained him the recognition of [Microsoft as an MVP of Application Lifecycle Management][mvp] awardee.
+[Devlin Liles][devlin] is a Vice President at [Improving Enterprises][improving] in Houston and a passionate technologist. Devlin prides himself on staying a generalist, but his passion in development is data and its interactions. These passions gained him the recognition of [Microsoft as an MVP of Application Lifecycle Management][mvp] awardee.
 
 Since 2007 he has been presenting and teaching classes on software development practices and tools to audiences around the nation. He is a regular national presenter at user groups, conferences, and community events. He founded an internal Corporate Software Craftsmanship conference in Northwest Arkansas as well as led the Tyson User group for a year and a half. He has been involved in many conferences and events (Dallas TechFest, Houston TechFest, Houston CodeCamp, Houston GiveCamp, AgileDotNet) as a coordinator; planner; or just a helping hand.
 
@@ -16,7 +16,7 @@ He is an avid soccer player and hobbyist gamer.
 
 # Tim Rayburn - Lead for [OnRamper], OnRamps [MVC] & [Services]
 {% img right /images/tim-rayburn.png %}
-[Tim Rayburn][tim] is a Principal Consultant with [Improving Enterprises][improving], a software and project management consulting company in Dallas, TX. Since 2007 he has been annually awarded the [Microsoft MVP for Connected Systems Development][mvp] in recognition of his expertise and community leadership. He is the organizer of Dallas TechFest, where through the work of an amazing staff they bring an incredible multi-technology conference to life every year in Dallas. He is the author of “[Entity Framework 4.1: Expert’s Cookbook][book]”, with [Devlin Liles][devlin], and can be found speaking across the nation of agile process, distributed architecture, and data access technologies. He lives in Arlington Texas with his amazing wife Kate and their loyal dog Gandalf.
+[Tim Rayburn][tim] is a Vice President with [Improving Enterprises][improving] in Dallas, a software and project management consulting company in Dallas, TX. Since 2007 he has been annually awarded the [Microsoft MVP for Connected Systems Development][mvp] in recognition of his expertise and community leadership. He is the organizer of Dallas TechFest, where through the work of an amazing staff they bring an incredible multi-technology conference to life every year in Dallas. He is the author of “[Entity Framework 4.1: Expert’s Cookbook][book]”, with [Devlin Liles][devlin], and can be found speaking across the nation of agile process, distributed architecture, and data access technologies. He lives in Dallas Texas with his amazing wife Kate and their loyal dog Gandalf.
 
 # Contributors
 
