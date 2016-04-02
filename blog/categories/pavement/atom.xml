@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pavement | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/pavement/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,9 +14,31 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.4]]></title>
+    <link href="http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4/"/>
+    <updated>2016-04-02T12:46:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Added support for CoreCLR to the package</li>
+<li>Removed dependency on <code>Common.Logging</code> until such time as they support CoreCLR themselves.</li>
+</ul>
+
+
+<h1>Notes</h1>
+
+<ul>
+<li>The CoreCLR conversion of all of Highway Framework has begun, this is the first drop, more will come.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Roadmaps]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
-    <updated>2013-10-19T08:38:00-07:00</updated>
+    <updated>2013-10-19T08:38:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
     <content type="html"><![CDATA[<p>Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.</p>
 
@@ -114,7 +136,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Pavement v0.3]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3/"/>
-    <updated>2013-10-05T12:22:00-07:00</updated>
+    <updated>2013-10-05T12:22:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/05/highway-dot-pavement-v0-dot-3</id>
     <content type="html"><![CDATA[<h1>Changes</h1>
 
@@ -135,7 +157,7 @@
   <entry>
     <title type="html"><![CDATA[Strong Names]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/04/strong-names/"/>
-    <updated>2013-10-04T20:05:00-07:00</updated>
+    <updated>2013-10-04T20:05:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/04/strong-names</id>
     <content type="html"><![CDATA[<p>We are thrilled to announce that we have today released an update to Highway.Pavement and Highway.Data which add strong name keys (SNKs) to the assemblies.  Furthermore, in keeping with good open source practices, the cryptographic keys to accomplish this signing are now checked into the source repository for each project.</p>
 

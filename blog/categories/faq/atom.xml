@@ -4,7 +4,7 @@
   <title><![CDATA[Category: faq | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/faq/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[How do I get my DbContext?]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
-    <updated>2013-11-14T11:10:00-08:00</updated>
+    <updated>2013-11-14T11:10:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
     <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
 
@@ -31,7 +31,7 @@
   <entry>
     <title type="html"><![CDATA[Does Highway.Data work with Database First?]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first/"/>
-    <updated>2013-11-07T15:32:00-08:00</updated>
+    <updated>2013-11-07T15:32:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/07/does-highway-dot-data-work-with-database-first</id>
     <content type="html"><![CDATA[<h2>Short Answer</h2>
 
@@ -54,7 +54,7 @@
   <entry>
     <title type="html"><![CDATA[What should I register with my IoC container?]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/"/>
-    <updated>2013-11-07T15:09:00-08:00</updated>
+    <updated>2013-11-07T15:09:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container</id>
     <content type="html"><![CDATA[<p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
 
@@ -102,7 +102,7 @@
   <entry>
     <title type="html"><![CDATA[How do I fix this 'Reference to type * could not be found' error?]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/"/>
-    <updated>2013-11-06T07:49:00-08:00</updated>
+    <updated>2013-11-06T07:49:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error</id>
     <content type="html"><![CDATA[<p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can&rsquo;t be fixed now that it&rsquo;s in the wild.  This most often presents itself as an error similar to :</p>
 
@@ -121,7 +121,7 @@ Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in
   <entry>
     <title type="html"><![CDATA[Roadmaps]]></title>
     <link href="http://hwyfwk.com/blog/2013/10/19/roadmaps/"/>
-    <updated>2013-10-19T08:38:00-07:00</updated>
+    <updated>2013-10-19T08:38:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2013/10/19/roadmaps</id>
     <content type="html"><![CDATA[<p>Below is the current road map for the Highway Framework. All of these are subject to change, but we want to be as transparent as possible in planning so that we can gather input from the community. Any project not in the list is considered stable and not in need of changes in the next 6 months.</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: onramp-mvc | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/onramp-mvc/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released/"/>
-    <updated>2014-04-10T11:18:00-07:00</updated>
+    <updated>2014-04-10T11:18:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released</id>
     <content type="html"><![CDATA[<p>Today we released a minor bug fix to the Highway.OnRamp.MVC packages, this included the following changes:</p>
 
@@ -33,7 +33,7 @@
   <entry>
     <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
-    <updated>2014-01-25T19:33:00-08:00</updated>
+    <updated>2014-01-25T19:33:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
     <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
 
@@ -143,7 +143,7 @@ string ConnectionString { get; }
   <entry>
     <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
-    <updated>2014-01-25T19:27:00-08:00</updated>
+    <updated>2014-01-25T19:27:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
     <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
 
@@ -163,7 +163,7 @@ string ConnectionString { get; }
   <entry>
     <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
-    <updated>2014-01-25T19:09:00-08:00</updated>
+    <updated>2014-01-25T19:09:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
     <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
 
@@ -237,7 +237,7 @@ public override CopyEntityValues(Driver source, Driver destination)
   <entry>
     <title type="html"><![CDATA[How do I get my DbContext?]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext/"/>
-    <updated>2013-11-14T11:10:00-08:00</updated>
+    <updated>2013-11-14T11:10:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/14/how-do-i-get-my-dbcontext</id>
     <content type="html"><![CDATA[<p>From time to time it is necessary to either pass a <code>DbContext</code> to some framework code that expects it, or to know the type of your <code>DbContext</code>, for instance when setting a database initializer.  The answer depends slightly on which part of Highway your using, as follows:</p>
 

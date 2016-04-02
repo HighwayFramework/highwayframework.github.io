@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,9 +14,31 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.4]]></title>
+    <link href="http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4/"/>
+    <updated>2016-04-02T12:46:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Added support for CoreCLR to the package</li>
+<li>Removed dependency on <code>Common.Logging</code> until such time as they support CoreCLR themselves.</li>
+</ul>
+
+
+<h1>Notes</h1>
+
+<ul>
+<li>The CoreCLR conversion of all of Highway Framework has begun, this is the first drop, more will come.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released/"/>
-    <updated>2015-10-20T12:00:00-07:00</updated>
+    <updated>2015-10-20T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Updated to remove chance of calling non-writable properties – Thanks Ed Blakes</li>
@@ -28,7 +50,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released/"/>
-    <updated>2015-10-13T12:00:00-07:00</updated>
+    <updated>2015-10-13T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Updated Async API and Sync API to be independent</li>
@@ -40,7 +62,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released/"/>
-    <updated>2015-07-29T12:00:00-07:00</updated>
+    <updated>2015-07-29T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Added <code>Context</code> on <code>Command</code> and <code>Scalar</code> Interceptors – Thanks Marcin Dzwonnik</li>
@@ -52,7 +74,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.3 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released/"/>
-    <updated>2015-07-17T12:00:00-07:00</updated>
+    <updated>2015-07-17T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Fixed bug that allowed <code>InMemoryDataContext</code> to return null results</li>
@@ -64,7 +86,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released/"/>
-    <updated>2015-07-07T16:00:00-07:00</updated>
+    <updated>2015-07-07T16:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Fixing null reference in adding back reference to non-existent collection</li>
@@ -76,7 +98,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.0 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-0-released/"/>
-    <updated>2015-07-07T12:00:00-07:00</updated>
+    <updated>2015-07-07T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-0-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Adding back reference population for <code>InMemoryDataContext</code></li>
@@ -93,7 +115,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.2.0 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/02/03/highway-dot-data-v5-dot-2-0-released/"/>
-    <updated>2015-02-03T12:00:00-08:00</updated>
+    <updated>2015-02-03T12:00:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2015/02/03/highway-dot-data-v5-dot-2-0-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Adding Virtual keyword for <code>DataContext</code> extension to most methods</li>
@@ -105,7 +127,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.1.3 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/12/29/highway-dot-data-v5-dot-1-3-released/"/>
-    <updated>2014-12-29T12:00:00-08:00</updated>
+    <updated>2014-12-29T12:00:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/12/29/highway-dot-data-v5-dot-1-3-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Fixed <code>StackOverflowException</code> in <code>InMemoryDataContext</code></li>
@@ -118,7 +140,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.1.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/06/11/highway-dot-data-v5-dot-1-1-released/"/>
-    <updated>2014-06-11T12:00:00-07:00</updated>
+    <updated>2014-06-11T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/06/11/highway-dot-data-v5-dot-1-1-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Adding Fluent query for testing <code>FindWhere</code> under prebuilt queries. – Thanks Philip Mateescu</li>
@@ -130,7 +152,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.1.0 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released/"/>
-    <updated>2014-04-28T22:37:00-07:00</updated>
+    <updated>2014-04-28T22:37:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/04/28/highway-dot-data-v5-dot-1-0-released</id>
     <content type="html"><![CDATA[<ul>
 <li><code>DomainRepositoryFactory</code> doesn’t throw on null event collection – Eric Burcham</li>
@@ -149,7 +171,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0.2 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released/"/>
-    <updated>2014-04-10T11:18:00-07:00</updated>
+    <updated>2014-04-10T11:18:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/04/10/highway-dot-onramp-dot-mvc-v3-dot-0-2-released</id>
     <content type="html"><![CDATA[<p>Today we released a minor bug fix to the Highway.OnRamp.MVC packages, this included the following changes:</p>
 
@@ -166,7 +188,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.7 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released/"/>
-    <updated>2014-03-22T10:47:00-07:00</updated>
+    <updated>2014-03-22T10:47:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/03/22/highway-dot-data-v5-dot-0-7-released</id>
     <content type="html"><![CDATA[<p>More contributions from, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
 
@@ -181,7 +203,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.6 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released/"/>
-    <updated>2014-03-15T10:47:00-07:00</updated>
+    <updated>2014-03-15T10:47:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/03/15/highway-dot-data-v5-dot-0-6-released</id>
     <content type="html"><![CDATA[<p>More contributions from @longility in this release, and an incubating feature, which will be promoted to a full feature in a future release:</p>
 
@@ -196,7 +218,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v5.0.5 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released/"/>
-    <updated>2014-03-10T10:47:00-07:00</updated>
+    <updated>2014-03-10T10:47:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2014/03/10/highway-dot-data-v5-dot-0-5-released</id>
     <content type="html"><![CDATA[<p>This release is brought to you by two new contributors, Eric Burcham and Long Mai!  Thank you gentlemen for your support.</p>
 
@@ -211,7 +233,7 @@
   <entry>
     <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
-    <updated>2014-01-25T19:33:00-08:00</updated>
+    <updated>2014-01-25T19:33:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
     <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
 
@@ -323,7 +345,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.OnRamp.MVC v3.0 Released]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released/"/>
-    <updated>2014-01-25T19:27:00-08:00</updated>
+    <updated>2014-01-25T19:27:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-onramp-dot-mvc-v3-dot-0-released</id>
     <content type="html"><![CDATA[<p>We are pleased to announce the release of Highway.OnRamp.MVC v3.0.  The following are the major features now included:</p>
 
@@ -343,7 +365,7 @@
   <entry>
     <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
-    <updated>2014-01-25T19:09:00-08:00</updated>
+    <updated>2014-01-25T19:09:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
     <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
 
@@ -432,7 +454,7 @@
   <entry>
     <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
-    <updated>2014-01-25T16:45:00-08:00</updated>
+    <updated>2014-01-25T16:45:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
     <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
 
@@ -508,7 +530,7 @@
   <entry>
     <title type="html"><![CDATA[Domain Context]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
-    <updated>2014-01-25T16:42:00-08:00</updated>
+    <updated>2014-01-25T16:42:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
     <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
 
@@ -616,55 +638,6 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v5.0 Released]]></title>
-    <link href="http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released/"/>
-    <updated>2014-01-25T16:40:00-08:00</updated>
-    <id>http://hwyfwk.com/blog/2014/01/25/highway-dot-data-v5-dot-0-released</id>
-    <content type="html"><![CDATA[<h1>Highway.Data 5.0 Released ( 5.0.1.0 )</h1>
-
-<h2>New Features, and better Domain Driven Design support</h2>
-
-<h3>Domain Context</h3>
-
-<p>We have added support for advanced domain specific contexts. These allow for detailed manipulation of your data access patterns. It adheres to the Domain Driven version of a bounded context.</p>
-
-<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/domain-context/">Domain Context</a></h4>
-
-<h3>Simplified Creation Pattern</h3>
-
-<p>We have also added the much requested <code>Repository</code> factories. These give you the ability to use Highway.Data in services and long living work-flows without having to hand roll your own management of unit of work.</p>
-
-<h4>More Details are here: <a href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/">Creation Patterns</a></h4>
-
-<h3>Entity Framework 6.0.0.2 Support</h3>
-
-<p>We shipped an EF 6.0 supported version now that some of the initial release bugs have been patch. We did require the 6.0.0.2 version so that we could make sure you get their fixes as well.</p>
-
-<p>We will be working over the next 3-4 weeks to support some of the new features ( that we don&rsquo;t already support) in Entity Framework 6.0.</p>
-
-<h4>More Details are here:  <a href="http://msdn.microsoft.com/en-us/data/ee712907#ef6">EF 6.0</a></h4>
-
-<h2>Breaking Changes:</h2>
-
-<h3>AsQueryable off Repository.Context</h3>
-
-<p>After seeing a lot of examples from clients, friends, and other speakers using <code>repository.Context.AsQueryable()</code>, we realized that this represented a large hole in the design pattern for Query Object separation. We have remove that hole this publish. If you were using this for simple operations please look at the pre-built queries, or codify the queries into <code>Query&lt;T&gt;, Scalar&lt;T&gt;, Command&lt;T&gt;</code> objects.</p>
-
-<h3>Interception</h3>
-
-<p>We have disabled event interception for the simple <code>DataContext</code> as it caused an additional understanding and performance overhead. This is in an effort make sure we have a simple entry story for most developers. If you were using this feature, we have good news. We have expanded the feature with pre/post <code>Command</code>, <code>Scalar</code>, and <code>Query</code> execution intercept points, as well as kept the standard pre/post save. These features have moved onto the <code>DomainContext&lt;T&gt;</code> class due to their advanced nature.</p>
-
-<h4>More Details are here:</h4>
-
-<h2>Thanks to:</h2>
-
-<h4>Curtis Schlak for pushing us to get EF 6.0 support published.</h4>
-
-<h4>Michael Dudley for the design sessions on vacation in Las Vegas, and the push to finish the beta release.</h4>
 ]]></content>
   </entry>
   

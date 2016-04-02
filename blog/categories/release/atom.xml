@@ -4,7 +4,7 @@
   <title><![CDATA[Category: release | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/release/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -14,9 +14,31 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.4]]></title>
+    <link href="http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4/"/>
+    <updated>2016-04-02T12:46:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-4</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Added support for CoreCLR to the package</li>
+<li>Removed dependency on <code>Common.Logging</code> until such time as they support CoreCLR themselves.</li>
+</ul>
+
+
+<h1>Notes</h1>
+
+<ul>
+<li>The CoreCLR conversion of all of Highway Framework has begun, this is the first drop, more will come.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released/"/>
-    <updated>2015-10-20T12:00:00-07:00</updated>
+    <updated>2015-10-20T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/10/20/highway-dot-data-v6-dot-0-4-2-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Updated to remove chance of calling non-writable properties – Thanks Ed Blakes</li>
@@ -28,7 +50,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4.1 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released/"/>
-    <updated>2015-10-13T12:00:00-07:00</updated>
+    <updated>2015-10-13T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/10/13/highway-dot-data-v6-dot-0-4-1-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Updated Async API and Sync API to be independent</li>
@@ -40,7 +62,7 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.4 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released/"/>
-    <updated>2015-07-29T12:00:00-07:00</updated>
+    <updated>2015-07-29T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Added <code>Context</code> on <code>Command</code> and <code>Scalar</code> Interceptors – Thanks Marcin Dzwonnik</li>
@@ -52,22 +74,10 @@
   <entry>
     <title type="html"><![CDATA[Highway.Data v6.0.3 Released]]></title>
     <link href="http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released/"/>
-    <updated>2015-07-17T12:00:00-07:00</updated>
+    <updated>2015-07-17T12:00:00-05:00</updated>
     <id>http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Fixed bug that allowed <code>InMemoryDataContext</code> to return null results</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v6.0.1 Released]]></title>
-    <link href="http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released/"/>
-    <updated>2015-07-07T16:00:00-07:00</updated>
-    <id>http://hwyfwk.com/blog/2015/07/07/highway-dot-data-v6-dot-0-1-released</id>
-    <content type="html"><![CDATA[<ul>
-<li>Fixing null reference in adding back reference to non-existent collection</li>
 </ul>
 
 ]]></content>

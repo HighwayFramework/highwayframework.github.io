@@ -4,7 +4,7 @@
   <title><![CDATA[Category: feature | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/feature/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2015-11-03T10:47:08-08:00</updated>
+  <updated>2016-04-02T12:46:47-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Session and Configuration access via Interfaces]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces/"/>
-    <updated>2014-01-25T19:33:00-08:00</updated>
+    <updated>2014-01-25T19:33:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/session-and-configuration-access-via-interfaces</id>
     <content type="html"><![CDATA[<p>There are two things which are historically very hard to deal with when unit testing a websites, these are configuration values, and session variables.  They both present largely the same problem, they are normally accessible via an API that is not conducive to testing, both are static classes, and that API retrieves data from them via &ldquo;magic strings&rdquo;.  The Castle Project has a wonderful component within it called <code>DictionaryAdapter</code> which can help solve these pains for us very easily, once you understand how it works.</p>
 
@@ -126,7 +126,7 @@ string ConnectionString { get; }
   <entry>
     <title type="html"><![CDATA[Easy RESTful ApiControllers]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/"/>
-    <updated>2014-01-25T19:09:00-08:00</updated>
+    <updated>2014-01-25T19:09:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers</id>
     <content type="html"><![CDATA[<p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
 
@@ -200,7 +200,7 @@ public override CopyEntityValues(Driver source, Driver destination)
   <entry>
     <title type="html"><![CDATA[Simplified Creation Patterns]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/"/>
-    <updated>2014-01-25T16:45:00-08:00</updated>
+    <updated>2014-01-25T16:45:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns</id>
     <content type="html"><![CDATA[<h1>Simplified Creation Patterns</h1>
 
@@ -258,7 +258,7 @@ public override CopyEntityValues(Driver source, Driver destination)
   <entry>
     <title type="html"><![CDATA[Domain Context]]></title>
     <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
-    <updated>2014-01-25T16:42:00-08:00</updated>
+    <updated>2014-01-25T16:42:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
     <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
 
@@ -343,7 +343,7 @@ public override CopyEntityValues(Driver source, Driver destination)
   <entry>
     <title type="html"><![CDATA[Naming Conventions]]></title>
     <link href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/"/>
-    <updated>2013-11-06T11:37:00-08:00</updated>
+    <updated>2013-11-06T11:37:00-06:00</updated>
     <id>http://hwyfwk.com/blog/2013/11/06/naming-conventions</id>
     <content type="html"><![CDATA[<p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
 
