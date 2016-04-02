@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hp | The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/blog/categories/hp/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2016-04-02T12:49:11-05:00</updated>
+  <updated>2016-04-02T14:23:21-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.5]]></title>
+    <link href="http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-5/"/>
+    <updated>2016-04-02T14:21:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-5</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Pavement v0.4]]></title>
@@ -66,18 +80,6 @@
     <id>http://hwyfwk.com/blog/2015/07/29/highway-dot-data-v6-dot-0-4-released</id>
     <content type="html"><![CDATA[<ul>
 <li>Added <code>Context</code> on <code>Command</code> and <code>Scalar</code> Interceptors – Thanks Marcin Dzwonnik</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Highway.Data v6.0.3 Released]]></title>
-    <link href="http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released/"/>
-    <updated>2015-07-17T12:00:00-05:00</updated>
-    <id>http://hwyfwk.com/blog/2015/07/17/highway-dot-data-v6-dot-0-3-released</id>
-    <content type="html"><![CDATA[<ul>
-<li>Fixed bug that allowed <code>InMemoryDataContext</code> to return null results</li>
 </ul>
 
 ]]></content>

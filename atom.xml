@@ -4,7 +4,7 @@
   <title><![CDATA[The fastest and smoothest way to good architecture]]></title>
   <link href="http://hwyfwk.com/atom.xml" rel="self"/>
   <link href="http://hwyfwk.com/"/>
-  <updated>2016-04-02T12:49:11-05:00</updated>
+  <updated>2016-04-02T14:23:21-05:00</updated>
   <id>http://hwyfwk.com/</id>
   <author>
     <name><![CDATA[Tim Rayburn & Devlin Liles]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Highway.Pavement v0.5]]></title>
+    <link href="http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-5/"/>
+    <updated>2016-04-02T14:21:00-05:00</updated>
+    <id>http://hwyfwk.com/blog/2016/04/02/highway-dot-pavement-v0-dot-5</id>
+    <content type="html"><![CDATA[<h1>Changes</h1>
+
+<ul>
+<li>Adding a strong name key to the Highway.Pavement assembly so it can be referenced from signed assemblies.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Highway.Pavement v0.4]]></title>
@@ -523,120 +537,6 @@
 </span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
 </span><span class='line'>    IRepository Create(Type type);
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Domain Context]]></title>
-    <link href="http://hwyfwk.com/blog/2014/01/25/domain-context/"/>
-    <updated>2014-01-25T16:42:00-06:00</updated>
-    <id>http://hwyfwk.com/blog/2014/01/25/domain-context</id>
-    <content type="html"><![CDATA[<h1>Domain Context and Domain Driven Design (DDD) Patterns</h1>
-
-<h2>Why did you support DDD?</h2>
-
-<p>We have been working in large complex applications for the last several projects and found some rough edges around both business logic and data access. These edges come from not separating the business concepts effectively in code. Long running business sagas being isolated helped to solve this. We added this advanced support to Highway.Data to help make this easier for us, and those like us that have drank the DDD punch.</p>
-
-<h2>How did you support DDD?</h2>
-
-<p>We added a few classes to help support the ability to create domain bounded contexts. These use a generic type parameter to define which domain they contain, and also to segregate the in memory cache for mappings. This allows us to load differing views on similar objects.</p>
-
-<h3>IDomainRepository</h3>
-
-<p>This repository has the event interception events, as well as the bounded context.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainRepository</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
-</span><span class='line'><span class="err">{</span>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeQuery</span><span class="p">&gt;</span> <span class="n">BeforeQuery</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeScalar</span><span class="p">&gt;</span> <span class="n">BeforeScalar</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeCommand</span><span class="p">&gt;</span> <span class="n">BeforeCommand</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterQuery</span><span class="p">&gt;</span> <span class="n">AfterQuery</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterScalar</span><span class="p">&gt;</span> <span class="n">AfterScalar</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterCommand</span><span class="p">&gt;</span> <span class="n">AfterCommand</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">DomainContext</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>IDomainContext</h3>
-
-<p>This context holds the context level interception events, and is contrained to a <code>IDomain</code> type.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomainContext</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IDataContext</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="k">class</span>
-</span><span class='line'><span class="err">{</span>
-</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
-</span><span class='line'>    <span class="c1">///     The event fired just before the commit of the persistence</span>
-</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">BeforeSave</span><span class="p">&gt;</span> <span class="n">BeforeSave</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">/// &lt;summary&gt;</span>
-</span><span class='line'>    <span class="c1">///     The event fired just after the commit of the persistence</span>
-</span><span class='line'>    <span class="c1">/// &lt;/summary&gt;</span>
-</span><span class='line'>    <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">AfterSave</span><span class="p">&gt;</span> <span class="n">AfterSave</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>IDomain</h3>
-
-<p>This is the interface that you implement to define a domain for your objects. It includes any event interceptors, context configurations, connection string, and object mappings.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IDomain</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="kt">string</span> <span class="n">ConnectionString</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">IMappingConfiguration</span> <span class="n">Mappings</span> <span class="p">{</span> <span class="k">get</span><span class="p">;}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">IContextConfiguration</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">List</span><span class="p">&lt;</span><span class="n">IInterceptor</span><span class="p">&gt;</span> <span class="n">Events</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
