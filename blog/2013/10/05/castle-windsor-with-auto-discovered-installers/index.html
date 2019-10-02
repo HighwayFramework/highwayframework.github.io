@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/05/castle-windsor-with-auto-discovered-installers/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    Castle Windsor With Auto Discovered Installers
+    Castle Windsor with Auto Discovered Installers
 	<h5>
 
 
@@ -106,86 +106,65 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-05T15:07:00-05:00" pubdate data-updated="true">Oct 5<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-05T15:07:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <h1>Configuring Castle Windsor</h1>
+      <h1 id="configuring-castle-windsor">Configuring Castle Windsor</h1>
 
 <p>Dependency injection is a key part of good software development, it is the D or <a href="http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID</a>, and yet is not something <a href="http://microsoft.com">Microsoft</a> ships a solution for.  As such, we have turned to the community and the long standing, well supported, king of IoC : <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a></p>
 
-<p>We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our <code>WindsorActivator.Startup()</code> method, we do the following:</p>
+<p>We configure Windsor with a set of reasonable defaults, and enable a few features which some people may not be aware of, to make it is painless as possible.  In our <code class="highlighter-rouge">WindsorActivator.Startup()</code> method, we do the following:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'>        <span class="c1">// Create the container</span>
-</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WindsorContainer</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Add the Array Resolver, so we can take dependencies on T[]</span>
-</span><span class='line'>        <span class="c1">// while only registering T.</span>
-</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="n">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="n">ArrayResolver</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
-</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Register the kernel and container, in case an installer needs it.</span>
-</span><span class='line'>        <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IKernel</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWindsorContainer</span><span class="p">&gt;().</span><span class="n">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="c1">// Create the container</span>
+            <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">WindsorContainer</span><span class="p">();</span>
 
+            <span class="c1">// Add the Array Resolver, so we can take dependencies on T[]</span>
+            <span class="c1">// while only registering T.</span>
+            <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="nf">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="nf">ArrayResolver</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
+            <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
 
-<p>We make your instance of <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> available via <code>IoC.Container</code> but we have specifically marked that as <code>[Obsolete]</code> because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of <code>App_Architecture</code>.</p>
+            <span class="c1">// Register the kernel and container, in case an installer needs it.</span>
+            <span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+                <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IKernel</span><span class="p">&gt;().</span><span class="nf">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">),</span>
+                <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWindsorContainer</span><span class="p">&gt;().</span><span class="nf">Instance</span><span class="p">(</span><span class="n">IoC</span><span class="p">.</span><span class="n">Container</span><span class="p">)</span>
+                <span class="p">);</span>
+</code></pre></div></div>
 
-<h2>Accessing the Container without an Obsolete Warning</h2>
+<p>We make your instance of <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> available via <code class="highlighter-rouge">IoC.Container</code> but we have specifically marked that as <code class="highlighter-rouge">[Obsolete]</code> because you should not be accessing the container directly.  Instead, we want to encourage you to rely on our injection of dependencies into your Controllers, and never directly access the container outside of <code class="highlighter-rouge">App_Architecture</code>.</p>
 
-<p>Now, on rare occasions there will be perfectly reasonable pragmatic reasons to need to access the container.  This is the reason why we have marked the <code>[Obsolete]</code> merely as a warning, and then included the <code>#pragma</code> statements to disable those warnings in places you are accepting the need to directly access the container.  When those occur, simply surround your code with :</p>
+<h2 id="accessing-the-container-without-an-obsolete-warning">Accessing the Container without an Obsolete Warning</h2>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="cp">#pragma warning disable 618</span>
-</span><span class='line'><span class="cp">#pragma warning restore 618</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Now, on rare occasions there will be perfectly reasonable pragmatic reasons to need to access the container.  This is the reason why we have marked the <code class="highlighter-rouge">[Obsolete]</code> merely as a warning, and then included the <code class="highlighter-rouge">#pragma</code> statements to disable those warnings in places you are accepting the need to directly access the container.  When those occur, simply surround your code with :</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	#pragma warning disable 618
+	#pragma warning restore 618
+</code></pre></div></div>
 
-<p>You should keep such sections small, and should be aware that the <code>#pragma</code> statements will also disable any other <code>[Obsolete]</code> warnings that occur between them, not just those for the <code>IoC.Container</code>.</p>
+<p>You should keep such sections small, and should be aware that the <code class="highlighter-rouge">#pragma</code> statements will also disable any other <code class="highlighter-rouge">[Obsolete]</code> warnings that occur between them, not just those for the <code class="highlighter-rouge">IoC.Container</code>.</p>
 
-<h1>Discovering Installers</h1>
+<h1 id="discovering-installers">Discovering Installers</h1>
 
-<p><code>WindsorActivator</code> also includes one very small, but very powerful line that is worth highlighting:</p>
+<p><code class="highlighter-rouge">WindsorActivator</code> also includes one very small, but very powerful line that is worth highlighting:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Container</span><span class="p">.</span><span class="n">Install</span><span class="p">(</span><span class="n">FromAssembly</span><span class="p">.</span><span class="n">This</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Container.Install(FromAssembly.This());
+</code></pre></div></div>
 
+<p>This statement tells <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> to scan the <strong>current assembly</strong>, looking for classes which implement the <code class="highlighter-rouge">IWindsorInstaller</code> interface, and to execute those components, allowing them to register components with the container.  This auto discovery is one of the best features of our IoC implementation, allowing you to segregate your registrations into small, related pieces, as you will see.</p>
 
-<p>This statement tells <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a> to scan the <strong>current assembly</strong>, looking for classes which implement the <code>IWindsorInstaller</code> interface, and to execute those components, allowing them to register components with the container.  This auto discovery is one of the best features of our IoC implementation, allowing you to segregate your registrations into small, related pieces, as you will see.</p>
+<h1 id="included-installers">Included Installers</h1>
 
-<h1>Included Installers</h1>
-
-<p>We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the <code>Installers</code> folder of your MVC solution.  Here are their names and purposes:</p>
+<p>We have included several installers for you, in the various packages of Highway.OnRamp.MVC.   They are all located in the <code class="highlighter-rouge">Installers</code> folder of your MVC solution.  Here are their names and purposes:</p>
 
 <ul>
-<li><code>CommonLoggingInstaller</code> &ndash; Configures the Common.Logging installer used by Highway.Data to log to NLog</li>
-<li><code>ControllersInstaller</code> &ndash; Scans the current assembly for all types that implement <code>IController</code> from System.Web.Mvc and registers them with <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a>.  This means you never have to register your controllers manually.</li>
-<li><code>DefaultConventionInstaller</code> &ndash; Automatically registers types based on naming conventions, the <a href="/blog/2013/11/06/automatic-ioc-registration-convention/">details of which we discuss in this feature</a>.</li>
-<li><code>EntityFrameworkInstaller</code> &ndash; Registers the configured DatabaseInitializer for Entity Framework.</li>
-<li><code>HighwayDataInstaller</code> &ndash; Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
-<li><code>LoggingInstaller</code> &ndash; Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
+  <li><code class="highlighter-rouge">CommonLoggingInstaller</code> - Configures the Common.Logging installer used by Highway.Data to log to NLog</li>
+  <li><code class="highlighter-rouge">ControllersInstaller</code> - Scans the current assembly for all types that implement <code class="highlighter-rouge">IController</code> from System.Web.Mvc and registers them with <a href="http://docs.castleproject.org/Default.aspx?Page=MainPage&amp;NS=Windsor&amp;AspxAutoDetectCookieSupport=1">Castle.Windsor</a>.  This means you never have to register your controllers manually.</li>
+  <li><code class="highlighter-rouge">DefaultConventionInstaller</code> - Automatically registers types based on naming conventions, the <a href="/blog/2013/11/06/automatic-ioc-registration-convention/">details of which we discuss in this feature</a>.</li>
+  <li><code class="highlighter-rouge">EntityFrameworkInstaller</code> - Registers the configured DatabaseInitializer for Entity Framework.</li>
+  <li><code class="highlighter-rouge">HighwayDataInstaller</code> - Is the configuration and registrations for using Highway.Data.EntityFramework for your database.  It will be covered in more detail when we discuss Data Access.</li>
+  <li><code class="highlighter-rouge">LoggingInstaller</code> - Configures the Castle Logging Facility, and wires it to NLog.  We will cover this is more detail when we discuss the Logging feature.</li>
 </ul>
 
 
@@ -206,9 +185,9 @@
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -255,7 +234,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

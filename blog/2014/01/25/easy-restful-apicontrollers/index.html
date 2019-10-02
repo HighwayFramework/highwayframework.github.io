@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2014/01/25/easy-restful-apicontrollers/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,95 +106,64 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2014-01-25T19:09:00-06:00" pubdate data-updated="true">Jan 25<span>th</span>, 2014</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2014-01-25T19:09:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code>BaseRestApiController</code>.  That base class has two constructor requirements:</p>
+      <p>Using the Domain concepts and Prebuilt Queries of Highway.Data, we have included a basic RESTful base class for your ApiControllers.  This feature is very easy to use, simply inherit from <code class="highlighter-rouge">BaseRestApiController</code>.  That base class has two constructor requirements:</p>
 
 <ol>
-<li><code>IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
-<li><code>RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
+  <li><code class="highlighter-rouge">IDomainRepositoryFactory</code> this class comes from Highway.Data and is already registered with our IoC.</li>
+  <li><code class="highlighter-rouge">RestfulOperations</code> this is a <strong>FLAGS</strong> enumeration that lets you control how the base class behaves.</li>
 </ol>
-
 
 <p>An implementation controller would look like this:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverController</span> <span class="p">:</span> <span class="n">BaseRestApiController</span><span class="p">&lt;</span><span class="n">Domain</span><span class="p">,</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Guid</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
-</span><span class='line'>      <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">All</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
-</span><span class='line'>      
-</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="nf">CopyEntityValues</span><span class="p">(</span><span class="n">Driver</span> <span class="n">source</span><span class="p">,</span> <span class="n">Driver</span> <span class="n">destination</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="c1">// copy values from one instance to another here.</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverController</span> <span class="p">:</span> <span class="n">BaseRestApiController</span><span class="p">&lt;</span><span class="n">Domain</span><span class="p">,</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Guid</span><span class="p">&gt;</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
+		<span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">All</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
 
+	<span class="k">public</span> <span class="k">override</span> <span class="nf">CopyEntityValues</span><span class="p">(</span><span class="n">Driver</span> <span class="n">source</span><span class="p">,</span> <span class="n">Driver</span> <span class="n">destination</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="c1">// copy values from one instance to another here.</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>This class would support all five of our pre-built functions, because it passed <code>RestfulOperations.All</code>, these are:</p>
+<p>This class would support all five of our pre-built functions, because it passed <code class="highlighter-rouge">RestfulOperations.All</code>, these are:</p>
 
 <ul>
-<li>GetAll &ndash; This is the default get with no <code>id</code> and returns ALL Drivers</li>
-<li>GetOne &ndash; This returns one driver, by <code>id</code></li>
-<li>Put &ndash; Accepts a <code>PUT</code> verb and updates a singular Driver.  Uses <code>CopyEntityValues</code> above to control what can be updated.</li>
-<li>Delete &ndash; Deletes a Driver by <code>id</code></li>
-<li>Post &ndash; Accepts a <code>POST</code> verb and inserts a singular Driver.</li>
+  <li>GetAll - This is the default get with no <code class="highlighter-rouge">id</code> and returns ALL Drivers</li>
+  <li>GetOne - This returns one driver, by <code class="highlighter-rouge">id</code></li>
+  <li>Put - Accepts a <code class="highlighter-rouge">PUT</code> verb and updates a singular Driver.  Uses <code class="highlighter-rouge">CopyEntityValues</code> above to control what can be updated.</li>
+  <li>Delete - Deletes a Driver by <code class="highlighter-rouge">id</code></li>
+  <li>Post - Accepts a <code class="highlighter-rouge">POST</code> verb and inserts a singular Driver.</li>
 </ul>
 
+<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR’ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
 
-<p>Importantly this enums is <strong>FLAGS</strong> based, and as such the values can be OR&#8217;ed together.  For instance, if you wanted to just support GetOne and Post you could change the line above to:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="nf">DriverController</span><span class="p">(</span><span class="n">IDomainRepositoryFactory</span> <span class="n">factory</span><span class="p">)</span> <span class="p">:</span>
-</span><span class='line'>  <span class="k">base</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">GetOne</span> <span class="p">|</span> <span class="n">RestfulOperations</span><span class="p">.</span><span class="n">Post</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	public DriverController(IDomainRepositoryFactory factory) :
+		base(factory, RestfulOperations.GetOne | RestfulOperations.Post) { }
+</code></pre></div></div>
 
 <p>There are some logical pre-built combinations already supported in the enum, which is defined as follows:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">    [Flags]</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">enum</span> <span class="n">RestOperations</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">GetAll</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">GetOne</span> <span class="p">=</span> <span class="m">2</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">Post</span> <span class="p">=</span> <span class="m">4</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">Put</span> <span class="p">=</span> <span class="m">8</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">Delete</span> <span class="p">=</span> <span class="m">16</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">ReadOnly</span> <span class="p">=</span> <span class="m">3</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">WriteOnly</span> <span class="p">=</span> <span class="m">28</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">All</span> <span class="p">=</span> <span class="m">31</span>
-</span><span class='line'>    <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        [Flags]
+        public enum RestOperations
+        {
+            GetAll = 1,
+            GetOne = 2,
+            Post = 4,
+            Put = 8,
+            Delete = 16,
+            ReadOnly = 3,
+            WriteOnly = 28,
+            All = 31
+        }
+</code></pre></div></div>
 
     </div>
   </div>
@@ -213,9 +182,9 @@
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -262,7 +231,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

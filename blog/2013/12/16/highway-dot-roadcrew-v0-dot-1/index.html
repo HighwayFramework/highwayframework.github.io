@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/12/16/highway-dot-roadcrew-v0-dot-1/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,44 +106,38 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-12-16T08:26:00-06:00" pubdate data-updated="true">Dec 16<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-12-16T08:26:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>We&rsquo;re thrilled to announce the initial release of Highway.RoadCrew.  This is a package installer, very similar to <code>bundler</code> from the Ruby world, but built on top of the amazing Chocolatey package manager, and PsGet PowerShell Module directory.  To get started, this is all you need to know:</p>
+      <p>We’re thrilled to announce the initial release of Highway.RoadCrew.  This is a package installer, very similar to <code class="highlighter-rouge">bundler</code> from the Ruby world, but built on top of the amazing Chocolatey package manager, and PsGet PowerShell Module directory.  To get started, this is all you need to know:</p>
 
-<h1>Install</h1>
+<h1 id="install">Install</h1>
 
 <p>First, run the following two lines, which will download the current script, and run it.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(new-object Net.WebClient).DownloadString("http://bit.ly/hwyfwk-rc") &gt; RunMe.ps1
-</span><span class='line'>.\RunMe.ps1</span></code></pre></td></tr></table></div></figure>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(new-object Net.WebClient).DownloadString("http://bit.ly/hwyfwk-rc") &gt; RunMe.ps1
+.\RunMe.ps1
+</code></pre></div></div>
 
+<h1 id="configure">Configure</h1>
 
-<h1>Configure</h1>
-
-<p>Now setup your configuration by editing the <code>RunMe.config.ps1</code> file.  This will always be the file you edit, you shouldn&rsquo;t ever need to modify <code>RunMe.ps1</code>.  The following commands are supported:</p>
+<p>Now setup your configuration by editing the <code class="highlighter-rouge">RunMe.config.ps1</code> file.  This will always be the file you edit, you shouldn’t ever need to modify <code class="highlighter-rouge">RunMe.ps1</code>.  The following commands are supported:</p>
 
 <ul>
-<li><code>chocolatey &lt;package-name&gt;</code> will install the named package (see <a href="http://chocolatey.org/">http://chocolatey.org/</a> for a list)
-
-<ul>
-<li><code>-source</code> is an optional switch that lets you specify another chocolatey feed or source</li>
+  <li><code class="highlighter-rouge">chocolatey &lt;package-name&gt;</code> will install the named package (see http://chocolatey.org/ for a list)
+    <ul>
+      <li><code class="highlighter-rouge">-source</code> is an optional switch that lets you specify another chocolatey feed or source</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">gem &lt;gem-name&gt;</code> will install a Ruby gem (see http://rubygems.org/ for a list)</li>
+  <li><code class="highlighter-rouge">windows &lt;feature-name&gt;</code> will install the named feature (execute <code class="highlighter-rouge">clist -source windowsfeatures</code> to see a possible list, only available after you’ve executed <code class="highlighter-rouge">RunMe.ps1</code> a second time currently)</li>
+  <li><code class="highlighter-rouge">profile &lt;powershell-command&gt;</code> adds the listed PowerShell command to the current user’s current profile.</li>
+  <li><code class="highlighter-rouge">alias &lt;alias-name&gt; &lt;command&gt;</code> adds an alias to the current user’s current PowerShell profile.</li>
+  <li><code class="highlighter-rouge">psget &lt;module-name&gt;</code> will install a PsGet.net PowerShell module (see http://psget.net/ for a list)</li>
 </ul>
-</li>
-<li><code>gem &lt;gem-name&gt;</code> will install a Ruby gem (see <a href="http://rubygems.org/">http://rubygems.org/</a> for a list)</li>
-<li><code>windows &lt;feature-name&gt;</code> will install the named feature (execute <code>clist -source windowsfeatures</code> to see a possible list, only available after you&rsquo;ve executed <code>RunMe.ps1</code> a second time currently)</li>
-<li><code>profile &lt;powershell-command&gt;</code> adds the listed PowerShell command to the current user&rsquo;s current profile.</li>
-<li><code>alias &lt;alias-name&gt; &lt;command&gt;</code> adds an alias to the current user&rsquo;s current PowerShell profile.</li>
-<li><code>psget &lt;module-name&gt;</code> will install a PsGet.net PowerShell module (see <a href="http://psget.net/">http://psget.net/</a> for a list)</li>
-</ul>
-
 
     </div>
   </div>
@@ -162,11 +156,11 @@
 
 
 
-  <a href="/blog/categories/hp/"><span class="badge">hp</span></a>
+  <a href="/blog/categories/roadcrew/"><span class="badge">roadcrew</span></a>
 
   <a href="/blog/categories/release/"><span class="badge">release</span></a>
 
-  <a href="/blog/categories/roadcrew/"><span class="badge">roadcrew</span></a>
+  <a href="/blog/categories/hp/"><span class="badge">hp</span></a>
 
 
 
@@ -213,7 +207,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

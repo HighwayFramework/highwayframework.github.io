@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2014/01/25/simplified-creation-patterns/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,82 +106,52 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2014-01-25T16:45:00-06:00" pubdate data-updated="true">Jan 25<span>th</span>, 2014</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2014-01-25T16:45:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <h1>Simplified Creation Patterns</h1>
+      <p>#Simplified Creation Patterns</p>
 
-<h3>Repository Factory</h3>
+<p>###Repository Factory
+We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
 
-<p>We wanted to provide a simple way to construct both domain repositories and simple Repositories. This lead us to create two different factories for repository. We ship a default factory for both of these, but we also ship interfaces for these as a test and extension point.</p>
+<p>####Repository Factory
+This allows you to construct a simple repository that doesn’t need any of the <code class="highlighter-rouge">DomainRepository</code> features.</p>
 
-<h4>Repository Factory</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 	public interface IRepositoryFactory
+    {
+        /// &lt;summary&gt;
+        /// Creates a repository for the requested domain
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
+        IRepository Create();
+    }
 
-<p>This allows you to construct a simple repository that doesn&rsquo;t need any of the <code>DomainRepository</code> features.</p>
+</code></pre></div></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>     public interface IRepositoryFactory
-</span><span class='line'>    {
-</span><span class='line'>        /// &lt;summary&gt;
-</span><span class='line'>        /// Creates a repository for the requested domain
-</span><span class='line'>        /// &lt;/summary&gt;
-</span><span class='line'>        /// &lt;returns&gt;Domain specific repository&lt;/returns&gt;
-</span><span class='line'>        IRepository Create();
-</span><span class='line'>    }
-</span></code></pre></td></tr></table></div></figure>
+<p>####Domain Repository Factory
+This allows you construct a repository specific to any domain that the factory is dependent on.</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public interface IDomainRepositoryFactory
+    {
 
-<h4>Domain Repository Factory</h4>
+        /// &lt;summary&gt;
+        /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+        /// &lt;/summary&gt;
+        /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
+        /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+        IRepository Create&lt;T&gt;() where T : class, IDomain;
 
-<p>This allows you construct a repository specific to any domain that the factory is dependent on.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>public interface IDomainRepositoryFactory
-</span><span class='line'>{
-</span><span class='line'>
-</span><span class='line'>    /// &lt;summary&gt;
-</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
-</span><span class='line'>    /// &lt;/summary&gt;
-</span><span class='line'>    /// &lt;typeparam name="T"&gt;Domain for repository&lt;/typeparam&gt;
-</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
-</span><span class='line'>    IRepository Create&lt;T&gt;() where T : class, IDomain;
-</span><span class='line'>
-</span><span class='line'>    /// &lt;summary&gt;
-</span><span class='line'>    /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
-</span><span class='line'>    /// &lt;/summary&gt;
-</span><span class='line'>    /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
-</span><span class='line'>    /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
-</span><span class='line'>    IRepository Create(Type type);
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
+        /// &lt;summary&gt;
+        /// Creates a repository for the specified &lt;see cref="IDomain"/&gt;
+        /// &lt;/summary&gt;
+        /// &lt;param name="T"&gt;Domain for repository&lt;/param&gt;
+        /// &lt;returns&gt;&lt;see cref="IRepository"/&gt;&lt;/returns&gt;
+        IRepository Create(Type type);
+    }
+</code></pre></div></div>
 
     </div>
   </div>
@@ -249,7 +219,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

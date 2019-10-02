@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/30/configuring-highway-dot-data-for-entity-framework/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,10 +106,8 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-30T20:20:00-05:00" pubdate data-updated="true">Oct 30<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-30T20:20:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
@@ -122,240 +120,150 @@
 
 <p><a href="#RavenDB">RavenDB</a></p>
 
-<p><a name="EntityFramework"></a></p>
+<p><a name="EntityFramework"></a>
+#EntityFramework
+##Getting Started
+The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
 
-<h1>EntityFramework</h1>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on Entity Framework is to install both Entity Framework and Highway.Data.EntityFramework with the below command.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.EntityFramework</span></code></pre></td></tr></table></div></figure>
-
+<pre><code class="language-plain">Install-Package Highway.Data.EntityFramework
+</code></pre>
 
 <p>This will bring the install down and put it in our project.</p>
 
-<h1>Example Domain</h1>
+<h1 id="example-domain">Example Domain</h1>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>In all of the examples below, we’ll be working with the following business domain, from our Driver’s Education company:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-<h2>Database to Entity Mappings</h2>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>Now we need to create our database mappings. Highway.Data doesn&rsquo;t redefine the mapping syntax, it just makes them injectable into the <code>DataContext</code>. To do this we defined an interface <code>IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code>DataContext</code>.
+<p>##Database to Entity Mappings
+Now we need to create our database mappings. Highway.Data doesn’t redefine the mapping syntax, it just makes them injectable into the <code class="highlighter-rouge">DataContext</code>. To do this we defined an interface <code class="highlighter-rouge">IMappingConfiguration</code> for you to implement that will allow us to inject your domain into a pre-built <code class="highlighter-rouge">DataContext</code>.
 <strong>The best practice is to name this class after the aggregate root in your domain, so ours is DriverExams</strong></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversExams</span> <span class="p">:</span> <span class="n">IMappingConfiguration</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureModelBuilder</span><span class="p">(</span><span class="n">DbModelBuilder</span> <span class="n">modelBuilder</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Entity</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span> <span class="c1">//This is the inline/fluent config</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Configurations</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">DriverMap</span><span class="p">());</span> <span class="c1">//This is the class based config</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriverMap</span> <span class="p">:</span> <span class="n">EntityTypeConfiguration</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriverMap</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">ToTable</span><span class="p">(</span><span class="s">&quot;Drivers&quot;</span><span class="p">);</span>
-</span><span class='line'>      <span class="c1">//You can do anything here that EF supports</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversExams</span> <span class="p">:</span> <span class="n">IMappingConfiguration</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureModelBuilder</span><span class="p">(</span><span class="n">DbModelBuilder</span> <span class="n">modelBuilder</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Entity</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span> <span class="c1">//This is the inline/fluent config</span>
 
+        <span class="n">modelBuilder</span><span class="p">.</span><span class="n">Configurations</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">new</span> <span class="nf">DriverMap</span><span class="p">());</span> <span class="c1">//This is the class based config</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code>EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code>IMappingConfiguration</code></em></p>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">DriverMap</span> <span class="p">:</span> <span class="n">EntityTypeConfiguration</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">DriverMap</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nf">ToTable</span><span class="p">(</span><span class="s">"Drivers"</span><span class="p">);</span>
+		<span class="c1">//You can do anything here that EF supports</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<h2>Context Level Configuration</h2>
+<p>That is all it takes to get our Database schema mapped to our entities. <em>As an aside, EF powertools will reference engineer the <code class="highlighter-rouge">EntityTypeConfiguration&lt;T&gt;</code> classes for you, and then you can just add them to your <code class="highlighter-rouge">IMappingConfiguration</code></em></p>
 
-<p>We setup a <code>DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code>IContextConfiguration</code> like below.</p>
+<p>##Context Level Configuration
+We setup a <code class="highlighter-rouge">DefaultContextConfiguration</code> by default, but if you disagree with our opinions about lazy loading etc.. you can change that. You just need to implement a class for <code class="highlighter-rouge">IContextConfiguration</code> like below.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DefaultContextConfiguration</span> <span class="p">:</span> <span class="n">IContextConfiguration</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureContext</span><span class="p">(</span><span class="n">DbContext</span> <span class="n">context</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">LazyLoadingEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">ProxyCreationEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="c1">//Here you can do any context level configuration changes that EF supports</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">DefaultContextConfiguration</span> <span class="p">:</span> <span class="n">IContextConfiguration</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureContext</span><span class="p">(</span><span class="n">DbContext</span> <span class="n">context</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">LazyLoadingEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">Configuration</span><span class="p">.</span><span class="n">ProxyCreationEnabled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+		<span class="c1">//Here you can do any context level configuration changes that EF supports</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>This will let you change fundemental behavior of the context.</p>
 
-<h2>Logging Configuration</h2>
+<p>##Logging Configuration</p>
 
 <p>Then you need to send in a logger, but those details are covered in our <a href="/blog/2013/10/28/logging-with-datacontext/">Logging Post</a> because it is not Entity Framework specific.</p>
 
-<h2>Using it all</h2>
+<p>##Using it all
+Last but not least we need to use our configured pieces like so:</p>
 
-<p>Last but not least we need to use our configured pieces like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="s">&quot;Your connection string here&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">DriversExams</span><span class="p">(),</span> <span class="k">new</span> <span class="n">DefaultContextConfiguration</span><span class="p">(),</span> <span class="k">new</span> <span class="n">NoOpLogger</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">DataContext</span><span class="p">(</span><span class="s">"Your connection string here"</span><span class="p">,</span> <span class="k">new</span> <span class="nf">DriversExams</span><span class="p">(),</span> <span class="k">new</span> <span class="nf">DefaultContextConfiguration</span><span class="p">(),</span> <span class="k">new</span> <span class="nf">NoOpLogger</span><span class="p">());</span>
+</code></pre></div></div>
 
 <p>We normally do this via our favorite IoC Container, but alas that is another guide.</p>
 
-<p><a name="NHibernate"></a></p>
+<p><a name="NHibernate"></a>
+#NHibernate
+Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code class="highlighter-rouge">DataContext</code>.</p>
 
-<h1>NHibernate</h1>
+<p>##Getting Started
+The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
 
-<p>Highway.Data is very easy to configure with NHibernate, because we take in an ISession on Constructor for <code>DataContext</code>.</p>
-
-<h2>Getting Started</h2>
-
-<p>The first step to getting Highway.Data running on NHibernate is to install both NHibernate and Highway.Data with the below command.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.NHibernate</span></code></pre></td></tr></table></div></figure>
-
+<pre><code class="language-plain">Install-Package Highway.Data.NHibernate
+</code></pre>
 
 <p>This will bring the install down and put it in our project.</p>
 
-<p>Everything else is out of the box NHibernate, isn&rsquo;t it great!!</p>
+<p>Everything else is out of the box NHibernate, isn’t it great!!</p>
 
-<h2>Example</h2>
+<p>##Example</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">nhibernateConfiguration</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Configuration</span><span class="p">().</span><span class="nf">Configure</span><span class="p">();</span>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">nhibernateConfiguration</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="p">().</span><span class="n">Configure</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">AutoMap</span><span class="p">.</span><span class="n">AssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
-</span><span class='line'>    <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span> <span class="p">(</span><span class="n">Driver</span><span class="p">).</span><span class="n">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
-</span><span class='line'>    <span class="p">.</span><span class="n">Conventions</span><span class="p">.</span><span class="n">AddFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
-</span><span class='line'>    <span class="p">.</span><span class="n">UseOverridesFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">var</span> <span class="n">factory</span> <span class="p">=</span> <span class="n">Fluently</span><span class="p">.</span><span class="n">Configure</span><span class="p">(</span><span class="n">nhibernateConfiguration</span><span class="p">).</span><span class="n">Mappings</span><span class="p">(</span><span class="n">mappingConfiguration</span> <span class="p">=&gt;</span> <span class="n">mappingConfiguration</span><span class="p">.</span><span class="n">AutoMappings</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">model</span><span class="p">)).</span><span class="n">BuildSessionFactory</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">factory</span><span class="p">.</span><span class="n">OpenSession</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">AutoMap</span><span class="p">.</span><span class="n">AssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
+    <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span> <span class="p">(</span><span class="n">Driver</span><span class="p">).</span><span class="nf">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">Conventions</span><span class="p">.</span><span class="n">AddFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
+    <span class="p">.</span><span class="n">UseOverridesFromAssemblyOf</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;();</span>
 
+<span class="kt">var</span> <span class="n">factory</span> <span class="p">=</span> <span class="n">Fluently</span><span class="p">.</span><span class="nf">Configure</span><span class="p">(</span><span class="n">nhibernateConfiguration</span><span class="p">).</span><span class="nf">Mappings</span><span class="p">(</span><span class="n">mappingConfiguration</span> <span class="p">=&gt;</span> <span class="n">mappingConfiguration</span><span class="p">.</span><span class="n">AutoMappings</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">model</span><span class="p">)).</span><span class="nf">BuildSessionFactory</span><span class="p">();</span>
 
-<p><a name="RavenDB"></a></p>
+<span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">DataContext</span><span class="p">(</span><span class="n">factory</span><span class="p">.</span><span class="nf">OpenSession</span><span class="p">());</span>
 
-<h1>RavenDB</h1>
+</code></pre></div></div>
 
-<p>Highway.Data is very easy to configure with RavenDB, because we take in an <code>IDocumentSession</code> on Constructor for <code>DataContext</code>.</p>
+<p><a name="RavenDB"></a>
+#RavenDB
+Highway.Data is very easy to configure with RavenDB, because we take in an <code class="highlighter-rouge">IDocumentSession</code> on Constructor for <code class="highlighter-rouge">DataContext</code>.</p>
 
-<h2>Getting Started</h2>
+<p>##Getting Started
+The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
 
-<p>The first step to getting Highway.Data running on RavenDB is to install both RavenDB and Highway.Data with the below command.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Install-Package Highway.Data.RavenDb</span></code></pre></td></tr></table></div></figure>
-
+<pre><code class="language-plain">Install-Package Highway.Data.RavenDb
+</code></pre>
 
 <p>This will bring the install down and put it in our project.</p>
 
-<p>Everything else is out of the box RavenDB, isn&rsquo;t it great!!</p>
+<p>Everything else is out of the box RavenDB, isn’t it great!!</p>
 
-<h2>Example</h2>
+<p>##Example</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">embeddableDocumentStore</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EmbeddableDocumentStore</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">DataDirectory</span> <span class="p">=</span> <span class="s">""</span><span class="p">,</span>
+    <span class="n">RunInMemory</span> <span class="p">=</span> <span class="k">true</span>
+<span class="p">};</span>
+<span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="nf">Initialize</span><span class="p">();</span>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">embeddableDocumentStore</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EmbeddableDocumentStore</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">DataDirectory</span> <span class="p">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">RunInMemory</span> <span class="p">=</span> <span class="k">true</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'><span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="n">Initialize</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="n">OpenSession</span><span class="p">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">DataContext</span><span class="p">(</span><span class="n">embeddableDocumentStore</span><span class="p">.</span><span class="nf">OpenSession</span><span class="p">());</span>
 
-
-
+</code></pre></div></div>
 
     </div>
   </div>
@@ -423,7 +331,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

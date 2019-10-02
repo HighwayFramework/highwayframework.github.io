@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/07/what-should-i-register-with-my-ioc-container/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    What Should I Register With My IoC Container?
+    What should I register with my IoC container?
 	<h5>
 
 
@@ -106,52 +106,45 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-11-07T15:09:00-06:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-11-07T15:09:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
       <p>If you are going to use an IoC container, regardless of which one, here is what needs to be registered, and some thoughts about object lifetime.  If we do not specify a lifetime, you can assume that singleton is acceptable.</p>
 
-<h2>Highway.Data</h2>
+<h2 id="highwaydata">Highway.Data</h2>
 
 <ul>
-<li><code>IRepository</code> should resolve to <code>Repository</code> on either a transient (new every request) or per web request (if you&rsquo;re in a website) object lifetime.</li>
-<li><code>IEventManager</code> should resolve to <code>EventManager</code></li>
-<li><code>ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code>NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
+  <li><code class="highlighter-rouge">IRepository</code> should resolve to <code class="highlighter-rouge">Repository</code> on either a transient (new every request) or per web request (if you’re in a website) object lifetime.</li>
+  <li><code class="highlighter-rouge">IEventManager</code> should resolve to <code class="highlighter-rouge">EventManager</code></li>
+  <li><code class="highlighter-rouge">ILog</code> should resolve to either a <a href="http://netcommon.sourceforge.net/">Common.Logging</a> implementation for your chosen logger, or an instance of <code class="highlighter-rouge">NoOpLogger</code> from <a href="http://netcommon.sourceforge.net/">Common.Logging</a>.</li>
 </ul>
 
-
-<h2>Highway.Data.EntityFramework</h2>
-
-<ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).
+<h2 id="highwaydataentityframework">Highway.Data.EntityFramework</h2>
 
 <ul>
-<li>Your IoC will need to inject a connection string, named <code>connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
-</ul>
-</li>
-<li><code>IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
-<li><code>IContextConfiguration</code> should resolve to <code>DefaultContextConfiguration</code> <strong>or</strong> a class you&rsquo;ve created should you need to change how the Context is configured from our defaults.</li>
+  <li><code class="highlighter-rouge">IDataContext</code> should resolve to <code class="highlighter-rouge">DataContext</code> on either a transient (new every request).
+    <ul>
+      <li>Your IoC will need to inject a connection string, named <code class="highlighter-rouge">connectionString</code> to the constructor, in whatever way such primitive dependencies are handled by your container.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">IMappingConfiguration</code> should resolve to a type you have created that implements this interface and maps all of your entities.</li>
+  <li><code class="highlighter-rouge">IContextConfiguration</code> should resolve to <code class="highlighter-rouge">DefaultContextConfiguration</code> <strong>or</strong> a class you’ve created should you need to change how the Context is configured from our defaults.</li>
 </ul>
 
-
-<h2>Highway.Data.NHibernate</h2>
+<h2 id="highwaydatanhibernate">Highway.Data.NHibernate</h2>
 
 <ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
-<li><code>ISession</code> should resolve to a call to your configured <code>ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
+  <li><code class="highlighter-rouge">IDataContext</code> should resolve to <code class="highlighter-rouge">DataContext</code> on either a transient (new every request).</li>
+  <li><code class="highlighter-rouge">ISession</code> should resolve to a call to your configured <code class="highlighter-rouge">ISessionFactory</code>.  These are standard NHibernate interfaces, and you should follow their guidance regarding object lifetime.</li>
 </ul>
 
-
-<h2>Highway.Data.RavenDb</h2>
-
+<h2 id="highwaydataravendb">Highway.Data.RavenDb</h2>
 <ul>
-<li><code>IDataContext</code> should resolve to <code>DataContext</code> on either a transient (new every request).</li>
-<li><code>IDocumentSession</code> should resolve to a call to your configured <code>IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
+  <li><code class="highlighter-rouge">IDataContext</code> should resolve to <code class="highlighter-rouge">DataContext</code> on either a transient (new every request).</li>
+  <li><code class="highlighter-rouge">IDocumentSession</code> should resolve to a call to your configured <code class="highlighter-rouge">IDocumentStore</code>.  These are standard RavenDb interfaces, and you should follow their guidance regarding object lifetime.</li>
 </ul>
 
 
@@ -221,7 +214,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

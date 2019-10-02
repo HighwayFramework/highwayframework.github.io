@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/06/mvc-filters-with-dependency-injection/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    MVC Filters With Dependency Injection
+    MVC Filters with Dependency Injection
 	<h5>
 
 
@@ -106,10 +106,8 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-06T20:39:00-05:00" pubdate data-updated="true">Oct 6<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-06T20:39:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
@@ -117,107 +115,74 @@
       <p>One of the most powerful features of the MVC OnRamp is the ability to have MVC Filters injected via our Inversion of Control (IoC) container, Castle.Windsor.  There are several types of filters supported by ASP.NET MVC that allow you to handle orthogonal issues such as:</p>
 
 <ul>
-<li><code>IExceptionFilter</code> which is invoked whenever unhandled exceptions occur.</li>
-<li><code>IActionFilter</code> which is invoked just before and just after specific actions.</li>
-<li><code>IAuthorizationFilter</code> which is invoked when authorizing requests.</li>
-<li><code>IResultFilter</code> which is invoked on just before and just after results are returned.</li>
+  <li><code class="highlighter-rouge">IExceptionFilter</code> which is invoked whenever unhandled exceptions occur.</li>
+  <li><code class="highlighter-rouge">IActionFilter</code> which is invoked just before and just after specific actions.</li>
+  <li><code class="highlighter-rouge">IAuthorizationFilter</code> which is invoked when authorizing requests.</li>
+  <li><code class="highlighter-rouge">IResultFilter</code> which is invoked on just before and just after results are returned.</li>
 </ul>
-
 
 <p>Normally these filters are applied one of two ways:</p>
 
 <ul>
-<li>Globally via specification in the App_Start, which can easily be resolved from the IoC container but which must be global in scope, and hence somewhat limiting.</li>
-<li>Via Attribute on either a Controller or Action, which cannot be resolved from the IoC because we have no control over the instantiation of those attributes.</li>
+  <li>Globally via specification in the App_Start, which can easily be resolved from the IoC container but which must be global in scope, and hence somewhat limiting.</li>
+  <li>Via Attribute on either a Controller or Action, which cannot be resolved from the IoC because we have no control over the instantiation of those attributes.</li>
 </ul>
 
+<p>But MVC allows for another option, which is an <code class="highlighter-rouge">IFilterProvider</code>, this interface is called at the outset of any request, and is allowed to return at runtime instances of filters which are to be applied.  Using this interface, we have created a class that resolves filters from within Castle.Windsor.  Consider the following class:</p>
 
-<p>But MVC allows for another option, which is an <code>IFilterProvider</code>, this interface is called at the outset of any request, and is allowed to return at runtime instances of filters which are to be applied.  Using this interface, we have created a class that resolves filters from within Castle.Windsor.  Consider the following class:</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">IoCFilterProvider</span> <span class="p">:</span> <span class="n">IFilterProvider</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;&gt;</span> <span class="n">registeredFilters</span><span class="p">;</span>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">IoCFilterProvider</span> <span class="p">:</span> <span class="n">IFilterProvider</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;&gt;</span> <span class="n">registeredFilters</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">IoCFilterProvider</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;[]</span> <span class="n">registeredFilters</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">registeredFilters</span> <span class="p">=</span> <span class="n">registeredFilters</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Filter</span><span class="p">&gt;</span> <span class="n">GetFilters</span><span class="p">(</span><span class="n">ControllerContext</span> <span class="n">controllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span> <span class="n">actionDescriptor</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">registeredFilters</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Invoke</span><span class="p">(</span><span class="n">controllerContext</span><span class="p">,</span> <span class="n">actionDescriptor</span><span class="p">)).</span><span class="n">Where</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+    <span class="k">public</span> <span class="nf">IoCFilterProvider</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span><span class="p">,</span> <span class="n">Filter</span><span class="p">&gt;[]</span> <span class="n">registeredFilters</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">registeredFilters</span> <span class="p">=</span> <span class="n">registeredFilters</span><span class="p">;</span>
+    <span class="p">}</span>
 
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Filter</span><span class="p">&gt;</span> <span class="nf">GetFilters</span><span class="p">(</span><span class="n">ControllerContext</span> <span class="n">controllerContext</span><span class="p">,</span> <span class="n">ActionDescriptor</span> <span class="n">actionDescriptor</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">registeredFilters</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">Invoke</span><span class="p">(</span><span class="n">controllerContext</span><span class="p">,</span> <span class="n">actionDescriptor</span><span class="p">)).</span><span class="nf">Where</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>This simple class takes as a dependencies an array of delegates, speficically an array of <code>Func&lt;&gt;</code> delegates which receive as parameters the <code>ControllerContext</code> and <code>ActionDescriptor</code> and which return an instance of the <code>Filter</code> class.</p>
+<p>This simple class takes as a dependencies an array of delegates, speficically an array of <code class="highlighter-rouge">Func&lt;&gt;</code> delegates which receive as parameters the <code class="highlighter-rouge">ControllerContext</code> and <code class="highlighter-rouge">ActionDescriptor</code> and which return an instance of the <code class="highlighter-rouge">Filter</code> class.</p>
 
 <ul>
-<li>The <code>ControllerContext</code> class describes the controller that is about to be called.</li>
-<li>The <code>ActionDescriptor</code> class describes the action on that controller which is about to be called.</li>
+  <li>The <code class="highlighter-rouge">ControllerContext</code> class describes the controller that is about to be called.</li>
+  <li>The <code class="highlighter-rouge">ActionDescriptor</code> class describes the action on that controller which is about to be called.</li>
 </ul>
 
+<p>Given this information, you can decide to either return a <code class="highlighter-rouge">Filter</code> which will be applied, or return a null which will take no action.</p>
 
-<p>Given this information, you can decide to either return a <code>Filter</code> which will be applied, or return a null which will take no action.</p>
+<h1 id="how-do-i-register-a-filter">How do I register a filter?</h1>
 
-<h1>How do I register a filter?</h1>
+<p>In our <code class="highlighter-rouge">FilterInstaller</code> class you will see an example of registering such a filter:</p>
 
-<p>In our <code>FilterInstaller</code> class you will see an example of registering such a filter:</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">FilterInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilterProvider</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">IoCFilterProvider</span><span class="p">&gt;(),</span>
+            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span>
+            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span><span class="n">ActionDescriptor</span><span class="p">,</span><span class="n">Filter</span><span class="p">&gt;&gt;().</span><span class="nf">Instance</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">))</span>
+            <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FilterInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilterProvider</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">IoCFilterProvider</span><span class="p">&gt;(),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span>
-</span><span class='line'>            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ControllerContext</span><span class="p">,</span><span class="n">ActionDescriptor</span><span class="p">,</span><span class="n">Filter</span><span class="p">&gt;&gt;().</span><span class="n">Instance</span><span class="p">(</span>
-</span><span class='line'>                <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">))</span>
-</span><span class='line'>            <span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>On line 8, we register a <code class="highlighter-rouge">Func&lt;ControllerContext,ActionDescriptor,Filter&gt;</code> and state that we will provide a specific instance of that delegate to be used.</p>
 
+<p>On line 9, we use the lambda syntax to declare a delegate, which is provided <code class="highlighter-rouge">(c,a)</code> as the parameters of type <code class="highlighter-rouge">ControllerContext</code> and <code class="highlighter-rouge">ActionDescriptor</code>, and which has a body of:</p>
 
-<p>On line 8, we register a <code>Func&lt;ControllerContext,ActionDescriptor,Filter&gt;</code> and state that we will provide a specific instance of that delegate to be used.</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">new</span> <span class="nf">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">)</span>
+</code></pre></div></div>
 
-<p>On line 9, we use the lambda syntax to declare a delegate, which is provided <code>(c,a)</code> as the parameters of type <code>ControllerContext</code> and <code>ActionDescriptor</code>, and which has a body of:</p>
+<p>In this simple case, we create an instance of the <code class="highlighter-rouge">System.Web.Mvc.Filter</code> class and provide it our <code class="highlighter-rouge">ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code class="highlighter-rouge">FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code class="highlighter-rouge">int.MinValue</code>, aka I really mean last of all last filters.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">new</span> <span class="nf">Filter</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ExceptionLoggingFilter</span><span class="p">&gt;(),</span> <span class="n">FilterScope</span><span class="p">.</span><span class="n">Last</span><span class="p">,</span> <span class="kt">int</span><span class="p">.</span><span class="n">MinValue</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this simple case, we create an instance of the <code>System.Web.Mvc.Filter</code> class and provide it our <code>ExceptionLoggingFilter</code> resolved from the container, and then tell the Filter to run in the <code>FilterScope.Last</code>, aka run this filter after all others, and order it within that scope using the <code>int.MinValue</code>, aka I really mean last of all last filters.</p>
-
-<p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code>Filter</code> and when to return <code>null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code>null</code>.</p>
+<p>You can easily extend these registrations to include other filters by simply registering their delegates with the container and deciding when to return an instance of <code class="highlighter-rouge">Filter</code> and when to return <code class="highlighter-rouge">null</code> based on your business need.  Our example always returns, because we want to always log exceptions, but that is not required.  If your delegate examines the input data and determines it does not need to run a filter, simply return <code class="highlighter-rouge">null</code>.</p>
 
     </div>
   </div>
@@ -236,9 +201,9 @@
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -285,7 +250,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

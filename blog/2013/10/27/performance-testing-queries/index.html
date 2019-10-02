@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/27/performance-testing-queries/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,119 +106,74 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-27T16:31:00-05:00" pubdate data-updated="true">Oct 27<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-27T16:31:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>When dealing with data access you should always adhere to Jackson&rsquo;s rules of optimization. For convenience they are right here:</p>
+      <p>When dealing with data access you should always adhere to Jackson’s rules of optimization. For convenience they are right here:
+###M.A. Jackson (Principles of Program Design, 1975) wrote:
+<strong>Rule 1.</strong> Don’t do it</p>
 
-<h3>M.A. Jackson (Principles of Program Design, 1975) wrote:</h3>
+<p><strong>Rule 2. (for experts only)</strong> Don’t do it yet.</p>
 
-<p><strong>Rule 1.</strong> Don&rsquo;t do it</p>
+<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let’s take the previous example of deleting all cars of a certain make.</p>
 
-<p><strong>Rule 2. (for experts only)</strong> Don&rsquo;t do it yet.</p>
+<h1 id="example-domain">Example Domain</h1>
 
-<p>Performance optimization should only be done when needed, but when you need to it should be easy to execute and to measure. With this in mind, Highway took some of the heavy lifting out of the hands of the developers. This is normally the tools that we will use to identify a query that is not performing up to par so we can change it. Let&rsquo;s take the previous example of deleting all cars of a certain make.</p>
+<p>In all of the examples below, we’ll be working with the following business domain, from our Driver’s Education company:</p>
 
-<h1>Example Domain</h1>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
+        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
+        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
+        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="nf">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">c</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
-</span><span class='line'>        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
-</span><span class='line'>        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<h1 id="performance-tests">Performance Tests</h1>
+<h2 id="these-should-ideally-run-against-production-like-data">These should <em>ideally</em> run against production like data</h2>
 
+<p>I am going to use a command for delete, but this could be just as easily done with a <code class="highlighter-rouge">Scalar</code> or <code class="highlighter-rouge">Query</code>.</p>
 
-<h1>Performance Tests</h1>
+<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn’t fail this test, look at Jackson rule 2.</p>
 
-<h2>These should <em>ideally</em> run against production like data</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[TestMethod]
+public void ShouldDeleteInUnder250Milliseconds()
+{
+    var context = new DataContext(Settings.Default.Connection, new DataMappings());
 
-<p>I am going to use a command for delete, but this could be just as easily done with a <code>Scalar</code> or <code>Query</code>.</p>
+    var dropMake = new DropMake("Chevy");
 
-<p>We want to measure the time it takes to execute the query and measure it against our maximum. If you cannot define a specific maximum for the test, you should look at Jackson rule 1. If your maximum doesn&rsquo;t fail this test, look at Jackson rule 2.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestMethod]</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldDeleteInUnder250Milliseconds</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">Settings</span><span class="p">.</span><span class="n">Default</span><span class="p">.</span><span class="n">Connection</span><span class="p">,</span> <span class="k">new</span> <span class="n">DataMappings</span><span class="p">());</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kt">var</span> <span class="n">dropMake</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DropMake</span><span class="p">(</span><span class="s">&quot;Chevy&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">dropMake</span><span class="p">.</span><span class="n">RunPerformanceTest</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="m">250</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+    dropMake.RunPerformanceTest(context,false,250);
+}
+</code></pre></div></div>
 
 <p>If the time exceeds maximum the performance test will throw an exception which will fail the test. The time and expected are in the exception.</p>
 
-<p>Let&rsquo;s take a closer look at this line</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">dropMake</span><span class="p">.</span><span class="n">RunPerformanceTest</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="m">250</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<p>Let’s take a closer look at this line</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dropMake.RunPerformanceTest(context,false,250);
+</code></pre></div></div>
 <p>The 1st parameter, context, is the data connection we use to execute the test.</p>
 
 <p>The 2nd parameter, false, is a flag telling us to include the start up time of the context in the total time. This is useful with ORMs like Entity Framework or NHibernate that have a large one time cost on start up. We give you the option of excluding that time from your evaluation.</p>
@@ -291,7 +246,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/naming-conventions">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/naming-conventions/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,47 +106,44 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T11:37:00-06:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T11:37:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
       <p>Starting in version 3.0 of Highway.OnRamp.MVC we have made a sincere effort to clarify naming conventions so you can understand the purpose of each piece of the OnRamp.  We have several important naming and organization conventions.</p>
 
-<h2>Naming Conventions</h2>
+<h2 id="naming-conventions">Naming Conventions</h2>
 
-<h3>Activators</h3>
+<h3 id="activators">Activators</h3>
 
-<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code>HttpApplication</code> cycle.  <a href="/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code>Activator</code> you know it runs during application startup.</p>
+<p>Activators are classes that run when a process is starting up.  For Highway.OnRamp.MVC this means as part of the <code class="highlighter-rouge">HttpApplication</code> cycle.  <a href="/blog/2013/10/05/webactivator-for-composable-startup/">We talk about WebActivator and how we accomplish this elsewhere</a>, but if a class name ends with <code class="highlighter-rouge">Activator</code> you know it runs during application startup.</p>
 
-<h3>Configs</h3>
+<h3 id="configs">Configs</h3>
 
-<p>Interfaces where the name ends with <code>Config</code> are configured automatically at run-time to provide values from <code>web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing configuration values.</p>
+<p>Interfaces where the name ends with <code class="highlighter-rouge">Config</code> are configured automatically at run-time to provide values from <code class="highlighter-rouge">web.config</code>.  This provides you the ability to mock these quickly in tests, and not litter your code with “magic strings” for accessing configuration values.</p>
 
-<h3>Sessions</h3>
+<h3 id="sessions">Sessions</h3>
 
-<p>Interfaces where the name ends with <code>Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with &ldquo;magic strings&rdquo; for accessing session variables.</p>
+<p>Interfaces where the name ends with <code class="highlighter-rouge">Session</code> are configured automatically at run-time to provide values from the current ASP.NET Session.  This provides you the ability to mock these quickly in tests, and not litter your code with “magic strings” for accessing session variables.</p>
 
-<h3>Installers</h3>
+<h3 id="installers">Installers</h3>
 
-<p>Classes that implement <code>IWindsorInstaller</code> are named with the <code>Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code>WindsorActivator</code> so anything it sets up can be assumed.</p>
+<p>Classes that implement <code class="highlighter-rouge">IWindsorInstaller</code> are named with the <code class="highlighter-rouge">Installer</code> suffix and are used to register components with the IoC.  Please note there is no guarantee of order of execution of these installers, but they do run at the end of the <code class="highlighter-rouge">WindsorActivator</code> so anything it sets up can be assumed.</p>
 
-<h2>Organization Conventions</h2>
+<h2 id="organization-conventions">Organization Conventions</h2>
 
-<h3>App_Architecture</h3>
+<h3 id="app_architecture">App_Architecture</h3>
 
-<p>The <code>App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we&rsquo;ve achieved an organization structure that your business code should never need to take a <code>using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
+<p>The <code class="highlighter-rouge">App_Architecture</code> folder contains all our structure related to startup events, IoC registration, concrete classes for registered interfaces, etc.  We believe that we’ve achieved an organization structure that your business code should never need to take a <code class="highlighter-rouge">using</code> statement to things within this folder.  This is the self-contained area which handles all of the wire-up aspects of the OnRamp, and while it will effect how your app runs, the classes should not need to be directly referenced.</p>
 
-<h4>App_Architecture \ Services</h4>
+<h4 id="app_architecture--services">App_Architecture \ Services</h4>
+<p>This folder contains a <code class="highlighter-rouge">Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code class="highlighter-rouge">Data</code> folder which has classes required by that plug-in.</p>
 
-<p>This folder contains a <code>Core</code> folder for classes support Highway.OnRamp.MVC, but then also contains folders for each plug-in to the OnRamp which contains their classes.  For instance, if you bring in Highway.OnRamp.MVC.Data it will also contain a <code>Data</code> folder which has classes required by that plug-in.</p>
+<h3 id="entities--mappings">Entities &amp; Mappings</h3>
 
-<h3>Entities &amp; Mappings</h3>
-
-<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code>Entities</code> folder, and it&rsquo;s sub-folder <code>Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code>Mappings</code> folder is meant to contain classes which implement <code>EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
+<p>If you bring in Highway.OnRamp.MVC.Data you will get an <code class="highlighter-rouge">Entities</code> folder, and it’s sub-folder <code class="highlighter-rouge">Mappings</code>.  This is meant to contain all of your Entity Framework entities, as the <code class="highlighter-rouge">Mappings</code> folder is meant to contain classes which implement <code class="highlighter-rouge">EntityTypeConfiguration&lt;T&gt;</code> classes that configure Entity Framework on how to map those entities.</p>
 
     </div>
   </div>
@@ -165,9 +162,9 @@
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -214,7 +211,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

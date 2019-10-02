@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/19/repository">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/19/repository/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,322 +106,187 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-19T08:17:00-05:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-19T08:17:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p><span class='pullquote-right' data-pullquote='IRepository is the singular interface which your business code should be aware of from Highway.Data.'>
-The <a href="/blog/2013/10/19/understanding-the-patterns/">Repository Pattern</a> describes an intermediary between code which uses data, and the particulars of how that data is retrieved.  In Highway.Data, we have a <code>Repository</code> class which is meant for this exact purpose, and it implements an <code>IRepository</code> interface which your code should take as a dependency.  IRepository is the singular interface which your business code should be aware of from Highway.Data.  Through it we can accomplish any database operation that is needed.
+      <p><span class="pullquote-right" data-pullquote="IRepository is the singular interface which your business code should be aware of from Highway.Data.">
+The <a href="/blog/2013/10/19/understanding-the-patterns/">Repository Pattern</a> describes an intermediary between code which uses data, and the particulars of how that data is retrieved.  In Highway.Data, we have a <code class="highlighter-rouge">Repository</code> class which is meant for this exact purpose, and it implements an <code class="highlighter-rouge">IRepository</code> interface which your code should take as a dependency.  IRepository is the singular interface which your business code should be aware of from Highway.Data.  Through it we can accomplish any database operation that is needed.
 </span></p>
 
-<p>In Highway.Data, we define our <code>IRepository</code> interface as follows:</p>
+<p>In Highway.Data, we define our <code class="highlighter-rouge">IRepository</code> interface as follows:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRepository</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">IDataContext</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IQuery</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IScalar</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">public</span> <span class="k">interface</span> <span class="nc">IRepository</span>
+    <span class="p">{</span>
+        <span class="n">IDataContext</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+        <span class="n">IEventManager</span> <span class="n">EventManager</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
 
+        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IQuery</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
+        <span class="n">T</span> <span class="n">Find</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IScalar</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">query</span><span class="p">);</span>
+        <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">);</span>
+    <span class="p">}</span>
+</code></pre></div></div>
 
-<p>The interface first has two properties, those being <code>Context</code> and <code>EventManager</code>.  The details of those are covered elsewhere, though we will touch lightly on <code>Context</code> in this article.  The other three methods are very interesting, and each deserve a section of their own.</p>
+<p>The interface first has two properties, those being <code class="highlighter-rouge">Context</code> and <code class="highlighter-rouge">EventManager</code>.  The details of those are covered elsewhere, though we will touch lightly on <code class="highlighter-rouge">Context</code> in this article.  The other three methods are very interesting, and each deserve a section of their own.</p>
 
-<h1>Example Domain</h1>
+<h1 id="example-domain">Example Domain</h1>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>In all of the examples below, we’ll be working with the following business domain, from our Driver’s Education company:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Instructor
+{
+    public int Id { get; set; }
+    public ICollection&lt;Driver&gt; Drivers { get; set; }
+}
 
+public class Driver
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public Car Car { get; set; }
+}
 
-<h1>Find Multiple Things &ndash; IEnumerable&lt;T&gt; Find&lt;T&gt;(IQuery&lt;T&gt; query)</h1>
+public class Car
+{
+    public int Id { get; set; }
+    public string Make { get; set; }
+    public string Model { get; set; }
+    public string Year { get; set; }
+}
+</code></pre></div></div>
 
-<p>This method is used when you want to retrieve multiple things from the database.  Let&rsquo;s assume we had a MVC controller which wanted to query for all drivers who had taken a class from Instructor #5.  First thing we&rsquo;ll need is a controller which has a dependency of our <code>IRepository</code> interface.</p>
+<h1 id="find-multiple-things---ienumerablet-findtiqueryt-query">Find Multiple Things - IEnumerable&lt;T&gt; Find&lt;T&gt;(IQuery&lt;T&gt; query)</h1>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>This method is used when you want to retrieve multiple things from the database.  Let’s assume we had a MVC controller which wanted to query for all drivers who had taken a class from Instructor #5.  First thing we’ll need is a controller which has a dependency of our <code class="highlighter-rouge">IRepository</code> interface.</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DriversController : Controller
+{
+    private IRepository repo;
 
-<p>Now then, we&rsquo;ll add an action method to this controller, which is called <code>ByInstructor</code> which takes an <code>int</code> of the Instructor&rsquo;s <code>Id</code>.  Then we call to the repository, passing in an instance of our Query object called <code>FindDriversByInstructorId</code>.  Like so:</p>
+    public DriversController(IRepository repo)
+    {
+        this.repo = repo;
+    }
+}
+</code></pre></div></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByInstructor</span><span class="p">(</span><span class="kt">int</span> <span class="n">instructorId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindDriversByInstructorId</span><span class="p">(</span><span class="n">instructorId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Now then, we’ll add an action method to this controller, which is called <code class="highlighter-rouge">ByInstructor</code> which takes an <code class="highlighter-rouge">int</code> of the Instructor’s <code class="highlighter-rouge">Id</code>.  Then we call to the repository, passing in an instance of our Query object called <code class="highlighter-rouge">FindDriversByInstructorId</code>.  Like so:</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DriversController : Controller
+{
+    private IRepository repo;
 
-<p>Note how our <code>DriversController</code> is not aware of anything database specific, like connection strings, or even which Object Relational Mapper (ORM) is servicing the request.  All it knows is that it is asking for multiple drivers, and receiving them.  Now, you might be curious what&rsquo;s going on inside of <code>FindDriversByInstructorId</code>, and while we&rsquo;re not discussing queries here, I want to show you the code so you don&rsquo;t think there is magic going on:</p>
+    public DriversController(IRepository repo)
+    {
+        this.repo = repo;
+    }
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FindDriversByInstructorId</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">FindDriversByInstructorId</span><span class="p">(</span><span class="kt">int</span> <span class="n">instructorId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Instructor</span><span class="p">&gt;().</span><span class="n">SelectMany</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+    public ActionResult ByInstructor(int instructorId)
+    {
+        IEnumerable&lt;Driver&gt; drivers = repo.Find(new FindDriversByInstructorId(instructorId));
+        return View(drivers);
+    }
+}
+</code></pre></div></div>
 
+<p>Note how our <code class="highlighter-rouge">DriversController</code> is not aware of anything database specific, like connection strings, or even which Object Relational Mapper (ORM) is servicing the request.  All it knows is that it is asking for multiple drivers, and receiving them.  Now, you might be curious what’s going on inside of <code class="highlighter-rouge">FindDriversByInstructorId</code>, and while we’re not discussing queries here, I want to show you the code so you don’t think there is magic going on:</p>
 
-<h1>Find One Thing &ndash; T Find&lt;T&gt;(IScalar&lt;T&gt; query)</h1>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class FindDriversByInstructorId : Query&lt;Driver&gt;
+{
+    public FindDriversByInstructorId(int instructorId)
+    {
+        ContextQuery = c =&gt; c.AsQueryable&lt;Instructor&gt;().SelectMany(e =&gt; e.Drivers);
+    }
+}
+</code></pre></div></div>
 
-<p>Our next method is used when we want to retrieve a singular thing from the database.  That one thing might be an <code>int</code>, for instance a count of rows, or it might be an entity like <code>Car</code>, for instance getting the car for a particular driver.  This time we&rsquo;ll be working with the <code>CarController</code>, and we&rsquo;re going to retrieve a <code>Car</code> by it&rsquo;s <code>Driver</code>&rsquo;s <code>Id</code>.  Our controller would use <code>IRepository</code> like so:</p>
+<h1 id="find-one-thing---t-findtiscalart-query">Find One Thing - T Find&lt;T&gt;(IScalar&lt;T&gt; query)</h1>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CarController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">CarController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByDriver</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">Car</span> <span class="n">car</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindCarByDriverId</span><span class="p">(</span><span class="n">driverId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Our next method is used when we want to retrieve a singular thing from the database.  That one thing might be an <code class="highlighter-rouge">int</code>, for instance a count of rows, or it might be an entity like <code class="highlighter-rouge">Car</code>, for instance getting the car for a particular driver.  This time we’ll be working with the <code class="highlighter-rouge">CarController</code>, and we’re going to retrieve a <code class="highlighter-rouge">Car</code> by it’s <code class="highlighter-rouge">Driver</code>’s <code class="highlighter-rouge">Id</code>.  Our controller would use <code class="highlighter-rouge">IRepository</code> like so:</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class CarController : Controller
+{
+    private IRepository repo;
 
-<p>As you can see, we return a singular object, once again completely unaware of which ORM is doing the work, or anything related to the database.  Like before, while we&rsquo;re not discussing Scalars here, this is the query being used :</p>
+    public CarController(IRepository repo)
+    {
+        this.repo = repo;
+    }
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FindCarByDriverId</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">FindCarByDriverId</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;()</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Car</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">FirstOrDefault</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+    public ActionResult ByDriver(int driverId)
+    {
+        Car car = repo.Find(new FindCarByDriverId(driverId));
+        return View(car);
+    }
+}
+</code></pre></div></div>
 
+<p>As you can see, we return a singular object, once again completely unaware of which ORM is doing the work, or anything related to the database.  Like before, while we’re not discussing Scalars here, this is the query being used :</p>
 
-<h1>Do Something &ndash; void Execute(ICommand command)</h1>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class FindCarByDriverId : Scalar&lt;Car&gt;
+{
+    public FindCarByDriverId(int driverId)
+    {
+        ContextQuery = c =&gt; c.AsQueryable&lt;Driver&gt;()
+            .Where(e =&gt; e.Id == driverId)
+            .Select(e =&gt; e.Car)
+            .FirstOrDefault();
+    }
+}
+</code></pre></div></div>
 
-<p>Our final method is used to perform a command that has no return value.  There are often times when you want the database to do some work, but you don&rsquo;t need it to return anything as a result of that work, this is what <code>Execute</code> is for.  In our example, we&rsquo;re going to add another method to our <code>CarController</code> class from the previous example, which will remove all Chevy vehicles from our database.  Our <code>CarController</code> will now look like this:</p>
+<h1 id="do-something---void-executeicommand-command">Do Something - void Execute(ICommand command)</h1>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CarController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">CarController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByDriver</span><span class="p">(</span><span class="kt">int</span> <span class="n">driverId</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">Car</span> <span class="n">car</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">FindCarByDriverId</span><span class="p">(</span><span class="n">driverId</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">RemoveChevy</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">repo</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="k">new</span> <span class="n">DropMake</span><span class="p">(</span><span class="s">&quot;Chevy&quot;</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">&quot;Index&quot;</span><span class="p">,</span> <span class="s">&quot;Home&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Our final method is used to perform a command that has no return value.  There are often times when you want the database to do some work, but you don’t need it to return anything as a result of that work, this is what <code class="highlighter-rouge">Execute</code> is for.  In our example, we’re going to add another method to our <code class="highlighter-rouge">CarController</code> class from the previous example, which will remove all Chevy vehicles from our database.  Our <code class="highlighter-rouge">CarController</code> will now look like this:</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class CarController : Controller
+{
+    private IRepository repo;
 
-<p>Note how <code>Execute</code> returns no value.  Our <code>DropMake</code> command looks like this :</p>
+    public CarController(IRepository repo)
+    {
+        this.repo = repo;
+    }
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
-</span><span class='line'>        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
-</span><span class='line'>        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+    public ActionResult ByDriver(int driverId)
+    {
+        Car car = repo.Find(new FindCarByDriverId(driverId));
+        return View(car);
+    }
 
+    public ActionResult RemoveChevy()
+    {
+        repo.Execute(new DropMake("Chevy"));
+        return RedirectToAction("Index", "Home");
+    }
+}
+</code></pre></div></div>
 
-<p>As the comment says, this is an inefficient way to remove multiple rows, please review the documentation on <code>AdvancedCommand</code> if you really need to perform a delete like this.</p>
+<p>Note how <code class="highlighter-rouge">Execute</code> returns no value.  Our <code class="highlighter-rouge">DropMake</code> command looks like this :</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DropMake : Command
+{
+    public DropMake(string make)
+    {
+        // THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS
+        // IT WOULD NORMALLY BE MUCH BETTER TO USE AN
+        // AdvancedCommand TO PERFORM THIS TYPE OF OPERATION
+        ContextQuery = c =&gt;
+        {
+            var cars = c.AsQueryable&lt;Car&gt;().Where(car =&gt; car.Make == make);
+            foreach (var car in cars)
+            {
+                c.Remove(car);
+            }
+        };
+    }
+}
+</code></pre></div></div>
+
+<p>As the comment says, this is an inefficient way to remove multiple rows, please review the documentation on <code class="highlighter-rouge">AdvancedCommand</code> if you really need to perform a delete like this.</p>
 
     </div>
   </div>
@@ -489,7 +354,7 @@ The <a href="/blog/2013/10/19/understanding-the-patterns/">Repository Pattern</a
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/advanced-queries-slash-commands-slash-scalars/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,241 +106,134 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-25T15:11:00-05:00" pubdate data-updated="true">Oct 25<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-25T15:11:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p><span class='pullquote-right' data-pullquote='Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.'>
-We have defined standard queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn&rsquo;t make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.
+      <p><span class="pullquote-right" data-pullquote="Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.">
+We have defined standard queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but how to tackle more complex technology specific queries, commands and scalars. These are for the cases where an ORM based operation doesn’t make sense (batch insert, bulk delete, complex set based operations). The intent is that you rarely have to use advanced queries, but when you do they work seamlessly. Let the technology deal with 95% of the data access, and use advanced queries for the other 5% as needed.
 </span></p>
 
-<p>All of the <code>AdvancedQuery</code>, <code>AdvancedScalar</code>, and <code>AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
+<p>All of the <code class="highlighter-rouge">AdvancedQuery</code>, <code class="highlighter-rouge">AdvancedScalar</code>, and <code class="highlighter-rouge">AdvancedCommand</code> are an opt in process for one reason, <strong>it requires that you bind your implementation of the query to the underlying technology.</strong> This is not something to take lightly, but sometimes it is needed.</p>
 
-<h1>Example Domain</h1>
+<h1 id="example-domain">Example Domain</h1>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>In all of the examples below, we’ll be working with the following business domain, from our Driver’s Education company:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Score</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Instructor</span> <span class="n">Instructor</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Top5PercentileOfDrivers</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">Top5PercentileOfDrivers</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">scores</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Score</span><span class="p">);</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">percentileScore</span> <span class="p">=</span>
-</span><span class='line'>                <span class="n">Convert</span><span class="p">.</span><span class="n">ToInt32</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">Round</span><span class="p">((</span><span class="m">5</span><span class="p">/</span><span class="m">100</span><span class="p">)*</span><span class="n">scores</span><span class="p">.</span><span class="n">Count</span><span class="p">()</span> <span class="p">+</span> <span class="m">0.5</span><span class="p">,</span> <span class="n">MidpointRounding</span><span class="p">.</span><span class="n">AwayFromZero</span><span class="p">));</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">OrderByDescending</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Score</span><span class="p">).</span><span class="n">Take</span><span class="p">(</span><span class="n">percentileScore</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">SwapInstructors</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">SwapInstructores</span><span class="p">(</span><span class="n">Instructor</span> <span class="n">currentInstructor</span><span class="p">,</span> <span class="n">Instructor</span> <span class="n">newInstructor</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">driver</span> <span class="k">in</span> <span class="n">currentInstructor</span><span class="p">.</span><span class="n">Drivers</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">{</span>
-</span><span class='line'>              <span class="n">driver</span><span class="p">.</span><span class="n">Instructor</span> <span class="p">=</span> <span class="n">newInstructor</span><span class="p">;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>          <span class="n">context</span><span class="p">.</span><span class="n">Commit</span><span class="p">();</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
-</span><span class='line'>        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
-</span><span class='line'>        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">c</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Score</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">Instructor</span> <span class="n">Instructor</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-<h1>Advanced Query &ndash; Sometimes you need a Stored Procedure</h1>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Top5PercentileOfDrivers</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">Top5PercentileOfDrivers</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">scores</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="nf">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Score</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">percentileScore</span> <span class="p">=</span>
+                <span class="n">Convert</span><span class="p">.</span><span class="nf">ToInt32</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">Round</span><span class="p">((</span><span class="m">5</span><span class="p">/</span><span class="m">100</span><span class="p">)*</span><span class="n">scores</span><span class="p">.</span><span class="nf">Count</span><span class="p">()</span> <span class="p">+</span> <span class="m">0.5</span><span class="p">,</span> <span class="n">MidpointRounding</span><span class="p">.</span><span class="n">AwayFromZero</span><span class="p">));</span>
+            <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Score</span><span class="p">).</span><span class="nf">Take</span><span class="p">(</span><span class="n">percentileScore</span><span class="p">);</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SwapInstructors</span> <span class="p">:</span> <span class="n">Scalar</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">SwapInstructores</span><span class="p">(</span><span class="n">Instructor</span> <span class="n">currentInstructor</span><span class="p">,</span> <span class="n">Instructor</span> <span class="n">newInstructor</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">driver</span> <span class="k">in</span> <span class="n">currentInstructor</span><span class="p">.</span><span class="n">Drivers</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="n">driver</span><span class="p">.</span><span class="n">Instructor</span> <span class="p">=</span> <span class="n">newInstructor</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">context</span><span class="p">.</span><span class="nf">Commit</span><span class="p">();</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">Command</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// THIS IS A REALLY BAD WAY TO REMOVE MULTIPLE ROWS</span>
+        <span class="c1">// IT WOULD NORMALLY BE MUCH BETTER TO USE AN</span>
+        <span class="c1">// AdvancedCommand TO PERFORM THIS TYPE OF OPERATION</span>
+        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">cars</span> <span class="p">=</span> <span class="n">c</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Car</span><span class="p">&gt;().</span><span class="nf">Where</span><span class="p">(</span><span class="n">car</span> <span class="p">=&gt;</span> <span class="n">car</span><span class="p">.</span><span class="n">Make</span> <span class="p">==</span> <span class="n">make</span><span class="p">);</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">car</span> <span class="k">in</span> <span class="n">cars</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">c</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="n">car</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="advanced-query---sometimes-you-need-a-stored-procedure">Advanced Query - Sometimes you need a Stored Procedure</h1>
 <p>In the case where we want to do large set based calculation it makes sense to use the power of the underlying persistence engine. Databases have been designed for set based operations, and here is where the power of stored procedures or parameterized SQL comes in. We are going to use a stored procedure to return the top 5 percentile of drivers that have used our training service. The advanced version of this would be below.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Top5PercentileOfDrivers</span> <span class="p">:</span> <span class="n">AdvancedQuery</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">Top5PercentileOfDrivers</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">ExecuteSqlQuery</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;(</span><span class="s">&quot;exec topPercentileDrivers @percentile&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">SqlParameter</span><span class="p">(</span><span class="s">&quot;percentile&quot;</span><span class="p">,</span><span class="m">5</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Top5PercentileOfDrivers : AdvancedQuery&lt;Driver&gt;
+{
+    public Top5PercentileOfDrivers()
+    {
+        ContextQuery = context =&gt; context.ExecuteSqlQuery&lt;Driver&gt;("exec topPercentileDrivers @percentile", new SqlParameter("percentile",5));
+    }
+}
+</code></pre></div></div>
 
-
-<h1>Advanced Commands &ndash;  When you need a hammer</h1>
-
-<p><span class='pullquote-right' data-pullquote='Highway.Data gives you an easy way to use the hammer, but doesn&#8217;t require every problem to be a nail.'>
-In the usage of data persistence technologies it is possible to run into corners that cost a significant amount of time to build out of. This has the chance to nullify the speed of development benefits in using the technology. Highway.Data provides a way to step out of this corner by using the base technology of the underlying implementation. When you are building something, sometimes you just need a hammer. Highway.Data gives you an easy way to use the hammer, but doesn&rsquo;t require every problem to be a nail.
+<h1 id="advanced-commands----when-you-need-a-hammer">Advanced Commands -  When you need a hammer</h1>
+<p><span class="pullquote-right" data-pullquote="Highway.Data gives you an easy way to use the hammer, but doesn&#8217;t require every problem to be a nail.">
+In the usage of data persistence technologies it is possible to run into corners that cost a significant amount of time to build out of. This has the chance to nullify the speed of development benefits in using the technology. Highway.Data provides a way to step out of this corner by using the base technology of the underlying implementation. When you are building something, sometimes you just need a hammer. Highway.Data gives you an easy way to use the hammer, but doesn’t require every problem to be a nail.
 </span></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DropMake : AdvancedCommand
+{
+    public DropMake(string make)
+    {
+        ContextQuery = c =&gt; c.ExecuteSqlCommand("DELETE FROM Cars WHERE Make = @make",new DbParameter[] {new SqlParameter("make", make)});
+    }
+}
+</code></pre></div></div>
+<p>#Advanced Scalar
+In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code class="highlighter-rouge">AdvancedScalar</code>.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class SwapInstructores : AdvancedScalar&lt;int&gt;
+{
+    public SwapInstructores(Instructor currentInstructor, Instructor newInstructor)
+    {
+        DbParameter[] parameters = new DbParameter[]
+        {
+            new SqlParameter("old", currentInstructor.Id),
+            new SqlParameter("new", newInstructor.Id),
+        };
+        ContextQuery = c =&gt; c.ExecuteSqlCommand("UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old", parameters);
+    }
+}
+</code></pre></div></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DropMake</span> <span class="p">:</span> <span class="n">AdvancedCommand</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DropMake</span><span class="p">(</span><span class="kt">string</span> <span class="n">make</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">ExecuteSqlCommand</span><span class="p">(</span><span class="s">&quot;DELETE FROM Cars WHERE Make = @make&quot;</span><span class="p">,</span><span class="k">new</span> <span class="n">DbParameter</span><span class="p">[]</span> <span class="p">{</span><span class="k">new</span> <span class="n">SqlParameter</span><span class="p">(</span><span class="s">&quot;make&quot;</span><span class="p">,</span> <span class="n">make</span><span class="p">)});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Advanced Scalar</h1>
-
-<p>In the instance that we need to make a lot of changes but also return some value from the database, we can use an <code>AdvancedScalar</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">SwapInstructores</span> <span class="p">:</span> <span class="n">AdvancedScalar</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">SwapInstructores</span><span class="p">(</span><span class="n">Instructor</span> <span class="n">currentInstructor</span><span class="p">,</span> <span class="n">Instructor</span> <span class="n">newInstructor</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">DbParameter</span><span class="p">[]</span> <span class="n">parameters</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DbParameter</span><span class="p">[]</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">&quot;old&quot;</span><span class="p">,</span> <span class="n">currentInstructor</span><span class="p">.</span><span class="n">Id</span><span class="p">),</span>
-</span><span class='line'>            <span class="k">new</span> <span class="nf">SqlParameter</span><span class="p">(</span><span class="s">&quot;new&quot;</span><span class="p">,</span> <span class="n">newInstructor</span><span class="p">.</span><span class="n">Id</span><span class="p">),</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">c</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">.</span><span class="n">ExecuteSqlCommand</span><span class="p">(</span><span class="s">&quot;UPDATE DRIVERS SET InstructorId = @new WHERE InstructorId = @old&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Each of these examples gives one of the many usages of <code>AdvancedQuery</code>/<code>AdvancedCommand</code>/<code>AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
+<p>Each of these examples gives one of the many usages of <code class="highlighter-rouge">AdvancedQuery</code>/<code class="highlighter-rouge">AdvancedCommand</code>/<code class="highlighter-rouge">AdvancedScalar</code>, but when you need the underlying provider this is your route. When used carefully this allows us to serve both the the needs of our application, but also the needs of our data storage.</p>
 
     </div>
   </div>
@@ -408,7 +301,7 @@ In the usage of data persistence technologies it is possible to run into corners
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

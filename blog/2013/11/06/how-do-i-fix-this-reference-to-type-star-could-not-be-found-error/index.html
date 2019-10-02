@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/how-do-i-fix-this-reference-to-type-star-could-not-be-found-error/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    How Do I Fix This 'Reference to Type * Could Not Be Found' Error?
+    How do I fix this 'Reference to type * could not be found' error?
 	<h5>
 
 
@@ -106,25 +106,22 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T07:49:00-06:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T07:49:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can&rsquo;t be fixed now that it&rsquo;s in the wild.  This most often presents itself as an error similar to :</p>
+      <p>In Highway.Data 4.1  we added strong name keys (SNKs) to all assemblies.  This was a good thing, but bad version number handling and unfortunately can’t be fixed now that it’s in the wild.  This most often presents itself as an error similar to :</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in 'C:\source\MyProject\packages\Highway.Data.4.0.5.3\lib\net40\Highway.Data.dll', but it could not be found</span></code></pre></td></tr></table></div></figure>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Reference to type 'Highway.Data.IContextConfiguration`1' claims it is defined in 'C:\source\MyProject\packages\Highway.Data.4.0.5.3\lib\net40\Highway.Data.dll', but it could not be found
+</code></pre></div></div>
 
+<p>The particular type that it complains about (<code class="highlighter-rouge">IContextConfiguration&lt;T&gt;</code> in this case) may vary case to case, but the combination of a <code class="highlighter-rouge">Reference to type * could not be found</code> and that error references a version prior to v4.1 are the signs that you’ve encountered this bug.</p>
 
-<p>The particular type that it complains about (<code>IContextConfiguration&lt;T&gt;</code> in this case) may vary case to case, but the combination of a <code>Reference to type * could not be found</code> and that error references a version prior to v4.1 are the signs that you&rsquo;ve encountered this bug.</p>
+<h2 id="resolution">Resolution</h2>
 
-<h2>Resolution</h2>
-
-<p>Unfortunately, any components that depended on the pre-v4.1 assemblies will need to be recompiled.  Because the SNK was added there is no Assembly Binding Redirect or other solution to this, we suck, and we&rsquo;re sorry.  Rest assured that all future Highway Framework assemblies will be signed from day one and that we&rsquo;ve learned this lesson.</p>
+<p>Unfortunately, any components that depended on the pre-v4.1 assemblies will need to be recompiled.  Because the SNK was added there is no Assembly Binding Redirect or other solution to this, we suck, and we’re sorry.  Rest assured that all future Highway Framework assemblies will be signed from day one and that we’ve learned this lesson.</p>
 
     </div>
   </div>
@@ -192,7 +189,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

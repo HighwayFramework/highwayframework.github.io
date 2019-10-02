@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/automatic-ioc-registration-convention">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/11/06/automatic-ioc-registration-convention/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,38 +106,26 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T09:27:00-06:00" pubdate data-updated="true">Nov 6<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-11-06T09:27:00-06:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p><span class='pullquote-right' data-pullquote='The class Foo will be automatically registered to interface IFoo'>
-In order to ease the pains of registering types to an IoC container, we include a <code>DefaultConventionInstaller</code> which registers components automatically to the IoC container based on naming conventions. The class Foo will be automatically registered to interface IFoo, provided of course that it implements IFoo.  This is accomplished using Windsor&rsquo;s registration conventions <a href="http://docs.castleproject.org/Windsor.Registering-components-by-conventions.ashx">which are documented here</a>.  By default we register all components with a Lifestyle of <code>PerWebRequest</code>, so one instance will be created per web request.  If you need to register a component with a different lifestyle than this, you will also need to exclude it from the default convention.  You can see an example of this below, where we exclude anything that is an <code>IController</code> because they are registered with a Transient Lifestyle in another installer
+      <p><span class="pullquote-right" data-pullquote="The class Foo will be automatically registered to interface IFoo">
+In order to ease the pains of registering types to an IoC container, we include a <code class="highlighter-rouge">DefaultConventionInstaller</code> which registers components automatically to the IoC container based on naming conventions. The class Foo will be automatically registered to interface IFoo, provided of course that it implements IFoo.  This is accomplished using Windsor’s registration conventions <a href="http://docs.castleproject.org/Windsor.Registering-components-by-conventions.ashx">which are documented here</a>.  By default we register all components with a Lifestyle of <code class="highlighter-rouge">PerWebRequest</code>, so one instance will be created per web request.  If you need to register a component with a different lifestyle than this, you will also need to exclude it from the default convention.  You can see an example of this below, where we exclude anything that is an <code class="highlighter-rouge">IController</code> because they are registered with a Transient Lifestyle in another installer
 </span></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">container</span><span class="p">.</span><span class="n">Register</span><span class="p">(</span>
-</span><span class='line'>        <span class="n">Classes</span><span class="p">.</span><span class="n">FromThisAssembly</span><span class="p">().</span><span class="n">Pick</span><span class="p">()</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">WithServiceDefaultInterfaces</span><span class="p">()</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">Unless</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span><span class="p">(</span><span class="n">IController</span><span class="p">).</span><span class="n">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
-</span><span class='line'>            <span class="p">.</span><span class="n">LifestylePerWebRequest</span><span class="p">()</span>
-</span><span class='line'>        <span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+        <span class="n">Classes</span><span class="p">.</span><span class="nf">FromThisAssembly</span><span class="p">().</span><span class="nf">Pick</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">WithServiceDefaultInterfaces</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">Unless</span><span class="p">(</span><span class="n">type</span> <span class="p">=&gt;</span> <span class="k">typeof</span><span class="p">(</span><span class="n">IController</span><span class="p">).</span><span class="nf">IsAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">))</span>
+            <span class="p">.</span><span class="nf">LifestylePerWebRequest</span><span class="p">()</span>
+        <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
     </div>
   </div>
@@ -156,9 +144,9 @@ In order to ease the pains of registering types to an IoC container, we include 
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -205,7 +193,7 @@ In order to ease the pains of registering types to an IoC container, we include 
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

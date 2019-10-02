@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/06/nlog-and-castle-logging-facility-for-logging/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -106,124 +106,83 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-06T08:50:00-05:00" pubdate data-updated="true">Oct 6<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-06T08:50:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>One of the most important features of any application is a good logging strategy.  Because of this, <code>Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code>NLog.config</code> file.</p>
+      <p>One of the most important features of any application is a good logging strategy.  Because of this, <code class="highlighter-rouge">Highway.OnRamp.MVC.Logging</code> brings together two very well established projects to provide a world class logging experience.  First, we use the <a href="http://docs.castleproject.org/Windsor.Logging-Facility.ashx">Castle Logging Facility</a> to provide a common abstraction over logging, so you are not coupled to a specific logging framework.  Then we implement <a href="http://nlog-project.org/">NLog</a> to perform the actual logging, configuring it via the <code class="highlighter-rouge">NLog.config</code> file.</p>
 
-<h1>How do I log from a class?</h1>
+<h1 id="how-do-i-log-from-a-class">How do I log from a class?</h1>
 
 <p>If you want to log from a class, there is a very simply pattern we recommend you follow:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">Castle.Core.Logging</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyNewClass</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nf">MyNewClass</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="n">Logger</span> <span class="p">=</span> <span class="n">NullLogger</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">public</span> <span class="n">ILogger</span> <span class="n">Logger</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="nn">Castle.Core.Logging</span><span class="p">;</span>
 
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MyNewClass</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="nf">MyNewClass</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">Logger</span> <span class="p">=</span> <span class="n">NullLogger</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ILogger</span> <span class="n">Logger</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>The steps are quite simple:</p>
 
 <ul>
-<li>Declare a public property of type <code>ILogger</code></li>
-<li>Initialize that property in your constructor to <code>NullLogger.Instance</code></li>
+  <li>Declare a public property of type <code class="highlighter-rouge">ILogger</code></li>
+  <li>Initialize that property in your constructor to <code class="highlighter-rouge">NullLogger.Instance</code></li>
 </ul>
 
+<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code class="highlighter-rouge">Logger</code> property.  But, if you ever remove the <code class="highlighter-rouge">LoggingInstaller</code> your code will continue to work because the <code class="highlighter-rouge">NullLogger</code> is a proper implementation of <code class="highlighter-rouge">ILogger</code> which does nothing.  This avoids <code class="highlighter-rouge">NullReferenceException</code>s when you don’t have a Logger injected, for instance during tests.</p>
 
-<p>This uses the ability of Castle.Windsor to do Property injection, so that after you class is constructed Castle Windsor will assign the real logger to that <code>Logger</code> property.  But, if you ever remove the <code>LoggingInstaller</code> your code will continue to work because the <code>NullLogger</code> is a proper implementation of <code>ILogger</code> which does nothing.  This avoids <code>NullReferenceException</code>s when you don&rsquo;t have a Logger injected, for instance during tests.</p>
+<h1 id="how-does-that-get-setup-to-begin-with">How does that get setup to begin with?</h1>
 
-<h1>How does that get setup to begin with?</h1>
+<p>The Logging Facility is setup in the <code class="highlighter-rouge">LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
 
-<p>The Logging Facility is setup in the <code>LoggingInstaller</code> class, where we configure it.  A facility is a Castle.Windsor concept for a bundled set of registrations and behaviors.  As you can see, this makes properly configuring something like NLog very easy:</p>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">LoggingInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
+    <span class="p">{</span>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">LoggingInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">LoggingFacility</span><span class="p">&gt;(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">UseNLog</span><span class="p">().</span><span class="n">WithConfig</span><span class="p">(</span><span class="s">&quot;NLog.config&quot;</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+        <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">LoggingFacility</span><span class="p">&gt;(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">UseNLog</span><span class="p">().</span><span class="nf">WithConfig</span><span class="p">(</span><span class="s">"NLog.config"</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>That really is all there is to it, we configure the facility to use NLog, and then tell it where the config file is.  Now, the config file we include is very simple:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.nlog-project.org/schemas/NLog.xsd&quot;</span>
-</span><span class='line'>      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>      <span class="na">autoReload=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>      <span class="na">globalThreshold=</span><span class="s">&quot;Debug&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;targets&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;target</span> <span class="na">xsi:type=</span><span class="s">&quot;File&quot;</span>
-</span><span class='line'>            <span class="na">name=</span><span class="s">&quot;file&quot;</span>
-</span><span class='line'>            <span class="na">fileName=</span><span class="s">&quot;${basedir}/Logs/Log.txt&quot;</span>
-</span><span class='line'>            <span class="na">archiveEvery=</span><span class="s">&quot;Day&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/targets&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;rules&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">minlevel=</span><span class="s">&quot;Debug&quot;</span> <span class="na">writeTo=</span><span class="s">&quot;file&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/rules&gt;</span>
-</span><span class='line'><span class="nt">&lt;/nlog&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;nlog</span> <span class="na">xmlns=</span><span class="s">"http://www.nlog-project.org/schemas/NLog.xsd"</span>
+      <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+      <span class="na">autoReload=</span><span class="s">"true"</span>
+      <span class="na">globalThreshold=</span><span class="s">"Debug"</span><span class="nt">&gt;</span>
 
+  <span class="nt">&lt;targets&gt;</span>
+    <span class="nt">&lt;target</span> <span class="na">xsi:type=</span><span class="s">"File"</span>
+            <span class="na">name=</span><span class="s">"file"</span>
+            <span class="na">fileName=</span><span class="s">"${basedir}/Logs/Log.txt"</span>
+            <span class="na">archiveEvery=</span><span class="s">"Day"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/targets&gt;</span>
 
-<p>This configuration sets up a <code>Logs</code> directory that will contain <code>Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says &ldquo;log everything to Logs.txt&rdquo;.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
+  <span class="nt">&lt;rules&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">"*"</span> <span class="na">minlevel=</span><span class="s">"Debug"</span> <span class="na">writeTo=</span><span class="s">"file"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/rules&gt;</span>
+<span class="nt">&lt;/nlog&gt;</span>
+</code></pre></div></div>
 
-<h1>What is logged automatically for me?</h1>
+<p>This configuration sets up a <code class="highlighter-rouge">Logs</code> directory that will contain <code class="highlighter-rouge">Log.txt</code> as a file which will be archived to another file every day.  It also configures NLog to log all messages Debug and above by default.  Not that while NLog supports a Trace level, below Debug, Castle Logging Facility does not so this essentially says “log everything to Logs.txt”.  There is a great deal more that can be done with NLog and I encourage you to <a href="https://github.com/nlog/nlog/wiki">review their documentation on config</a>.</p>
+
+<h1 id="what-is-logged-automatically-for-me">What is logged automatically for me?</h1>
 
 <p>We setup two types of loggers for you automatically;</p>
 
 <ul>
-<li>The App_Start component <code>LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
-<li>The filter <code>ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
+  <li>The App_Start component <code class="highlighter-rouge">LoggerAnnouncementsWireup</code> logs a message every time your application starts up, and if it properly shuts down.</li>
+  <li>The filter <code class="highlighter-rouge">ExceptionLoggingFilter</code> logs every exception that is unhandled by the application.</li>
 </ul>
 
 
@@ -244,9 +203,9 @@
 
 
 
-  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
-
   <a href="/blog/categories/onramp-mvc/"><span class="badge">onramp-mvc</span></a>
+
+  <a href="/blog/categories/feature/"><span class="badge">feature</span></a>
 
 
 
@@ -293,7 +252,7 @@
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 

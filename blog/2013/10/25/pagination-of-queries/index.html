@@ -19,8 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/pagination-of-queries">
-  <link href="/favicon.png" rel="icon">
+  <link rel="canonical" href="http://hwyfwk.com/blog/2013/10/25/pagination-of-queries/">
+  <link href="//favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -96,7 +96,7 @@
 
   <header>
   <div class="jumbotron">
-    Pagination of Queries
+    Pagination Of Queries
 	<h5>
 
 
@@ -106,161 +106,93 @@
 
 
 
-  
 
-
-<i class="icon-calendar-empty"></i> <time datetime="2013-10-25T14:11:00-05:00" pubdate data-updated="true">Oct 25<span>th</span>, 2013</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2013-10-25T14:11:00-05:00" pubdate data-updated="true"></time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <h1>Paging Queries</h1>
+      <p>#Paging Queries</p>
 
-<p><span class='pullquote-right' data-pullquote='The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?'>
-We have gone through how to define and use Queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but now lets talk about value adds on those Queries. If you want to page an existing <code>Query&lt;T&gt;</code>, we believe that you should be able to quickly and easily.The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?
+<p><span class="pullquote-right" data-pullquote="The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?">
+We have gone through how to define and use Queries in our <a href="blog/2013/10/19/queries-slash-commands-slash-scalars/">Queries / Commands / Scalars</a> post, but now lets talk about value adds on those Queries. If you want to page an existing <code class="highlighter-rouge">Query&lt;T&gt;</code>, we believe that you should be able to quickly and easily.The purpose of a query is reuse and test-ability, and if you cannot reuse it why do it?
 </span></p>
 
-<h1>Example Domain</h1>
+<h1 id="example-domain">Example Domain</h1>
 
-<p>In all of the examples below, we&rsquo;ll be working with the following business domain, from our Driver&rsquo;s Education company:</p>
+<p>In all of the examples below, we’ll be working with the following business domain, from our Driver’s Education company:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversByLastName</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="n">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Instructor</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">Drivers</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Driver</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">Car</span> <span class="n">Car</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-<h1>Paging The IQuery &ndash; LINQ style</h1>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Car</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Make</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Model</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-<p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code>.Skip(int numberOfObjects)</code> and <code>.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">DriversByLastName</span> <span class="p">:</span> <span class="n">Query</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">DriversByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ContextQuery</span> <span class="p">=</span> <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">AsQueryable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;().</span><span class="nf">Where</span><span class="p">(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="n">lastName</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="n">lastName</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<h1 id="paging-the-iquery---linq-style">Paging The IQuery - LINQ style</h1>
 
+<p>This method we chose for paging is one that should be familiar to the entire .NET community at this point. We are using <code class="highlighter-rouge">.Skip(int numberOfObjects)</code> and <code class="highlighter-rouge">.Take(int numberOfObjects)</code>. Take the following controller method to get drivers by name</p>
 
-<p>Now that we have a call to the database and out training school has been running for a while we realize that we have 500 &ldquo;Smith&#8221;s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of <code>Query</code> to do the following.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DriversController : Controller
+{
+    private IRepository repo;
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DriversController</span> <span class="p">:</span> <span class="n">Controller</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="n">IRepository</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="nf">DriversController</span><span class="p">(</span><span class="n">IRepository</span> <span class="n">repo</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">repo</span> <span class="p">=</span> <span class="n">repo</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">ByLastName</span><span class="p">(</span><span class="kt">string</span> <span class="n">lastName</span><span class="p">,</span> <span class="kt">int</span> <span class="n">page</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>      <span class="kt">var</span> <span class="n">pageSize</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Driver</span><span class="p">&gt;</span> <span class="n">drivers</span> <span class="p">=</span> <span class="n">repo</span><span class="p">.</span><span class="n">Find</span><span class="p">(</span><span class="k">new</span> <span class="n">DriversByLastName</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
-</span><span class='line'>                                                  <span class="p">.</span><span class="n">Skip</span><span class="p">(</span><span class="n">page</span> <span class="p">*</span> <span class="n">pageSize</span><span class="p">).</span><span class="n">Take</span><span class="p">(</span><span class="n">pageSize</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">drivers</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+    public DriversController(IRepository repo)
+    {
+        this.repo = repo;
+    }
 
+    public ActionResult ByLastName(string lastName)
+    {
+        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName));
+        return View(drivers);
+    }
+}
+</code></pre></div></div>
+<p>Now that we have a call to the database and out training school has been running for a while we realize that we have 500 “Smith”s in the database. This causes our view to be horrible, and we need to add paging to the call. This is as easy as modifying the usage of <code class="highlighter-rouge">Query</code> to do the following.</p>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DriversController : Controller
+{
+    private IRepository repo;
+
+    public DriversController(IRepository repo)
+    {
+        this.repo = repo;
+    }
+
+    public ActionResult ByLastName(string lastName, int page)
+    {
+		var pageSize = 10;
+        IEnumerable&lt;Driver&gt; drivers = repo.Find(new DriversByLastName(lastName)
+												    .Skip(page * pageSize).Take(pageSize));
+        return View(drivers);
+    }
+}
+</code></pre></div></div>
 <p>This allows us to reused already defined queries for our paging solution as well. <strong>This is one of the rare cases that you can modify the SQL of a query from outside the query</strong> This will only return the records that are inside the page that you have defined.</p>
 
     </div>
@@ -329,7 +261,7 @@ We have gone through how to define and use Queries in our <a href="blog/2013/10/
       <div class="row-fluid">
         <footer class="footer-page" role="contentinfo">
           <p>
-  Copyright &copy; 2016 - Tim Rayburn & Devlin Liles -
+  Copyright &copy; 2019 - Tim Rayburn & Devlin Liles -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
 </p>
 
